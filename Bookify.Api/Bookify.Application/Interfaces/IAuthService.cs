@@ -4,9 +4,10 @@ namespace Bookify.Application.Interfaces;
 
 public interface IAuthService
 {
-    Task<string> LoginAsync(Requests.Auth.LoginRequest loginRequest);
-    Task<string> RegisterAsync(Requests.Auth.RegisterRequest request);
+    Task<string> LoginAsync(LoginRequest loginRequest);
+    Task RegisterAsync(RegisterRequest request);
     Task SendSmsCodeAsync(SendSmsCodeRequest sendSmsCodeRequest);
+    Task SendCodeForTelegramAsync(SendCodeTelegramRequest sendCodeTelegramRequest);
     //Task ConfirmEmailAsync(EmailConfirmationRequest request);
     //Task ResetPasswordAsync(ResetPasswordRequest request);
     //Task ConfirmResetPasswordAsync(ConfirmResetPasswordRequest request);
