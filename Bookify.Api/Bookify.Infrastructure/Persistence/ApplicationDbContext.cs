@@ -28,13 +28,6 @@ public class ApplicationDbContext : IdentityDbContext<User, IdentityRole<Guid>, 
         modelBuilder.Entity<User>(e =>
         {
             e.ToTable("User");
-
-            e.Property(u => u.BirthDate)
-                .IsRequired();
-
-            e.Property(u => u.Gender)
-                .HasConversion<string>()
-                .IsRequired();
         });
 
         modelBuilder.Entity<IdentityUserClaim<Guid>>(e =>
@@ -98,8 +91,6 @@ public class ApplicationDbContext : IdentityDbContext<User, IdentityRole<Guid>, 
             Email = "admin@example.com",
             NormalizedEmail = "ADMIN@EXAMPLE.COM",
             EmailConfirmed = true,
-            BirthDate = new DateTime(1990, 1, 1),
-            Gender = Gender.Male
         };
 
         modelBuilder.Entity<User>().HasData(adminUser);

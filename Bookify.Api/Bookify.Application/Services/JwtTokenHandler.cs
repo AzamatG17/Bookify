@@ -39,8 +39,7 @@ internal sealed class JwtTokenHandler : IJwtTokenHandler
         var claims = new List<Claim>
         {
             new(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new(ClaimTypes.Name, user.UserName!),
-            new(ClaimTypes.Email, user.Email!)
+            new(ClaimTypes.Name, user.UserName!)
         };
 
         foreach (var role in roles)

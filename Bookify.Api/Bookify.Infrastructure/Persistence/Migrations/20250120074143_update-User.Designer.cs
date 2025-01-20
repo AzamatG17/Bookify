@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Bookify.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250119124054_Initial-Create")]
-    partial class InitialCreate
+    [Migration("20250120074143_update-User")]
+    partial class updateUser
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -36,6 +36,9 @@ namespace Bookify.Infrastructure.Persistence.Migrations
 
                     b.Property<DateTime>("BirthDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<long>("ChatId")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
@@ -108,10 +111,11 @@ namespace Bookify.Infrastructure.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("d09ebffc-0fa0-4c72-88c3-4f124c48431c"),
+                            Id = new Guid("c0ffad1a-a088-4e4c-a1b4-d76232949775"),
                             AccessFailedCount = 0,
                             BirthDate = new DateTime(1990, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ConcurrencyStamp = "9486eaf7-c122-4ce6-be6b-5bb88285cc1d",
+                            ChatId = 0L,
+                            ConcurrencyStamp = "d52c81ad-aefb-4570-b3b6-cd3b8b59a319",
                             Email = "admin@example.com",
                             EmailConfirmed = true,
                             FirstName = "admin",
@@ -156,9 +160,15 @@ namespace Bookify.Infrastructure.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("3060f303-fb1e-46e9-b40c-ab67629e6799"),
+                            Id = new Guid("dd0024da-e9d8-49c7-b563-87090e5fdc8a"),
                             Name = "admin",
                             NormalizedName = "ADMIN"
+                        },
+                        new
+                        {
+                            Id = new Guid("b7b31f6e-5abc-4190-a868-75efe4a7c584"),
+                            Name = "user",
+                            NormalizedName = "USER"
                         });
                 });
 
@@ -248,8 +258,8 @@ namespace Bookify.Infrastructure.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            UserId = new Guid("d09ebffc-0fa0-4c72-88c3-4f124c48431c"),
-                            RoleId = new Guid("3060f303-fb1e-46e9-b40c-ab67629e6799")
+                            UserId = new Guid("c0ffad1a-a088-4e4c-a1b4-d76232949775"),
+                            RoleId = new Guid("dd0024da-e9d8-49c7-b563-87090e5fdc8a")
                         });
                 });
 

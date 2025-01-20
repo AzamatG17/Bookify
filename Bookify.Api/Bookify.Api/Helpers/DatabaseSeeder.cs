@@ -29,8 +29,6 @@ public static class DatabaseSeeder
         {
             Email = "azamatgiasov04@gmail.com",
             UserName = "Admin",
-            BirthDate = new DateTime(1990, 1, 1),
-            Gender = Gender.Male,
         };
 
         context.Users.Add(adminUser);

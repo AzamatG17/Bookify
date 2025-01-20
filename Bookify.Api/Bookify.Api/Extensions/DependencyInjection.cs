@@ -34,6 +34,12 @@ internal static class DependencyInjection
             .Bind(configuration.GetSection(SmsOptions.SectionName))
             .ValidateDataAnnotations()
             .ValidateOnStart();
+
+        services
+            .AddOptions<BotTokenOptions>()
+            .Bind(configuration.GetSection(BotTokenOptions.SectionName))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
     }
 
     private static void AddControllers(this IServiceCollection services)
