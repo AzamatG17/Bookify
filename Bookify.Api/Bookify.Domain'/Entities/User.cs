@@ -7,7 +7,5 @@ public class User : IdentityUser<Guid>
 {
     public string FirstName { get; set; }
     public string LastName { get; set; }
-    public override string? Email { get; set; }
-    public DateTime BirthDate { get; set; }
-    public Gender Gender { get; set; }  
+    public long ChatId { get; set; }
 }
