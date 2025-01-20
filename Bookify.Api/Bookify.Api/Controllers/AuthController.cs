@@ -16,6 +16,24 @@ public class AuthController : ControllerBase
     }
 
     /// <summary>
+    /// Login to get JWT token.
+    /// </summary>
+    /// <param name="loginRequest">PhoneNumber and code to login</param>
+    /// <returns></returns>
+    [HttpPost("login")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status406NotAcceptable)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult> LoginAsync([FromBody] LoginRequest loginRequest)
+    {
+        var token = await _service.LoginAsync(loginRequest);
+
+        return Ok(token);
+    }
+
+    /// <summary>
     /// Register to create a new user.
     /// </summary>
     /// <param name="request">Register to create a new user.</param>
@@ -26,9 +44,9 @@ public class AuthController : ControllerBase
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult> RegisterAsync([FromBody] RegisterRequest request)
     {
-        var token = await _service.RegisterAsync(request);
+        await _service.RegisterAsync(request);
 
-        return Ok(token);
+        return Ok();
     }
 
     /// <summary>
@@ -43,6 +61,22 @@ public class AuthController : ControllerBase
     public async Task<ActionResult> SendConfirmCodeAsync([FromBody] SendSmsCodeRequest sendSmsCodeRequest)
     {
         await _service.SendSmsCodeAsync(sendSmsCodeRequest);
+
+        return Ok();
+    }
+
+    /// <summary>
+    /// Send code for Telegram bot
+    /// </summary>
+    /// <param name="sendCodeTelegramRequest">Send code for Telegram bot</param>
+    /// <returns></returns>
+    [HttpPost("telegramCode")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status406NotAcceptable)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult> SendSodeTelegramAsync([FromBody] SendCodeTelegramRequest sendCodeTelegramRequest)
+    {
+        await _service.SendCodeForTelegramAsync(sendCodeTelegramRequest);
 
         return Ok();
     }
