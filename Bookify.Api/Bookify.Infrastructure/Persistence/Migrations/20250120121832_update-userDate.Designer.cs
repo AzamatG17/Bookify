@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Bookify.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250119124405_Update-Email")]
-    partial class UpdateEmail
+    [Migration("20250120121832_update-userDate")]
+    partial class updateuserDate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -34,8 +34,8 @@ namespace Bookify.Infrastructure.Persistence.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("BirthDate")
-                        .HasColumnType("datetime2");
+                    b.Property<long>("ChatId")
+                        .HasColumnType("bigint");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
@@ -49,10 +49,6 @@ namespace Bookify.Infrastructure.Persistence.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Gender")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -108,14 +104,13 @@ namespace Bookify.Infrastructure.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("3764f991-2347-4f7a-877b-c47ae4d0681f"),
+                            Id = new Guid("c62b9a3c-1b2d-4dd4-ba76-09fd9e8c7a68"),
                             AccessFailedCount = 0,
-                            BirthDate = new DateTime(1990, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            ConcurrencyStamp = "aaf93dc2-cce4-434e-8fae-58ba7ec9bdcc",
+                            ChatId = 0L,
+                            ConcurrencyStamp = "f670a1bd-36c0-4315-b957-e33aa4f36cab",
                             Email = "admin@example.com",
                             EmailConfirmed = true,
                             FirstName = "admin",
-                            Gender = "Male",
                             LastName = "admin",
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@EXAMPLE.COM",
@@ -156,9 +151,15 @@ namespace Bookify.Infrastructure.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("d0ebef22-5fe1-42d5-b70d-f92cdd56d264"),
+                            Id = new Guid("a5324a9e-eadb-44cc-9918-41c7b6fef65b"),
                             Name = "admin",
                             NormalizedName = "ADMIN"
+                        },
+                        new
+                        {
+                            Id = new Guid("5a811d90-bb75-4634-bb2d-b6d1ac10c5a7"),
+                            Name = "user",
+                            NormalizedName = "USER"
                         });
                 });
 
@@ -248,8 +249,8 @@ namespace Bookify.Infrastructure.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            UserId = new Guid("3764f991-2347-4f7a-877b-c47ae4d0681f"),
-                            RoleId = new Guid("d0ebef22-5fe1-42d5-b70d-f92cdd56d264")
+                            UserId = new Guid("c62b9a3c-1b2d-4dd4-ba76-09fd9e8c7a68"),
+                            RoleId = new Guid("a5324a9e-eadb-44cc-9918-41c7b6fef65b")
                         });
                 });
 

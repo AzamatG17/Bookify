@@ -3,10 +3,12 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace Bookify.Infrastructure.Persistence.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class initial_create : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -32,11 +34,11 @@ namespace Bookify.Infrastructure.Persistence.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     BirthDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Gender = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedEmail = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     EmailConfirmed = table.Column<bool>(type: "bit", nullable: false),
                     PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -163,17 +165,21 @@ namespace Bookify.Infrastructure.Persistence.Migrations
             migrationBuilder.InsertData(
                 table: "Role",
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
-                values: new object[] { new Guid("3060f303-fb1e-46e9-b40c-ab67629e6799"), null, "admin", "ADMIN" });
+                values: new object[,]
+                {
+                    { new Guid("2ff9790a-9113-455e-8a89-48526cc08622"), null, "user", "USER" },
+                    { new Guid("a5932dc8-e83b-4abb-92fa-dc2c57f6bbba"), null, "admin", "ADMIN" }
+                });
 
             migrationBuilder.InsertData(
                 table: "User",
                 columns: new[] { "Id", "AccessFailedCount", "BirthDate", "ConcurrencyStamp", "Email", "EmailConfirmed", "FirstName", "Gender", "LastName", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { new Guid("d09ebffc-0fa0-4c72-88c3-4f124c48431c"), 0, new DateTime(1990, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "9486eaf7-c122-4ce6-be6b-5bb88285cc1d", "admin@example.com", true, "admin", "Male", "admin", false, null, "ADMIN@EXAMPLE.COM", "ADMIN", null, null, false, null, false, "admin" });
+                values: new object[] { new Guid("0ff2ef44-28d8-42ae-a7bf-6ed3b3d0af1e"), 0, new DateTime(1990, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "da41291e-2cff-46f9-9e4b-abb9be1697a3", "admin@example.com", true, "admin", "Male", "admin", false, null, "ADMIN@EXAMPLE.COM", "ADMIN", null, null, false, null, false, "admin" });
 
             migrationBuilder.InsertData(
                 table: "UserRole",
                 columns: new[] { "RoleId", "UserId" },
-                values: new object[] { new Guid("3060f303-fb1e-46e9-b40c-ab67629e6799"), new Guid("d09ebffc-0fa0-4c72-88c3-4f124c48431c") });
+                values: new object[] { new Guid("a5932dc8-e83b-4abb-92fa-dc2c57f6bbba"), new Guid("0ff2ef44-28d8-42ae-a7bf-6ed3b3d0af1e") });
 
             migrationBuilder.CreateIndex(
                 name: "RoleNameIndex",

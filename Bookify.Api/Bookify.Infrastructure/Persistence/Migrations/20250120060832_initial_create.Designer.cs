@@ -4,6 +4,7 @@ using Bookify.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Bookify.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250120060832_initial_create")]
+    partial class initial_create
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -31,8 +34,8 @@ namespace Bookify.Infrastructure.Persistence.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
-                    b.Property<long>("ChatId")
-                        .HasColumnType("bigint");
+                    b.Property<DateTime>("BirthDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
@@ -46,6 +49,10 @@ namespace Bookify.Infrastructure.Persistence.Migrations
                         .HasColumnType("bit");
 
                     b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Gender")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -101,13 +108,14 @@ namespace Bookify.Infrastructure.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("c62b9a3c-1b2d-4dd4-ba76-09fd9e8c7a68"),
+                            Id = new Guid("0ff2ef44-28d8-42ae-a7bf-6ed3b3d0af1e"),
                             AccessFailedCount = 0,
-                            ChatId = 0L,
-                            ConcurrencyStamp = "f670a1bd-36c0-4315-b957-e33aa4f36cab",
+                            BirthDate = new DateTime(1990, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            ConcurrencyStamp = "da41291e-2cff-46f9-9e4b-abb9be1697a3",
                             Email = "admin@example.com",
                             EmailConfirmed = true,
                             FirstName = "admin",
+                            Gender = "Male",
                             LastName = "admin",
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@EXAMPLE.COM",
@@ -148,13 +156,13 @@ namespace Bookify.Infrastructure.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("a5324a9e-eadb-44cc-9918-41c7b6fef65b"),
+                            Id = new Guid("a5932dc8-e83b-4abb-92fa-dc2c57f6bbba"),
                             Name = "admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = new Guid("5a811d90-bb75-4634-bb2d-b6d1ac10c5a7"),
+                            Id = new Guid("2ff9790a-9113-455e-8a89-48526cc08622"),
                             Name = "user",
                             NormalizedName = "USER"
                         });
@@ -246,8 +254,8 @@ namespace Bookify.Infrastructure.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            UserId = new Guid("c62b9a3c-1b2d-4dd4-ba76-09fd9e8c7a68"),
-                            RoleId = new Guid("a5324a9e-eadb-44cc-9918-41c7b6fef65b")
+                            UserId = new Guid("0ff2ef44-28d8-42ae-a7bf-6ed3b3d0af1e"),
+                            RoleId = new Guid("a5932dc8-e83b-4abb-92fa-dc2c57f6bbba")
                         });
                 });
 
