@@ -17,6 +17,9 @@ public class ApplicationDbContext : IdentityDbContext<User, IdentityRole<Guid>, 
         //Database.Migrate();
     }
 
+    public DbSet<Companies> Companies { get; set; }
+    public DbSet<Services> Services { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
