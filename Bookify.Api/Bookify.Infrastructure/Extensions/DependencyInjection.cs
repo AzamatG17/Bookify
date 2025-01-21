@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Bookify.Application.Interfaces;
 using Bookify.Infrastructure.Sms;
 using Bookify.Infrastructure.SendNotification;
+using Bookify.Infrastructure.Client;
 
 namespace Bookify.Infrastructure.Extensions;
 
@@ -26,6 +27,7 @@ public static class DependencyInjection
 
         services.AddScoped<ISmsService, SmsService>();
         services.AddScoped<ITelegramService, TelegramService>();
+        services.AddScoped<IApiClient, ApiClient>();
 
         AddIdentity(services);
 
