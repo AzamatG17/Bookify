@@ -1,4 +1,4 @@
-﻿using Bookify.Application.Interfaces;
+﻿using Bookify.Application.Interfaces.IServices;
 using Bookify.Domain_.Common;
 using Bookify.Infrastructure.Extensions;
 using Microsoft.EntityFrameworkCore;

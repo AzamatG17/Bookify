@@ -1,4 +1,4 @@
-﻿namespace Bookify.Application.Interfaces;
+﻿namespace Bookify.Application.Interfaces.IServices;
 
 public interface ICurrentUserService
 {

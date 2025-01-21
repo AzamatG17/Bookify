@@ -1,4 +1,4 @@
-﻿using Bookify.Application.Interfaces;
+﻿using Bookify.Application.Interfaces.IServices;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace Bookify.Application.Services;
