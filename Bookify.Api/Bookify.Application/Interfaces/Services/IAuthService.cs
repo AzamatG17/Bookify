@@ -1,6 +1,6 @@
 ﻿using Bookify.Application.Requests.Auth;
 
-namespace Bookify.Application.Interfaces;
+namespace Bookify.Application.Interfaces.IServices;
 
 public interface IAuthService
 {
