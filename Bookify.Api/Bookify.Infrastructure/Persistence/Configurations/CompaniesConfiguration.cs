@@ -1,6 +1,7 @@
 ﻿using Bookify.Domain_.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System.Reflection.Emit;
 
 namespace Bookify.Infrastructure.Persistence.Configurations;
 
@@ -27,5 +28,10 @@ internal class CompaniesConfiguration : IEntityTypeConfiguration<Companies>
 
         builder.Property(c => c.BackgroundColor)
             .HasMaxLength(50);
+
+        builder.HasMany(c => c.Services)
+            .WithOne(s => s.Company)
+            .HasForeignKey(s => s.CompanyId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }
