@@ -1,8 +1,10 @@
 ﻿using Bookify.Application.Interfaces;
 using Bookify.Application.Interfaces.IServices;
+using Bookify.Application.Interfaces.IStores;
 using Bookify.Application.Interfaces.Services;
 using Bookify.Application.Mappings;
 using Bookify.Application.Services;
+using Bookify.Application.Stores;
 using Bookify.Application.Validations.Auth;
 using FluentValidation;
 using Microsoft.Extensions.Configuration;
@@ -19,8 +21,11 @@ public static class DependencyInjection
         services.AddValidatorsFromAssemblyContaining<RegisterRequestValidator>();
         services.AddFluentValidationAutoValidation();
 
+        services.AddScoped<IBranchStore, BranchStore>();
+
         services.AddSingleton<ICurrentUserService, CurrentUserService>();
 
+        services.AddScoped<IBranchService, BranchService>();
         services.AddScoped<ICompaniesService, CompaniesService>();
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<ISmsCodeService, SmsCodeService>();
