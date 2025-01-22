@@ -22,7 +22,7 @@ internal sealed class CompaniesService(IApplicationDbContext context, IMapper ma
             .ProjectTo<CompaniesDto>(_mapper.ConfigurationProvider)
             .ToListAsync();
 
-        return comapies;
+        return comapies ?? [];
     }
 
     public async Task<CompaniesDto> GetByIdAsync(CompanyRequest request)
@@ -55,7 +55,15 @@ internal sealed class CompaniesService(IApplicationDbContext context, IMapper ma
     {
         ArgumentNullException.ThrowIfNull(request);
 
-        var company = _mapper.Map<Companies>(request);
+        var company = await _context.Companies
+            .FirstOrDefaultAsync(c => c.Id == request.Id);
+
+        if (company is null)
+        {
+            throw new EntityNotFoundException($"Company with id:{request.Id} does not exist.");
+        }
+
+        _mapper.Map(request, company);
 
         _context.Companies.Update(company);
         await _context.SaveChangesAsync();

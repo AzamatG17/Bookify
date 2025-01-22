@@ -3,6 +3,16 @@ using Bookify.Application.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin() // Разрешает доступ с любых доменов
+              .AllowAnyHeader() // Разрешает любые заголовки
+              .AllowAnyMethod(); // Разрешает любые HTTP-методы (GET, POST и т.д.)
+    });
+});
+
 builder.Services
     .RegisterApplication(builder.Configuration)
     .RegisterApi(builder.Configuration);
@@ -23,6 +33,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
     app.UseDatabaseSeeder();
 }
+
+app.UseCors("AllowAll");
 
 app.UseErrorHandler();
 

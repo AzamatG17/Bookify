@@ -4,12 +4,16 @@ public sealed record Branches(
     int BranchId,
     string BranchName,
     string BranchAddress,
-    string Latitude,
-    string Longitude,
+    Coordinates Coordinates,
     List<OpeningTimeDto> OpeningTimeDto
     );
 
 public sealed record OpeningTimeDto(
     int Day,
     string OpenTime
+    );
+
+public sealed record Coordinates(
+    double? Latitude,
+    double? Longitude
     );
