@@ -27,9 +27,8 @@ public class CompaniesController : ControllerBase
     [HttpHead]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status406NotAcceptable)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<List<CompaniesDto>>> GetAllAsync()
+    public async Task<ActionResult<List<CompaniesDto>>> GetCompanyAllAsync()
     {
         var companies = await _service.GetAllAsync();
 
@@ -41,13 +40,13 @@ public class CompaniesController : ControllerBase
     /// </summary>
     /// <param name="request">The Company Id</param>
     /// <returns></returns>
-    [HttpGet("{id:int:min(1)}", Name = nameof(GetByIdAsync))]
+    [HttpGet("{id:int:min(1)}/company", Name = nameof(GetCompanyByIdAsync))]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status406NotAcceptable)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<CompaniesDto>> GetByIdAsync([FromRoute] CompanyRequest request)
+    public async Task<ActionResult<CompaniesDto>> GetCompanyByIdAsync([FromRoute] CompanyRequest request)
     {
         var company = await _service.GetByIdAsync(request);
 
@@ -64,11 +63,11 @@ public class CompaniesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status406NotAcceptable)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<CompaniesDto>> CreateAsync([FromBody] CreateCompanyRequest request)
+    public async Task<ActionResult<CompaniesDto>> CreateCompanyAsync([FromBody] CreateCompanyRequest request)
     {
         var response = await _service.CreateAsync(request);
 
-        return CreatedAtAction(nameof(GetByIdAsync), new { id = response.Id }, response);
+        return CreatedAtAction(nameof(GetCompanyByIdAsync), new { id = response.Id }, response);
     }
 
     /// <summary>
@@ -83,7 +82,7 @@ public class CompaniesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status406NotAcceptable)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult> UpdateAsync([FromRoute] int id, [FromBody] UpdateCompanyRequest request)
+    public async Task<ActionResult> UpdateCompanyAsync([FromRoute] int id, [FromBody] UpdateCompanyRequest request)
     {
         if (id != request.Id)
         {
@@ -104,7 +103,7 @@ public class CompaniesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult> DeleteAsync([FromRoute] CompanyRequest request)
+    public async Task<ActionResult> DeleteCompanyAsync([FromRoute] CompanyRequest request)
     {
         await _service.DeleteAsync(request);
 
