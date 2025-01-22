@@ -15,11 +15,9 @@ public class ServicesConfiguration : IEntityTypeConfiguration<Services>
             .HasMaxLength(255)
             .IsRequired();
 
-        builder.Property(s => s.Description)
-            .HasMaxLength(1000);
-
-        builder.Property(s => s.Location)
-            .HasMaxLength(100)
-            .IsRequired();
+        builder.HasOne(s => s.Branch)
+            .WithMany(b => b.Services)
+            .HasForeignKey(s => s.BranchId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

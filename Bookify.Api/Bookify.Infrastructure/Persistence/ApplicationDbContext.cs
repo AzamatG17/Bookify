@@ -1,10 +1,10 @@
 ﻿using Bookify.Application.Constants;
 using Bookify.Domain_.Entities;
-using Bookify.Domain_.Enums;
 using Bookify.Domain_.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using System.Reflection;
 
 namespace Bookify.Infrastructure.Persistence;
@@ -17,8 +17,12 @@ public class ApplicationDbContext : IdentityDbContext<User, IdentityRole<Guid>, 
         //Database.Migrate();
     }
 
-    public DbSet<Companies> Companies { get; set; }
-    public DbSet<Services> Services { get; set; }
+    public virtual DbSet<OpeningTimeBranch> OpeningTimeBranches { get; set; }
+    public virtual DbSet<Branch> Branches { get; set; }
+    public virtual DbSet<Companies> Companies { get; set; }
+    public virtual DbSet<Services> Services { get; set; }
+
+    public DatabaseFacade Database => base.Database;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -11,5 +11,5 @@ public class Companies : AuditableEntity
     public string? Color { get; set; }
     public string? BackgroundColor { get; set; }
 
-    public virtual ICollection<Services> Services { get; set; }
+    public virtual ICollection<Branch> Branches { get; set; }
 }

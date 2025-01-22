@@ -1,6 +1,7 @@
 ﻿using Bookify.Domain_.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace Bookify.Domain_.Interfaces;
 
@@ -11,7 +12,10 @@ public interface IApplicationDbContext
     DbSet<IdentityUserRole<Guid>> UserRoles { get; set; }
     DbSet<Companies> Companies { get; set; }
     DbSet<Services> Services { get; set; }
+    DbSet<Branch> Branches { get; set; }
+    DbSet<OpeningTimeBranch> OpeningTimeBranches { get; set; }
 
+    DatabaseFacade Database { get; }
     int SaveChanges();
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
