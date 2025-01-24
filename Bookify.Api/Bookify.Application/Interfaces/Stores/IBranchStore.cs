@@ -1,9 +1,9 @@
-﻿using Bookify.Application.Models;
+﻿using Bookify.Domain_.Entities;
 
 namespace Bookify.Application.Interfaces.IStores;
 
 public interface IBranchStore
 {
-    Task<List<Branches>> GetAllAsync(string baseUrl);
-    Task<List<Branches>> GetAllForOnlinetAsync(string baseUrl);
+    Task<List<Branch>> GetAllAsync(Companies companies);
+    Task<List<Branch>> GetAllForOnlinetAsync(Companies companies);
 }
