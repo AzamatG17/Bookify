@@ -4,6 +4,7 @@ using Bookify.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Bookify.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250124045733_Add-data-Service")]
+    partial class AdddataService
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -310,10 +313,10 @@ namespace Bookify.Infrastructure.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("1d4843dc-a3c7-43ab-8c71-df3c008fbd3b"),
+                            Id = new Guid("1a0bfec0-862e-4d5a-987d-cc5807fcefb5"),
                             AccessFailedCount = 0,
                             ChatId = 0L,
-                            ConcurrencyStamp = "786279a7-8ab9-4779-aa70-c05bdc44f2e2",
+                            ConcurrencyStamp = "6fb91de5-eae4-45b2-8986-4507ad75cc61",
                             Email = "admin@example.com",
                             EmailConfirmed = true,
                             FirstName = "admin",
@@ -321,7 +324,6 @@ namespace Bookify.Infrastructure.Persistence.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@EXAMPLE.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAENHuUQw2TMnGLx+XzThm/vBJ+D2EjUImX0fn3f2BDtW3+ya6mSayPh9Dk0eRkUKwLQ==",
                             PhoneNumberConfirmed = false,
                             TwoFactorEnabled = false,
                             UserName = "admin"
@@ -358,13 +360,13 @@ namespace Bookify.Infrastructure.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("8a13e052-d5da-42d6-beb9-cf08d77dc163"),
+                            Id = new Guid("45f7b1de-6a9f-4579-9410-1efbe7fe97ed"),
                             Name = "admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = new Guid("7dec89d2-4798-4033-bd70-94cdb35ad074"),
+                            Id = new Guid("35663efa-b5c8-445e-9507-4a03ea396025"),
                             Name = "user",
                             NormalizedName = "USER"
                         });
@@ -456,8 +458,8 @@ namespace Bookify.Infrastructure.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            UserId = new Guid("1d4843dc-a3c7-43ab-8c71-df3c008fbd3b"),
-                            RoleId = new Guid("8a13e052-d5da-42d6-beb9-cf08d77dc163")
+                            UserId = new Guid("1a0bfec0-862e-4d5a-987d-cc5807fcefb5"),
+                            RoleId = new Guid("45f7b1de-6a9f-4579-9410-1efbe7fe97ed")
                         });
                 });
 
@@ -504,7 +506,7 @@ namespace Bookify.Infrastructure.Persistence.Migrations
                     b.HasOne("Bookify.Domain_.Entities.Branch", "Branch")
                         .WithMany("Services")
                         .HasForeignKey("BranchId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Branch");
@@ -515,7 +517,7 @@ namespace Bookify.Infrastructure.Persistence.Migrations
                     b.HasOne("Bookify.Domain_.Entities.Service", "Services")
                         .WithMany("ServiceTranslations")
                         .HasForeignKey("ServiceId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Services");

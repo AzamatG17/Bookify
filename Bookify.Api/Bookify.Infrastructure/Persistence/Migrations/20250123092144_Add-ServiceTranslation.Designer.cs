@@ -4,6 +4,7 @@ using Bookify.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Bookify.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250123092144_Add-ServiceTranslation")]
+    partial class AddServiceTranslation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -156,40 +159,6 @@ namespace Bookify.Infrastructure.Persistence.Migrations
                     b.ToTable("OpeningTimeBranch", (string)null);
                 });
 
-            modelBuilder.Entity("Bookify.Domain_.Entities.Service", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("BranchId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreatedAtUtc")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("LastUpdatedAtUtc")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("LastUpdatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("ServiceId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("BranchId");
-
-                    b.ToTable("Service", (string)null);
-                });
-
             modelBuilder.Entity("Bookify.Domain_.Entities.ServiceTranslation", b =>
                 {
                     b.Property<int>("Id")
@@ -229,6 +198,42 @@ namespace Bookify.Infrastructure.Persistence.Migrations
                     b.HasIndex("ServiceId");
 
                     b.ToTable("ServiceTranslation", (string)null);
+                });
+
+            modelBuilder.Entity("Bookify.Domain_.Entities.Services", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("BranchId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("LastUpdatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LastUpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BranchId");
+
+                    b.ToTable("Services", (string)null);
                 });
 
             modelBuilder.Entity("Bookify.Domain_.Entities.User", b =>
@@ -310,10 +315,10 @@ namespace Bookify.Infrastructure.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("1d4843dc-a3c7-43ab-8c71-df3c008fbd3b"),
+                            Id = new Guid("b7d920b7-11f1-4682-a932-e1dc24a71e0a"),
                             AccessFailedCount = 0,
                             ChatId = 0L,
-                            ConcurrencyStamp = "786279a7-8ab9-4779-aa70-c05bdc44f2e2",
+                            ConcurrencyStamp = "545d9efc-ac3a-4a4e-90cc-9a00acc3cded",
                             Email = "admin@example.com",
                             EmailConfirmed = true,
                             FirstName = "admin",
@@ -321,7 +326,6 @@ namespace Bookify.Infrastructure.Persistence.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@EXAMPLE.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAENHuUQw2TMnGLx+XzThm/vBJ+D2EjUImX0fn3f2BDtW3+ya6mSayPh9Dk0eRkUKwLQ==",
                             PhoneNumberConfirmed = false,
                             TwoFactorEnabled = false,
                             UserName = "admin"
@@ -358,13 +362,13 @@ namespace Bookify.Infrastructure.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("8a13e052-d5da-42d6-beb9-cf08d77dc163"),
+                            Id = new Guid("28a0d6dd-d29a-401f-a0f3-58cfaab5a9dc"),
                             Name = "admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = new Guid("7dec89d2-4798-4033-bd70-94cdb35ad074"),
+                            Id = new Guid("b19e3e32-0b28-414c-a4b7-8b292b26937a"),
                             Name = "user",
                             NormalizedName = "USER"
                         });
@@ -456,8 +460,8 @@ namespace Bookify.Infrastructure.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            UserId = new Guid("1d4843dc-a3c7-43ab-8c71-df3c008fbd3b"),
-                            RoleId = new Guid("8a13e052-d5da-42d6-beb9-cf08d77dc163")
+                            UserId = new Guid("b7d920b7-11f1-4682-a932-e1dc24a71e0a"),
+                            RoleId = new Guid("28a0d6dd-d29a-401f-a0f3-58cfaab5a9dc")
                         });
                 });
 
@@ -499,26 +503,26 @@ namespace Bookify.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("Bookify.Domain_.Entities.Service", b =>
+            modelBuilder.Entity("Bookify.Domain_.Entities.ServiceTranslation", b =>
+                {
+                    b.HasOne("Bookify.Domain_.Entities.Services", "Services")
+                        .WithMany("ServiceTranslations")
+                        .HasForeignKey("ServiceId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Services");
+                });
+
+            modelBuilder.Entity("Bookify.Domain_.Entities.Services", b =>
                 {
                     b.HasOne("Bookify.Domain_.Entities.Branch", "Branch")
                         .WithMany("Services")
                         .HasForeignKey("BranchId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Branch");
-                });
-
-            modelBuilder.Entity("Bookify.Domain_.Entities.ServiceTranslation", b =>
-                {
-                    b.HasOne("Bookify.Domain_.Entities.Service", "Services")
-                        .WithMany("ServiceTranslations")
-                        .HasForeignKey("ServiceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Services");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
@@ -584,7 +588,7 @@ namespace Bookify.Infrastructure.Persistence.Migrations
                     b.Navigation("Branches");
                 });
 
-            modelBuilder.Entity("Bookify.Domain_.Entities.Service", b =>
+            modelBuilder.Entity("Bookify.Domain_.Entities.Services", b =>
                 {
                     b.Navigation("ServiceTranslations");
                 });

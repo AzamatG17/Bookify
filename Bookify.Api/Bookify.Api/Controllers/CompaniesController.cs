@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 
 namespace Bookify.Api.Controllers;
 
-[Authorize]
+//[Authorize]
 [Route("api/company")]
 [ApiController]
 public class CompaniesController : ControllerBase
@@ -59,6 +59,7 @@ public class CompaniesController : ControllerBase
     /// <param name="request"></param>
     /// <returns></returns>
     [HttpPost]
+    [Authorize(Policy = "Admin")]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status406NotAcceptable)]
@@ -77,6 +78,7 @@ public class CompaniesController : ControllerBase
     /// <param name="request">Company to update</param>
     /// <returns></returns>
     [HttpPut("{id:int:min(1)}")]
+    [Authorize(Policy = "Admin")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -100,6 +102,7 @@ public class CompaniesController : ControllerBase
     /// <param name="request">Company od to delete</param>
     /// <returns></returns>
     [HttpDelete("{Id:int:min(1)}")]
+    [Authorize(Policy = "Admin")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]

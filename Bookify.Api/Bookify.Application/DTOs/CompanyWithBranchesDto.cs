@@ -1,5 +1,4 @@
-﻿using Bookify.Application.Models;
-using Bookify.Domain_.Enums;
+﻿using Bookify.Domain_.Enums;
 
 namespace Bookify.Application.DTOs;
 
@@ -9,5 +8,5 @@ public record CompanyWithBranchesDto(
     Projects Projects,
     string? Color,
     string? BackgroundColor,
-    List<Branches>? Branches
+    List<BranchDto>? Branches
     );

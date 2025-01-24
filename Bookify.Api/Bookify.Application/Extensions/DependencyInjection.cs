@@ -2,6 +2,7 @@
 using Bookify.Application.Interfaces.IServices;
 using Bookify.Application.Interfaces.IStores;
 using Bookify.Application.Interfaces.Services;
+using Bookify.Application.Interfaces.Stores;
 using Bookify.Application.Mappings;
 using Bookify.Application.Services;
 using Bookify.Application.Stores;
@@ -22,9 +23,11 @@ public static class DependencyInjection
         services.AddFluentValidationAutoValidation();
 
         services.AddScoped<IBranchStore, BranchStore>();
+        services.AddScoped<IServiceStore, ServiceStore>();
 
         services.AddSingleton<ICurrentUserService, CurrentUserService>();
 
+        services.AddScoped<IServicesService, ServicesService>();
         services.AddScoped<IBranchService, BranchService>();
         services.AddScoped<ICompaniesService, CompaniesService>();
         services.AddScoped<IAuthService, AuthService>();

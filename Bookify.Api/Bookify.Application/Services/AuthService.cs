@@ -126,4 +126,24 @@ internal sealed class AuthService : IAuthService
         };
         await _telegramService.SendMessageAsync(existingUser.ChatId, message);
     }
+
+    public async Task<string> LoginForAdminAsync(LoginForAdminRequest request)
+    {
+        ArgumentNullException.ThrowIfNullOrEmpty(nameof(request));
+
+        var existingUser = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == request.Login)
+            ?? throw new UserNameNotExistException($"Login: {request.Login} does not exist.");
+
+        var isPasswordValid = await _userManager.CheckPasswordAsync(existingUser, request.Password);
+        if (!isPasswordValid)
+        {
+            throw new InvalidPasswordException("The provided password is incorrect.");
+        }
+
+        var roles = await _userManager.GetRolesAsync(existingUser);
+
+        var token = _jwtTokenHandler.GenerateToken(existingUser, roles);
+
+        return token;
+    }
 }

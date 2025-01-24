@@ -20,7 +20,8 @@ public class ApplicationDbContext : IdentityDbContext<User, IdentityRole<Guid>, 
     public virtual DbSet<OpeningTimeBranch> OpeningTimeBranches { get; set; }
     public virtual DbSet<Branch> Branches { get; set; }
     public virtual DbSet<Companies> Companies { get; set; }
-    public virtual DbSet<Services> Services { get; set; }
+    public virtual DbSet<Service> Services { get; set; }
+    public virtual DbSet<ServiceTranslation> ServiceTranslations { get; set; }
 
     public DatabaseFacade Database => base.Database;
 
@@ -99,6 +100,9 @@ public class ApplicationDbContext : IdentityDbContext<User, IdentityRole<Guid>, 
             NormalizedEmail = "ADMIN@EXAMPLE.COM",
             EmailConfirmed = true,
         };
+
+        var passwordHasher = new PasswordHasher<User>();
+        adminUser.PasswordHash = passwordHasher.HashPassword(adminUser, "admin");
 
         modelBuilder.Entity<User>().HasData(adminUser);
 

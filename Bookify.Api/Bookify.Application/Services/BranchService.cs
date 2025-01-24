@@ -1,8 +1,6 @@
-﻿using AutoMapper;
-using Bookify.Application.DTOs;
+﻿using Bookify.Application.DTOs;
 using Bookify.Application.Interfaces.IServices;
 using Bookify.Application.Interfaces.IStores;
-using Bookify.Application.Models;
 using Bookify.Application.Requests.Services;
 using Bookify.Domain_.Entities;
 using Bookify.Domain_.Exceptions;
@@ -11,86 +9,73 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Bookify.Application.Services;
 
-internal sealed class BranchService : IBranchService
+internal sealed class BranchService(IApplicationDbContext context, IBranchStore branchStore) : IBranchService
 {
-    private readonly IApplicationDbContext _context;
-    private readonly IBranchStore _branchStore;
-    private readonly IMapper _mapper;
-
-    public BranchService(IApplicationDbContext context, IBranchStore branchStore, IMapper mapper)
-    {
-        _context = context ?? throw new ArgumentNullException(nameof(context));
-        _branchStore = branchStore ?? throw new ArgumentNullException(nameof(branchStore));
-        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-    }
+    private readonly IApplicationDbContext _context = context ?? throw new ArgumentNullException(nameof(context));
+    private readonly IBranchStore _branchStore = branchStore ?? throw new ArgumentNullException(nameof(branchStore));
 
     public async Task<List<CompanyWithBranchesDto>> GetAllAsync()
     {
-        var companies = await _context.Companies
+        var branches = await _context.Companies
+            .Include(c => c.Branches)
+            .ThenInclude(o => o.OpeningTimeBranches)
             .AsNoTracking()
             .ToListAsync();
 
-        var result = new List<CompanyWithBranchesDto>();
+        var result = branches.Select(c => new CompanyWithBranchesDto(
+            c.Id,
+            c.Name,
+            c.Projects,
+            c.Color,
+            c.BackgroundColor,
+            c.Branches.Select(b => new BranchDto(
+            b.BranchId,
+            b.Name,
+            b.BranchAddres,
+            b.CoordinateLatitude,
+            b.CoordinateLongitude,
+            b.OpeningTimeBranches.Select(o => new DTOs.OpeningTimeDto(
+                    o.Day,
+                    o.OpenTime
+                    )).ToList() 
+                )).ToList()
+            )).ToList();
 
-        foreach (var company in companies)
-        {
-            List<Branches>? branches = null;
-
-            if (company.Projects == Domain_.Enums.Projects.BookingService)
-            {
-                branches = await _branchStore.GetAllAsync(company.BaseUrl);
-            }
-            else if (company.Projects == Domain_.Enums.Projects.Onlinet)
-            {
-                branches = await _branchStore.GetAllForOnlinetAsync(company.BaseUrl);
-            }
-
-            result.Add(new CompanyWithBranchesDto(
-                Id: company.Id,
-                Name: company.Name,
-                Projects: company.Projects,
-                Color: company.Color,
-                BackgroundColor: company.BackgroundColor,
-                Branches: branches
-            ));
-        }
-
-        return result;
+        return result ?? [];
     }
 
     public async Task<CompanyWithBranchesDto> GetByIdAsync(CompanyRequest request)
     {
-        var company = await _context.Companies
+        var branch = await _context.Companies
+            .Include(c => c.Branches)
+            .ThenInclude(o => o.OpeningTimeBranches)
             .AsNoTracking()
-            .FirstOrDefaultAsync(c => c.Id == request.Id);
+            .FirstOrDefaultAsync(c => c.Id == request.Id)
+            ?? throw new EntityNotFoundException($"Company with id does not exist.");
 
-        if (company is null)
-        {
-            throw new EntityNotFoundException($"Company with id:{request.Id} does not exist.");
-        }
-
-        List<Branches> branches = new();
-
-        if (company.Projects == Domain_.Enums.Projects.BookingService)
-        {
-            branches = await _branchStore.GetAllAsync(company.BaseUrl);
-        }
-        else if (company.Projects == Domain_.Enums.Projects.Onlinet)
-        {
-            branches = await _branchStore.GetAllForOnlinetAsync(company.BaseUrl);
-        }
-
-        return new CompanyWithBranchesDto(
-            Id: company.Id,
-            Name: company.Name,
-            Projects: company.Projects,
-            Color: company.Color,
-            BackgroundColor: company.BackgroundColor,
-            Branches: branches
+        var result = new CompanyWithBranchesDto(
+            branch.Id,
+            branch.Name,
+            branch.Projects,
+            branch.Color,
+            branch.BackgroundColor,
+            branch.Branches?.Select(b => new BranchDto(
+                b.BranchId,
+                b.Name,
+                b.BranchAddres,
+                b.CoordinateLatitude,
+                b.CoordinateLongitude,
+                b.OpeningTimeBranches?.Select(o => new DTOs.OpeningTimeDto(
+                    o.Day,
+                    o.OpenTime
+                )).ToList()
+            )).ToList()
         );
+
+        return result;
     }
 
-    public async Task UpdateDateAsync(CompanyRequest request)
+    public async Task<List<Branch>> UpdateDateAsync(CompanyRequest request)
     {
         using var transaction = await _context.Database.BeginTransactionAsync();
         try
@@ -104,26 +89,25 @@ internal sealed class BranchService : IBranchService
                 _context.Branches.RemoveRange(branches);
             }
 
-            var newBranches = await GetByIdsAsync(request);
+            var newBranchesData = await GetByIdsAsync(request);
 
-            foreach (var branch in newBranches)
-            {
-                var result = _mapper.Map<Branch>(branch);
-                await _context.Branches.AddAsync(result);
-            }
+            await _context.Branches.AddRangeAsync(newBranchesData);
 
             await _context.SaveChangesAsync();
 
             await transaction.CommitAsync();
+
+            return newBranchesData;
         }
         catch (Exception ex)
         {
             await transaction.RollbackAsync();
-            throw;
+
+            throw new InvalidUpdateDataException("Failed to update company branches. See inner exception for details.", ex);
         }
     }
 
-    public async Task<List<Branches>> GetByIdsAsync(CompanyRequest request)
+    private async Task<List<Branch>> GetByIdsAsync(CompanyRequest request)
     {
         var company = await _context.Companies
             .AsNoTracking()
@@ -134,15 +118,15 @@ internal sealed class BranchService : IBranchService
             throw new EntityNotFoundException($"Company with id:{request.Id} does not exist.");
         }
 
-        List<Branches> branches = new();
+        List<Branch> branches = [];
 
         if (company.Projects == Domain_.Enums.Projects.BookingService)
         {
-            branches = await _branchStore.GetAllAsync(company.BaseUrl);
+            branches = await _branchStore.GetAllAsync(company);
         }
         else if (company.Projects == Domain_.Enums.Projects.Onlinet)
         {
-            branches = await _branchStore.GetAllForOnlinetAsync(company.BaseUrl);
+            branches = await _branchStore.GetAllForOnlinetAsync(company);
         }
 
         return branches;
