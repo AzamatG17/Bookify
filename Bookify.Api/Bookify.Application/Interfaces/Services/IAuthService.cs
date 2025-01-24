@@ -8,7 +8,5 @@ public interface IAuthService
     Task RegisterAsync(RegisterRequest request);
     Task SendSmsCodeAsync(SendSmsCodeRequest sendSmsCodeRequest);
     Task SendCodeForTelegramAsync(SendCodeTelegramRequest sendCodeTelegramRequest);
-    //Task ConfirmEmailAsync(EmailConfirmationRequest request);
-    //Task ResetPasswordAsync(ResetPasswordRequest request);
-    //Task ConfirmResetPasswordAsync(ConfirmResetPasswordRequest request);
+    Task<string> LoginForAdminAsync(LoginForAdminRequest request);
 }
