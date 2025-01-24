@@ -4,6 +4,7 @@ using Bookify.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Bookify.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250124102652_Update-usertable")]
+    partial class Updateusertable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -310,10 +313,10 @@ namespace Bookify.Infrastructure.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("1d4843dc-a3c7-43ab-8c71-df3c008fbd3b"),
+                            Id = new Guid("b127f5cf-4a7a-403b-a03b-645952dbad5e"),
                             AccessFailedCount = 0,
                             ChatId = 0L,
-                            ConcurrencyStamp = "786279a7-8ab9-4779-aa70-c05bdc44f2e2",
+                            ConcurrencyStamp = "cfa22e3f-6a6d-462c-9df8-2dd81d13fd18",
                             Email = "admin@example.com",
                             EmailConfirmed = true,
                             FirstName = "admin",
@@ -321,7 +324,7 @@ namespace Bookify.Infrastructure.Persistence.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@EXAMPLE.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAENHuUQw2TMnGLx+XzThm/vBJ+D2EjUImX0fn3f2BDtW3+ya6mSayPh9Dk0eRkUKwLQ==",
+                            PasswordHash = "AQAAAAIAAYagAAAAENgsUFby33ij4kGoRFF99ft+MJEA55RTZI4+9DC0c4qaO2Dib4frhnO8rYsIifoPqA==",
                             PhoneNumberConfirmed = false,
                             TwoFactorEnabled = false,
                             UserName = "admin"
@@ -358,13 +361,13 @@ namespace Bookify.Infrastructure.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("8a13e052-d5da-42d6-beb9-cf08d77dc163"),
+                            Id = new Guid("5c2be04c-85b6-4c52-af14-79fd8c685eab"),
                             Name = "admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = new Guid("7dec89d2-4798-4033-bd70-94cdb35ad074"),
+                            Id = new Guid("b649d03a-0a82-4aa3-b694-5f4f90ad3421"),
                             Name = "user",
                             NormalizedName = "USER"
                         });
@@ -456,8 +459,8 @@ namespace Bookify.Infrastructure.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            UserId = new Guid("1d4843dc-a3c7-43ab-8c71-df3c008fbd3b"),
-                            RoleId = new Guid("8a13e052-d5da-42d6-beb9-cf08d77dc163")
+                            UserId = new Guid("b127f5cf-4a7a-403b-a03b-645952dbad5e"),
+                            RoleId = new Guid("5c2be04c-85b6-4c52-af14-79fd8c685eab")
                         });
                 });
 
@@ -504,7 +507,7 @@ namespace Bookify.Infrastructure.Persistence.Migrations
                     b.HasOne("Bookify.Domain_.Entities.Branch", "Branch")
                         .WithMany("Services")
                         .HasForeignKey("BranchId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Branch");

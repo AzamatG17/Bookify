@@ -4,6 +4,7 @@ using Bookify.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Bookify.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250123095433_Add-ServiceTranslation-Service")]
+    partial class AddServiceTranslationService
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -180,8 +183,10 @@ namespace Bookify.Infrastructure.Persistence.Migrations
                     b.Property<string>("LastUpdatedBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("ServiceId")
-                        .HasColumnType("int");
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.HasKey("Id");
 
@@ -310,10 +315,10 @@ namespace Bookify.Infrastructure.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("1d4843dc-a3c7-43ab-8c71-df3c008fbd3b"),
+                            Id = new Guid("a193d86e-fe4b-4a55-9308-be7ed9991bab"),
                             AccessFailedCount = 0,
                             ChatId = 0L,
-                            ConcurrencyStamp = "786279a7-8ab9-4779-aa70-c05bdc44f2e2",
+                            ConcurrencyStamp = "4db0c384-e4ac-4c7a-863b-b96140716309",
                             Email = "admin@example.com",
                             EmailConfirmed = true,
                             FirstName = "admin",
@@ -321,7 +326,6 @@ namespace Bookify.Infrastructure.Persistence.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@EXAMPLE.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAENHuUQw2TMnGLx+XzThm/vBJ+D2EjUImX0fn3f2BDtW3+ya6mSayPh9Dk0eRkUKwLQ==",
                             PhoneNumberConfirmed = false,
                             TwoFactorEnabled = false,
                             UserName = "admin"
@@ -358,13 +362,13 @@ namespace Bookify.Infrastructure.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("8a13e052-d5da-42d6-beb9-cf08d77dc163"),
+                            Id = new Guid("e6cf504a-7e15-4a27-b032-c7b6051f23c1"),
                             Name = "admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = new Guid("7dec89d2-4798-4033-bd70-94cdb35ad074"),
+                            Id = new Guid("609a80b5-95b0-42af-86ba-67fe9295e896"),
                             Name = "user",
                             NormalizedName = "USER"
                         });
@@ -456,8 +460,8 @@ namespace Bookify.Infrastructure.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            UserId = new Guid("1d4843dc-a3c7-43ab-8c71-df3c008fbd3b"),
-                            RoleId = new Guid("8a13e052-d5da-42d6-beb9-cf08d77dc163")
+                            UserId = new Guid("a193d86e-fe4b-4a55-9308-be7ed9991bab"),
+                            RoleId = new Guid("e6cf504a-7e15-4a27-b032-c7b6051f23c1")
                         });
                 });
 
@@ -504,7 +508,7 @@ namespace Bookify.Infrastructure.Persistence.Migrations
                     b.HasOne("Bookify.Domain_.Entities.Branch", "Branch")
                         .WithMany("Services")
                         .HasForeignKey("BranchId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Branch");
@@ -515,7 +519,7 @@ namespace Bookify.Infrastructure.Persistence.Migrations
                     b.HasOne("Bookify.Domain_.Entities.Service", "Services")
                         .WithMany("ServiceTranslations")
                         .HasForeignKey("ServiceId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Services");

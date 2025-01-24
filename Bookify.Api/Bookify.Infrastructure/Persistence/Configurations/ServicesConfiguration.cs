@@ -4,20 +4,19 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Bookify.Infrastructure.Persistence.Configurations;
 
-public class ServicesConfiguration : IEntityTypeConfiguration<Services>
+public class ServicesConfiguration : IEntityTypeConfiguration<Service>
 {
-    public void Configure(EntityTypeBuilder<Services> builder)
+    public void Configure(EntityTypeBuilder<Service> builder)
     {
-        builder.ToTable(nameof(Services));
+        builder.ToTable(nameof(Service));
         builder.HasKey(s => s.Id);
 
-        builder.Property(s => s.Name)
-            .HasMaxLength(255)
+        builder.Property(s => s.ServiceId)
             .IsRequired();
 
-        builder.HasOne(s => s.Branch)
-            .WithMany(b => b.Services)
-            .HasForeignKey(s => s.BranchId)
-            .OnDelete(DeleteBehavior.Restrict);
+        builder.HasMany(s => s.ServiceTranslations)
+            .WithOne(b => b.Services)
+            .HasForeignKey(b => b.ServiceId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

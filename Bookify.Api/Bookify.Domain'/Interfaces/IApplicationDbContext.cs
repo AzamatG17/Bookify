@@ -11,9 +11,10 @@ public interface IApplicationDbContext
     DbSet<IdentityRole<Guid>> Roles { get; set; }
     DbSet<IdentityUserRole<Guid>> UserRoles { get; set; }
     DbSet<Companies> Companies { get; set; }
-    DbSet<Services> Services { get; set; }
+    DbSet<Service> Services { get; set; }
     DbSet<Branch> Branches { get; set; }
     DbSet<OpeningTimeBranch> OpeningTimeBranches { get; set; }
+    DbSet<ServiceTranslation> ServiceTranslations { get; set; }
 
     DatabaseFacade Database { get; }
     int SaveChanges();
