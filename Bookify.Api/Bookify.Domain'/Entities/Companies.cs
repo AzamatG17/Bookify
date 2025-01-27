@@ -8,6 +8,7 @@ public class Companies : AuditableEntity
     public required string Name { get; set; }
     public required string BaseUrl { get; set; }
     public required Projects Projects { get; set; }
+    public string? LogoBase64 { get; set; }
     public string? Color { get; set; }
     public string? BackgroundColor { get; set; }
 

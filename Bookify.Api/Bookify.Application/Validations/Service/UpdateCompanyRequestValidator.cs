@@ -25,6 +25,10 @@ public class UpdateCompanyRequestValidator : AbstractValidator<UpdateCompanyRequ
             .NotNull()
             .WithMessage("Projects cannot be null.");
 
+        RuleFor(x => x.LogoBase64)
+            .NotNull()
+            .WithMessage("Logo cannot be null.");
+
         RuleFor(x => x.Color)
             .NotEmpty()
             .WithMessage("Color is required.")

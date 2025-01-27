@@ -46,6 +46,25 @@ internal sealed class AuthService : IAuthService
         return token;
     }
 
+    public async Task<string> LoginForTelegramAsync(LoginForTelegramRequest loginForTelegramRequest)
+    {
+        ArgumentNullException.ThrowIfNull(nameof(loginForTelegramRequest));
+
+        var existingUser = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == loginForTelegramRequest.PhoneNumber)
+            ?? throw new UserNameNotExistException($"Phone Number: {loginForTelegramRequest.PhoneNumber} does not exist.");
+
+        if (existingUser.ChatId != loginForTelegramRequest.ChatId)
+        {
+            throw new ChatIdValidationException("The provided ChatId is invalid for the given phone number.");
+        }
+
+        var roles = await _userManager.GetRolesAsync(existingUser);
+
+        var token = _jwtTokenHandler.GenerateToken(existingUser, roles);
+
+        return token;
+    }
+
     public async Task RegisterAsync(Requests.Auth.RegisterRequest request)
     {
         ArgumentNullException.ThrowIfNull(nameof(request));

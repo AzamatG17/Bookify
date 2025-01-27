@@ -12,7 +12,7 @@ public class AuthController : ControllerBase
 
     public AuthController(IAuthService service)
     {
-        _service = service ?? throw new ArgumentNullException(nameof(service)); 
+        _service = service ?? throw new ArgumentNullException(nameof(service));
     }
 
     /// <summary>
@@ -29,6 +29,24 @@ public class AuthController : ControllerBase
     public async Task<ActionResult> LoginAsync([FromBody] LoginRequest loginRequest)
     {
         var token = await _service.LoginAsync(loginRequest);
+
+        return Ok(token);
+    }
+
+    /// <summary>
+    /// Login to get JWT token.
+    /// </summary>
+    /// <param name="loginRequest">PhoneNumber and code to login</param>
+    /// <returns></returns>
+    [HttpPost("loginTelegram")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status406NotAcceptable)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult> LoginForTelegramAsync([FromBody] LoginForTelegramRequest loginRequest)
+    {
+        var token = await _service.LoginForTelegramAsync(loginRequest);
 
         return Ok(token);
     }

@@ -7,6 +7,7 @@ public record UpdateCompanyRequest(
     string Name,
     string BaseUrl,
     Projects Projects,
+    string LogoBase64,
     string Color,
     string BackgroundColor
     );
