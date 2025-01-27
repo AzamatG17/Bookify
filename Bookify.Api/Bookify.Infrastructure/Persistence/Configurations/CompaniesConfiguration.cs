@@ -22,6 +22,8 @@ internal class CompaniesConfiguration : IEntityTypeConfiguration<Companies>
         builder.Property(c => c.Projects)
             .IsRequired();
 
+        builder.Property(c => c.LogoBase64);
+
         builder.Property(c => c.Color)
             .HasMaxLength(50);
 
