@@ -5,5 +5,5 @@ namespace Bookify.Application.Interfaces.Stores;
 public interface IListFreeTimesStore
 {
     Task<List<FreeTimeDto>> GetDataBookingServiceAsync(int branchId, int serviceId, DateTime startDate, string baseUrl);
-    Task GetDataOnlinetAsync(int branchId, int serviceId, DateTime startDate);
+    Task<List<FreeTimeDto>> GetDataOnlinetAsync(int branchId, int serviceId, DateTime startDate, string baseUrl);
 }
