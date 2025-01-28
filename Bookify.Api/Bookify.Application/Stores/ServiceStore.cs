@@ -31,7 +31,7 @@ internal sealed class ServiceStore : IServiceStore
 
             if (serviceResponses != null && serviceResponses.Any())
             {
-                MapToService(serviceResponses, branch.Id, language, serviceMap);
+                MapToOnlinetService(serviceResponses, branch.Id, language, serviceMap);
             }
         }
 
@@ -45,7 +45,7 @@ internal sealed class ServiceStore : IServiceStore
         if (languages == null || languages.Count == 0)
             throw new ArgumentNullException(nameof(languages));
 
-        var allServices = new List<Service>();
+        var serviceMap = new Dictionary<int, Service>();
 
         foreach (var language in languages)
         {
@@ -55,33 +55,40 @@ internal sealed class ServiceStore : IServiceStore
 
             if (serviceResponses != null && serviceResponses.Any())
             {
-                var services = MapToService(serviceResponses, branch.Id, language);
-                allServices.AddRange(services);
+                MapToService(serviceResponses, branch.Id, language, serviceMap);
             }
         }
 
-        return allServices;
-    }
-
-    public static List<Service> MapToService(List<ServiceResponse> serviceResponses, int branchId, string languageCode)
-    {
-        return serviceResponses.Select(s => new Service
-        {
-            ServiceId = s.ServiceId,
-            BranchId = branchId,
-            ServiceTranslations = new List<ServiceTranslation>
-            {
-                new ServiceTranslation
-                {
-                    Name = s.ServiceName,
-                    LanguageCode = languageCode,
-                    ServiceId = s.ServiceId
-                }
-            }
-        }).ToList();
+        return serviceMap.Values.ToList();
     }
 
     public static List<Service> MapToService(List<ServiceResponse> serviceResponses, int branchId, string languageCode, Dictionary<int, Service> serviceMap)
+    {
+        foreach (var response in serviceResponses)
+        {
+            if (!serviceMap.TryGetValue(response.ServiceId, out var service))
+            {
+                service = new Service
+                {
+                    ServiceId = response.ServiceId,
+                    BranchId = branchId,
+                    ServiceTranslations = new List<ServiceTranslation>()
+                };
+                serviceMap[response.ServiceId] = service;
+            }
+
+            service.ServiceTranslations.Add(new ServiceTranslation
+            {
+                Name = response.ServiceName,
+                LanguageCode = languageCode,
+                ServiceId = response.ServiceId
+            });
+        }
+
+        return serviceMap.Values.ToList();
+    }
+
+    public static List<Service> MapToOnlinetService(List<ServiceResponse> serviceResponses, int branchId, string languageCode, Dictionary<int, Service> serviceMap)
     {
         foreach (var response in serviceResponses)
         {

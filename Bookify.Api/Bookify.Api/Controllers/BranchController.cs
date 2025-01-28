@@ -34,7 +34,7 @@ public class BranchController : ControllerBase
     /// </summary>
     /// <param name="request">The Branch Id</param>
     /// <returns></returns>
-    [HttpGet("{id:int:min(1)}/branch", Name = nameof(GetBranchByIdAsync))]
+    [HttpGet("{Id:int:min(1)}/branch", Name = nameof(GetBranchByIdAsync))]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

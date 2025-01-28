@@ -29,17 +29,18 @@ internal sealed class BranchService(IApplicationDbContext context, IBranchStore 
             c.Color,
             c.BackgroundColor,
             c.Branches.Select(b => new BranchDto(
-            b.BranchId,
-            b.Name,
-            b.BranchAddres,
-            b.CoordinateLatitude,
-            b.CoordinateLongitude,
-            b.OpeningTimeBranches.Select(o => new DTOs.OpeningTimeDto(
-                    o.Day,
-                    o.OpenTime
-                    )).ToList() 
-                )).ToList()
-            )).ToList();
+                b.Id,
+                b.BranchId,
+                b.Name,
+                b.BranchAddres,
+                b.CoordinateLatitude,
+                b.CoordinateLongitude,
+                b.OpeningTimeBranches.Select(o => new DTOs.OpeningTimeDto(
+                        o.Day,
+                        o.OpenTime
+                        )).ToList() 
+                    )).ToList()
+                )).ToList();
 
         return result ?? [];
     }
@@ -60,6 +61,7 @@ internal sealed class BranchService(IApplicationDbContext context, IBranchStore 
             branch.Color,
             branch.BackgroundColor,
             branch.Branches?.Select(b => new BranchDto(
+                b.Id,
                 b.BranchId,
                 b.Name,
                 b.BranchAddres,

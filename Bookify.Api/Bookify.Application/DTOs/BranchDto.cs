@@ -1,6 +1,7 @@
 ﻿namespace Bookify.Application.DTOs;
 
 public record BranchDto(
+    int Id,
     int BranchId,
     string Name,
     string? BranchAddres,
