@@ -38,11 +38,12 @@ internal sealed class ServicesService : IServicesService
         throw new NotImplementedException();
     }
 
-    public async Task<List<Service>> UpdateDataAsync(BranchRequest branchRequest)
+    public async Task<List<ServiceDto>> UpdateDataAsync(BranchRequest branchRequest)
     {
         ArgumentNullException.ThrowIfNull(nameof(branchRequest));
 
         using var transaction = await _context.Database.BeginTransactionAsync();
+        
         try
         {
             var services = await _context.Services
@@ -62,7 +63,7 @@ internal sealed class ServicesService : IServicesService
 
             await transaction.CommitAsync();
 
-            return newServices;
+            return newServices.Select(MapToServiceDto).ToList();
         }
         catch (Exception ex)
         {
@@ -77,7 +78,7 @@ internal sealed class ServicesService : IServicesService
         var branch = await _context.Branches
             .Include(c => c.Companies)
             .AsNoTracking()
-            .FirstOrDefaultAsync(b => b.BranchId == branchRequest.BranchId);
+            .FirstOrDefaultAsync(b => b.Id == branchRequest.BranchId);
 
         if (branch is null)
         {
@@ -106,6 +107,8 @@ internal sealed class ServicesService : IServicesService
     {
         var query = _context.ServiceTranslations
             .Include(s => s.Services)
+            .ThenInclude(b => b.Branch)
+            .ThenInclude(c => c.Companies)
             .AsNoTracking()
             .AsQueryable();
 
@@ -137,8 +140,20 @@ internal sealed class ServicesService : IServicesService
     private static ServiceDto MapToServiceDto(ServiceTranslation service)
     {
         return new ServiceDto(
+            service.Id,
             service.Services.ServiceId,
-            service.Name
+            service.Name,
+            service.Services.Branch.Companies.Id
         );
+    }
+
+    private static ServiceDto MapToServiceDto(Service service)
+    {
+        return new ServiceDto(
+            service.Id,
+            service.ServiceId,
+            "",
+            0
+            );
     }
 }
