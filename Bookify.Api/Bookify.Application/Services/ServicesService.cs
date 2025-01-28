@@ -7,7 +7,6 @@ using Bookify.Application.Interfaces.Stores;
 using Bookify.Application.Interfaces.Services;
 using Bookify.Application.DTOs;
 using Bookify.Application.QueryParameters;
-using AutoMapper;
 
 namespace Bookify.Application.Services;
 
@@ -76,7 +75,18 @@ internal sealed class ServicesService : IServicesService
     private async Task<List<Service>> GetDataForServiceStore(BranchRequest branchRequest)
     {
         var branch = await _context.Branches
-            .Include(c => c.Companies)
+            .Select(x => new Branch
+            {
+                Id = x.Id,
+                BranchId = x.BranchId,
+                Name = x.Name,
+                Companies = new Companies
+                {
+                    Projects = x.Companies.Projects,
+                    Name = x.Companies.Name,
+                    BaseUrl = x.Companies.BaseUrl
+                }
+            })
             .AsNoTracking()
             .FirstOrDefaultAsync(b => b.Id == branchRequest.BranchId);
 

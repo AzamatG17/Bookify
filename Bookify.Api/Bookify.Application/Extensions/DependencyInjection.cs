@@ -24,15 +24,18 @@ public static class DependencyInjection
 
         services.AddScoped<IBranchStore, BranchStore>();
         services.AddScoped<IServiceStore, ServiceStore>();
+        services.AddScoped<IListFreeTimesStore, ListFreeTimesStore>();
 
-        services.AddSingleton<ICurrentUserService, CurrentUserService>();
-
+        services.AddScoped<IFreeTimeService, FreeTimeService>();
         services.AddScoped<IServicesService, ServicesService>();
         services.AddScoped<IBranchService, BranchService>();
         services.AddScoped<ICompaniesService, CompaniesService>();
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<ISmsCodeService, SmsCodeService>();
         services.AddSingleton<IJwtTokenHandler, JwtTokenHandler>();
+
+        services.AddSingleton<ICurrentUserService, CurrentUserService>();
+
         return services;
     }
 }
