@@ -1,3 +1,3 @@
 ﻿namespace Bookify.Application.DTOs;
 
-public record ServiceDto(int ServiceId, string ServiceName);
+public record ServiceDto(int Id, int ServiceId, string ServiceName, int CompanyId);
