@@ -1,7 +1,9 @@
-﻿using Bookify.Application.Interfaces.IServices;
+﻿using Bookify.Application.DTOs;
+using Bookify.Application.Interfaces.IServices;
 using Bookify.Application.Interfaces.Services;
 using Bookify.Application.Requests.Auth;
 using Bookify.Application.Requests.Services;
+using Bookify.Domain_.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -71,7 +73,7 @@ public class UpdateDataController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status406NotAcceptable)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult> UpdateServiceByBranchIdAsync([FromRoute] BranchRequest branchRequest)
+    public async Task<ActionResult<ServiceDto>> UpdateServiceByBranchIdAsync([FromRoute] BranchRequest branchRequest)
     {
         var result = await _services.UpdateDataAsync(branchRequest);
 
