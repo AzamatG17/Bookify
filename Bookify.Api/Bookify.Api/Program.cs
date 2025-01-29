@@ -1,5 +1,14 @@
 using Bookify.Api.Extensions;
 using Bookify.Application.Extensions;
+using Serilog;
+using Serilog.Events;
+
+Log.Logger = new LoggerConfiguration()
+        .MinimumLevel.Debug()
+        .WriteTo.Console()
+        .WriteTo.File("logs/logs_.txt", LogEventLevel.Information, rollingInterval: RollingInterval.Day)
+        .WriteTo.File("logs/errors_.txt", LogEventLevel.Error, rollingInterval: RollingInterval.Day)
+        .CreateLogger();
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,6 +27,8 @@ builder.Services
     .RegisterApi(builder.Configuration);
 
 builder.Services.AddHttpClient();
+
+builder.Host.UseSerilog();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

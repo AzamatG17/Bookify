@@ -150,7 +150,7 @@ internal sealed class ServicesService : IServicesService
     private static ServiceDto MapToServiceDto(ServiceTranslation service)
     {
         return new ServiceDto(
-            service.Id,
+            service.Services.Id,
             service.Services.ServiceId,
             service.Name,
             service.Services.Branch.Companies.Id

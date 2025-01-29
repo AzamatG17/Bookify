@@ -2,7 +2,6 @@
 using Bookify.Application.Interfaces.Services;
 using Bookify.Application.Interfaces.Stores;
 using Bookify.Application.Requests.Services;
-using Bookify.Domain_.Entities;
 using Bookify.Domain_.Exceptions;
 using Bookify.Domain_.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -38,12 +37,12 @@ internal sealed class FreeTimeService : IFreeTimeService
         if (service.Branch.Companies.Projects == Domain_.Enums.Projects.BookingService)
         {
             result = await _listFreeDaysStore.GetDataBookingServiceAsync(
-            service.BranchId, service.ServiceId, freeTimeRequest.DateOnly, service.Branch.Companies.BaseUrl);
+            service.Branch.BranchId, service.ServiceId, freeTimeRequest.DateOnly, service.Branch.Companies.BaseUrl);
         }
         else if (service.Branch.Companies.Projects == Domain_.Enums.Projects.Onlinet)
         {
             result = await _listFreeDaysStore.GetDataOnlinetAsync(
-            service.BranchId, service.ServiceId, freeTimeRequest.DateOnly, service.Branch.Companies.BaseUrl);
+            service.Branch.BranchId, service.ServiceId, freeTimeRequest.DateOnly, service.Branch.Companies.BaseUrl);
         }
 
         return result;
@@ -65,12 +64,12 @@ internal sealed class FreeTimeService : IFreeTimeService
         if (service.Branch.Companies.Projects == Domain_.Enums.Projects.BookingService)
         {
             result = await _listFreeTimesStore.GetDataBookingServiceAsync(
-            service.BranchId, service.ServiceId, freeTimeRequest.DateOnly, service.Branch.Companies.BaseUrl);
+            service.Branch.BranchId, service.ServiceId, freeTimeRequest.DateOnly, service.Branch.Companies.BaseUrl);
         }
         else if (service.Branch.Companies.Projects == Domain_.Enums.Projects.Onlinet)
         {
             result = await _listFreeTimesStore.GetDataOnlinetAsync(
-            service.BranchId, service.ServiceId, freeTimeRequest.DateOnly, service.Branch.Companies.BaseUrl);
+            service.Branch.BranchId, service.ServiceId, freeTimeRequest.DateOnly, service.Branch.Companies.BaseUrl);
         }
 
         return result;

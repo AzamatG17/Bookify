@@ -18,15 +18,33 @@ internal sealed class ApiClient : IApiClient
         if (string.IsNullOrEmpty(url))
             throw new ArgumentNullException(nameof(url));
 
-        var response = await _client.GetAsync(url);
-
-        response.EnsureSuccessStatusCode();
-
-        var content = await response.Content.ReadAsStringAsync();
-        return JsonSerializer.Deserialize<TResult>(content, new JsonSerializerOptions
+        try
         {
-            PropertyNameCaseInsensitive = true
-        }) ?? throw new InvalidOperationException("Deserialization returned null.");
+            var response = await _client.GetAsync(url);
+
+            response.EnsureSuccessStatusCode();
+
+            var content = await response.Content.ReadAsStringAsync();
+
+            var result = JsonSerializer.Deserialize<TResult>(content, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
+
+            return result ?? throw new InvalidOperationException("Deserialization returned null.");
+        }
+        catch (HttpRequestException httpEx)
+        {
+            throw new InvalidOperationException("An error occurred while making the HTTP request.", httpEx);
+        }
+        catch (JsonException jsonEx)
+        {
+            throw new InvalidOperationException("Failed to deserialize the response content.", jsonEx);
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidOperationException("An unexpected error occurred.", ex);
+        }
     }
 
     public Task<TResult> PostAsync<TResult, TRequest>(string url, TRequest request)

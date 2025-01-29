@@ -17,7 +17,12 @@ public class AvailableTimeController : ControllerBase
         _service = service ?? throw new ArgumentNullException(nameof(service));
     }
 
-    [HttpGet]
+    /// <summary>
+    /// Get free days
+    /// </summary>
+    /// <param name="freeTimeRequest">The ServiceId and Date</param>
+    /// <returns></returns>
+    [HttpGet("days")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -28,7 +33,12 @@ public class AvailableTimeController : ControllerBase
         return reslut;
     }
 
-    [HttpGet]
+    /// <summary>
+    /// Get free times
+    /// </summary>
+    /// <param name="freeTimeRequest">The ServiceId and Date</param>
+    /// <returns></returns>
+    [HttpGet("times")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]

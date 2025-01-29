@@ -33,9 +33,9 @@ internal sealed class ListFreeDaysStore : IListFreeDaysStore
         if (string.IsNullOrEmpty(baseUrl))
             throw new ArgumentNullException(nameof(baseUrl));
 
-        string formattedDate = startDate.ToString("yyyy-MM-dd");
+        string formattedDate = startDate.ToString("yyyyMMdd");
 
-        var endpoint = $"{baseUrl}/ListFreeDaysMonth?branchId={branchId}&serviceId={serviceId}&startDate={formattedDate}&languageShortId=ru";
+        var endpoint = $"{baseUrl}/OnlinetBookingServiceRest/ListFreeDaysMonth?branchId={branchId}&serviceId={serviceId}&startDate={formattedDate}&languageShortId=ru";
         var freeDaysResponse = await _client.GetAsync<List<FreeDayResponse>>(endpoint);
 
         return MapToFreeDayDto(freeDaysResponse);
