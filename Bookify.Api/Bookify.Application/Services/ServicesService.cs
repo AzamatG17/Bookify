@@ -88,12 +88,8 @@ internal sealed class ServicesService : IServicesService
                 }
             })
             .AsNoTracking()
-            .FirstOrDefaultAsync(b => b.Id == branchRequest.BranchId);
-
-        if (branch is null)
-        {
-            throw new EntityNotFoundException($"Branch with id:{branchRequest.BranchId} does not exist.");
-        }
+            .FirstOrDefaultAsync(b => b.Id == branchRequest.BranchId)
+            ?? throw new EntityNotFoundException($"Branch with id:{branchRequest.BranchId} does not exist.");
 
         List<Service> services = [];
         List<string> Language = new()

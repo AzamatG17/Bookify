@@ -29,12 +29,8 @@ internal sealed class CompaniesService(IApplicationDbContext context, IMapper ma
     {
         var company = await _context.Companies
             .AsNoTracking()
-            .FirstOrDefaultAsync(x => x.Id == request.Id);
-
-        if (company is null)
-        {
-            throw new EntityNotFoundException($"Company entity with id {request.Id} not found");
-        }
+            .FirstOrDefaultAsync(x => x.Id == request.Id)
+            ?? throw new EntityNotFoundException($"Company entity with id {request.Id} not found");
 
         return _mapper.Map<CompaniesDto>(company);
     }
@@ -56,12 +52,8 @@ internal sealed class CompaniesService(IApplicationDbContext context, IMapper ma
         ArgumentNullException.ThrowIfNull(request);
 
         var company = await _context.Companies
-            .FirstOrDefaultAsync(c => c.Id == request.Id);
-
-        if (company is null)
-        {
-            throw new EntityNotFoundException($"Company with id:{request.Id} does not exist.");
-        }
+            .FirstOrDefaultAsync(c => c.Id == request.Id)
+            ?? throw new EntityNotFoundException($"Company with id:{request.Id} does not exist.");
 
         _mapper.Map(request, company);
 
@@ -74,12 +66,8 @@ internal sealed class CompaniesService(IApplicationDbContext context, IMapper ma
     public async Task DeleteAsync(CompanyRequest companyRequest)
     {
         var company = await _context.Companies
-            .FirstOrDefaultAsync(x => x.Id == companyRequest.Id);
-
-        if (company is null)
-        {
-            throw new EntityNotFoundException($"Company with id: {companyRequest.Id} is not found.");
-        }
+            .FirstOrDefaultAsync(x => x.Id == companyRequest.Id)
+            ?? throw new EntityNotFoundException($"Company with id: {companyRequest.Id} is not found.");
 
         _context.Companies.Remove(company);
         await _context.SaveChangesAsync();
