@@ -32,9 +32,9 @@ internal sealed class ListFreeTimesStore : IListFreeTimesStore
         if (string.IsNullOrEmpty(baseUrl))
             throw new ArgumentNullException(nameof(baseUrl));
 
-        string formattedDate = startDate.ToString("yyyy-MM-dd");
+        string formattedDate = startDate.ToString("yyyyMMdd");
 
-        var endpoint = $"{baseUrl}/api/ListFreeTimes?branchId={branchId}&serviceId={serviceId}&startDate={formattedDate}";
+        var endpoint = $"{baseUrl}/OnlinetBookingServiceRest/ListFreeTimes?branchId={branchId}&serviceId={serviceId}&startDate={formattedDate}&languageShortId=ru";
 
         var freetimes = await _client.GetAsync<List<FreeTimeOnlinetResponse>>(endpoint);
 
