@@ -8,6 +8,7 @@ using Bookify.Application.Services;
 using Bookify.Application.Stores;
 using Bookify.Application.Validations.Auth;
 using FluentValidation;
+using Hangfire;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SharpGrip.FluentValidation.AutoValidation.Mvc.Extensions;
@@ -26,8 +27,10 @@ public static class DependencyInjection
         services.AddScoped<IServiceStore, ServiceStore>();
         services.AddScoped<IListFreeTimesStore, ListFreeTimesStore>();
         services.AddScoped<IListFreeDaysStore, ListFreeDaysStore>();
+        services.AddScoped<IBookingStore, BookingStore>();
 
         services.AddScoped<IFreeTimeService, FreeTimeService>();
+        services.AddScoped<IBookingService, BookingService>();
         services.AddScoped<IServicesService, ServicesService>();
         services.AddScoped<IBranchService, BranchService>();
         services.AddScoped<ICompaniesService, CompaniesService>();
@@ -37,6 +40,21 @@ public static class DependencyInjection
 
         services.AddSingleton<ICurrentUserService, CurrentUserService>();
 
+        AddBackgroundJobs(services, configuration);
+
         return services;
+    }
+
+    private static void AddBackgroundJobs(IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddHangfire(options =>
+        {
+            options.SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+                .UseSimpleAssemblyNameTypeSerializer()
+                .UseRecommendedSerializerSettings()
+                .UseSqlServerStorage(configuration.GetConnectionString("DefaultConnection"));
+        });
+
+        services.AddHangfireServer();
     }
 }
