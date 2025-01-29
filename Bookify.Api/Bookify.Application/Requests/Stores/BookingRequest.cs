@@ -1,6 +1,6 @@
 ﻿namespace Bookify.Application.Requests.Stores;
 
-public class CreateBookingRequest
+public class BookingRequest
 {
     public string BranchId { get; set; }
     public string CustomerID { get; set; } = "";
