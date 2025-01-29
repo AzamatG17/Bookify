@@ -22,6 +22,7 @@ public class ApplicationDbContext : IdentityDbContext<User, IdentityRole<Guid>, 
     public virtual DbSet<Companies> Companies { get; set; }
     public virtual DbSet<Service> Services { get; set; }
     public virtual DbSet<ServiceTranslation> ServiceTranslations { get; set; }
+    public virtual DbSet<Booking> Bookings { get; set; }
 
     public DatabaseFacade Database => base.Database;
 
