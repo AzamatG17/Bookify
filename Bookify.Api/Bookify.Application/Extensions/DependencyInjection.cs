@@ -25,6 +25,7 @@ public static class DependencyInjection
         services.AddScoped<IBranchStore, BranchStore>();
         services.AddScoped<IServiceStore, ServiceStore>();
         services.AddScoped<IListFreeTimesStore, ListFreeTimesStore>();
+        services.AddScoped<IListFreeDaysStore, ListFreeDaysStore>();
 
         services.AddScoped<IFreeTimeService, FreeTimeService>();
         services.AddScoped<IServicesService, ServicesService>();
