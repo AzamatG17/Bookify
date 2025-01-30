@@ -45,7 +45,7 @@ internal class AuditInterceptor : SaveChangesInterceptor
         var currentUserName = _currentUserService.GetUserName();
 
         foreach (var entry in context.ChangeTracker.Entries<AuditableEntity>())
-        {
+        {   
             if (entry.State == EntityState.Added)
             {
                 entry.Entity.CreatedAtUtc = DateTime.UtcNow;

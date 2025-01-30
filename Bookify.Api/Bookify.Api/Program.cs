@@ -1,5 +1,7 @@
 using Bookify.Api.Extensions;
 using Bookify.Application.Extensions;
+using Hangfire;
+using Hangfire.Dashboard.BasicAuthorization;
 using Serilog;
 using Serilog.Events;
 
@@ -36,6 +38,8 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddMemoryCache();
 
+builder.Services.AddHttpContextAccessor();
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -44,6 +48,25 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
     app.UseDatabaseSeeder();
 }
+
+app.UseHangfireDashboard("/hangfire", new DashboardOptions
+{
+    Authorization = [ new BasicAuthAuthorizationFilter(new BasicAuthAuthorizationFilterOptions
+        {
+            RequireSsl = false,
+            SslRedirect = false,
+            LoginCaseSensitive = true,
+            Users =
+            [
+                new BasicAuthAuthorizationUser
+                {
+                    Login = "admin",
+                    PasswordClear =  "admin"
+                }
+            ]
+
+        }) ]
+});
 
 app.UseCors("AllowAll");
 

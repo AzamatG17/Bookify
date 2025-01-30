@@ -36,8 +36,9 @@ public static class DependencyInjection
         services.AddScoped<ICompaniesService, CompaniesService>();
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<ISmsCodeService, SmsCodeService>();
-        services.AddSingleton<IJwtTokenHandler, JwtTokenHandler>();
 
+
+        services.AddSingleton<IJwtTokenHandler, JwtTokenHandler>();
         services.AddSingleton<ICurrentUserService, CurrentUserService>();
 
         AddBackgroundJobs(services, configuration);

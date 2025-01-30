@@ -14,14 +14,14 @@ public class BookingStore : IBookingStore
         _client = client ?? throw new ArgumentNullException(nameof(client));
     }
 
-    public async Task<CreateBookingResponse> CreateBookingForBookingServiceAsync(BookingRequest request, string baseUrl)
+    public async Task<CreateBookingResponse> CreateBookingForBookingServiceAsync(BookingForBookingServiceRequest request, string baseUrl)
     {
         if (string.IsNullOrEmpty(baseUrl))
             throw new ArgumentNullException(nameof(baseUrl));
 
         var endpoint = $"{baseUrl}/api/Bookings/CreateBooking";
 
-        var response = await _client.PostAsync<CreateBookingResponse, BookingRequest>(endpoint, request);
+        var response = await _client.PostAsync<CreateBookingResponse, BookingForBookingServiceRequest>(endpoint, request);
 
         return response;
     }
