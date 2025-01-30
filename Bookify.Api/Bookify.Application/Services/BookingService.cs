@@ -42,26 +42,33 @@ internal sealed class BookingService(
         CreateBookingResponse response = company.Projects switch
         {
             Domain_.Enums.Projects.BookingService => await _store.CreateBookingForBookingServiceAsync(bookingRequestModel, company.BaseUrl),
-            Domain_.Enums.Projects.Onlinet => await _store.CreateBookingOnlinetAsync(bookingRequestModel, company.BaseUrl),
+            //Domain_.Enums.Projects.Onlinet => await _store.CreateBookingOnlinetAsync(bookingRequestModel, company.BaseUrl),
             _ => throw new NotSupportedException($"Unsupported project type: {company.Projects}")
         };
 
-        if (response.Success)
-        {
-            _backgroundJobClient.Enqueue(() => SaveBookingAsync(response, bookingRequest, user.Id));
-        }
+        //if (response.Success)
+        //{
+        //    _backgroundJobClient.Enqueue(() => SaveBookingAsync(response, bookingRequest, user.Id));
+        //}
+
+        await SaveBookingAsync(response, bookingRequest, user.Id);
 
         return response;
     }
 
-    private async Task SaveBookingAsync(CreateBookingResponse response, CreateBookingRequest bookingRequest, Guid userId)
+    public async Task SaveBookingAsync(CreateBookingResponse response, CreateBookingRequest bookingRequest, Guid userId)
     {
-        using var scope = _serviceProvider.CreateScope();
-        var dbContext = scope.ServiceProvider.GetRequiredService<IApplicationDbContext>();
+        var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == userId);
+
+        if (user is null)
+        {
+            throw new InvalidOperationException("User was not created correctly.");
+        }
 
         var booking = new Booking
         {
-            UserId = userId,
+            UserId = user.Id,
+            CreatedBy = user.UserName,
             ServiceId = bookingRequest.ServiceId,
             StartDate = bookingRequest.StartDate,
             StartTime = bookingRequest.StartTime,
@@ -72,8 +79,8 @@ internal sealed class BookingService(
             BranchName = response.BranchName
         };
 
-        await dbContext.Bookings.AddAsync(booking);
-        await dbContext.SaveChangesAsync();
+        _context.Bookings.Add(booking);
+        await _context.SaveChangesAsync();
     }
 
     private async Task<Service> GetServiceAsync(int serviceId)
@@ -92,21 +99,37 @@ internal sealed class BookingService(
             ?? throw new EntityNotFoundException($"User with id: {userId} does not exist.");
     }
 
-    private static BookingRequest CreateBookingRequestModel(CreateBookingRequest request, Service service, User user)
+    //private static BookingRequest CreateBookingRequestOnlinetModel(CreateBookingRequest request, Service service, User user)
+    //{
+    //    return new BookingRequest
+    //    {
+    //        BranchId = service.Branch.Id.ToString(),
+    //        ServiceId = service.Id.ToString(),
+    //        CustomerID = user.Id.ToString() ?? "",
+    //        Email = "test@gmail.com",
+    //        FirstName = user.FirstName,
+    //        LastName = user.LastName,
+    //        Name = $"{user.LastName} {user.FirstName}",
+    //        Note = "",
+    //        PhoneNumber = user.PhoneNumber ?? "",
+    //        LanguageShortId = request.Language,
+    //        StartDate = request.StartDate,
+    //        StartTime = request.StartTime
+    //    };
+    //}
+
+    private static BookingForBookingServiceRequest CreateBookingRequestModel(CreateBookingRequest request, Service service, User user)
     {
-        return new BookingRequest
+        return new BookingForBookingServiceRequest
         {
-            BranchId = service.Branch.Id.ToString(),
-            ServiceId = service.Id.ToString(),
-            CustomerID = user.Id.ToString() ?? "",
-            Email = "test@gmail.com",
+            BranchId = service.Branch.BranchId,
+            Email = "test@test.uz",
             FirstName = user.FirstName,
             LastName = user.LastName,
-            Name = $"{user.LastName} {user.FirstName}",
-            Note = "",
-            PhoneNumber = user.PhoneNumber ?? "",
             LanguageShortId = request.Language,
-            StartDate = request.StartDate,
+            PhoneNumber = user.PhoneNumber ?? "",
+            ServiceId = service.ServiceId,
+            StartDate = request.StartDate.ToUniversalTime(),
             StartTime = request.StartTime
         };
     }

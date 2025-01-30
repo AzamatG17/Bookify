@@ -3,7 +3,7 @@
 public record CreateBookingRequest(
     int ServiceId,
     Guid UserId,
-    string StartDate,
+    DateTime StartDate,
     string StartTime,
     string Language
     );
