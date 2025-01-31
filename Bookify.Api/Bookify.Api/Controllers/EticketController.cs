@@ -1,25 +1,25 @@
-﻿using Bookify.Application.Interfaces.Services;
+﻿using Bookify.Application.DTOs;
+using Bookify.Application.Interfaces.Services;
 using Bookify.Application.Requests.Services;
-using Bookify.Application.Responses;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Bookify.Api.Controllers;
 
 //[Authorize]
-[Route("api/booking")]
+[Route("api/eticket")]
 [ApiController]
-public class BookingController : ControllerBase
+public class EticketController : ControllerBase
 {
-    private readonly IBookingService _service;
+    private readonly IEticketService _service;
 
-    public BookingController(IBookingService service)
+    public EticketController(IEticketService service)
     {
         _service = service ?? throw new ArgumentNullException(nameof(service));
     }
 
     /// <summary>
-    /// Create a new Booking.
+    /// Create ETicket
     /// </summary>
     /// <param name="request"></param>
     /// <returns></returns>
@@ -29,9 +29,9 @@ public class BookingController : ControllerBase
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status406NotAcceptable)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<CreateBookingResponse>> CreateBookingAsync([FromBody] CreateBookingRequest request)
+    public async Task<ActionResult<ETicketDto>> CreateEticketAsync([FromBody] CreateEticketRequest request)
     {
-        var response = await _service.CreateAsync(request);
+        var response = await _service.CreateTicketAsync(request);
 
         return response;
     }

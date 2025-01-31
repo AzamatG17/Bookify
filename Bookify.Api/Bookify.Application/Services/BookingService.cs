@@ -1,4 +1,5 @@
-﻿using Bookify.Application.Interfaces.Services;
+﻿using Bookify.Application.Interfaces.IServices;
+using Bookify.Application.Interfaces.Services;
 using Bookify.Application.Interfaces.Stores;
 using Bookify.Application.Requests.Services;
 using Bookify.Application.Requests.Stores;
@@ -18,13 +19,15 @@ internal sealed class BookingService(
     IBookingStore store,
     UserManager<User> userManager,
     IBackgroundJobClient backgroundJobClient,
-    IServiceProvider serviceProvider) : IBookingService
+    IBackgroundJobService backgroundJobService,
+    ICurrentUserService currentUserService) : IBookingService
 {
     private readonly IApplicationDbContext _context = context ?? throw new ArgumentNullException(nameof(context));
     private readonly UserManager<User> _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
     private readonly IBookingStore _store = store ?? throw new ArgumentNullException(nameof(store));
     private readonly IBackgroundJobClient _backgroundJobClient = backgroundJobClient ?? throw new ArgumentNullException(nameof(backgroundJobClient));
-    private readonly IServiceProvider _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
+    private readonly IBackgroundJobService _backgroundJobService = backgroundJobService ?? throw new ArgumentNullException(nameof(backgroundJobService));
+    private readonly ICurrentUserService _currentUserService = currentUserService ?? throw new ArgumentNullException(nameof(currentUserService));  
 
     public async Task<CreateBookingResponse> CreateAsync(CreateBookingRequest bookingRequest)
     {
@@ -35,7 +38,7 @@ internal sealed class BookingService(
         var company = (service.Branch?.Companies)
             ?? throw new InvalidOperationException("Branch is not associated with a company.");
 
-        var user = await GetUserAsync(bookingRequest.UserId);
+        var user = await GetUserAsync(_currentUserService.GetUserId());
 
         var bookingRequestModel = CreateBookingRequestModel(bookingRequest, service, user);
 
@@ -46,41 +49,12 @@ internal sealed class BookingService(
             _ => throw new NotSupportedException($"Unsupported project type: {company.Projects}")
         };
 
-        //if (response.Success)
-        //{
-        //    _backgroundJobClient.Enqueue(() => SaveBookingAsync(response, bookingRequest, user.Id));
-        //}
-
-        await SaveBookingAsync(response, bookingRequest, user.Id);
-
-        return response;
-    }
-
-    public async Task SaveBookingAsync(CreateBookingResponse response, CreateBookingRequest bookingRequest, Guid userId)
-    {
-        var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == userId);
-
-        if (user is null)
+        if (response.Success)
         {
-            throw new InvalidOperationException("User was not created correctly.");
+            _backgroundJobClient.Enqueue(() => _backgroundJobService.SaveBookingAsync(response, bookingRequest, user.Id));
         }
 
-        var booking = new Booking
-        {
-            UserId = user.Id,
-            CreatedBy = user.UserName,
-            ServiceId = bookingRequest.ServiceId,
-            StartDate = bookingRequest.StartDate,
-            StartTime = bookingRequest.StartTime,
-            Language = bookingRequest.Language,
-            BookingCode = response.BookingCode,
-            Success = response.Success,
-            ServiceName = response.ServiceName,
-            BranchName = response.BranchName
-        };
-
-        _context.Bookings.Add(booking);
-        await _context.SaveChangesAsync();
+        return response;
     }
 
     private async Task<Service> GetServiceAsync(int serviceId)

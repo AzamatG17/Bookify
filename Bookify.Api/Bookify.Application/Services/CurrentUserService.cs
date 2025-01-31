@@ -31,17 +31,19 @@ public sealed class CurrentUserService : ICurrentUserService
 
     public string GetUserName()
     {
-        var user = _httpContextAccessor.HttpContext?.User
-            ?? throw new InvalidOperationException($"Unable to get user info from HttpContext.");
-
-        if (user.Identity is null || !user.Identity.IsAuthenticated)
+        var httpContext = _httpContextAccessor.HttpContext;
+        if (httpContext == null)
         {
             return string.Empty;
         }
 
-        var userName = user.FindFirst(ClaimTypes.Name)?.Value
-            ?? throw new InvalidOperationException("User does not have Name claim.");
+        var user = httpContext.User;
+        if (user == null || user.Identity == null || !user.Identity.IsAuthenticated)
+        {
+            return string.Empty;
+        }
 
-        return userName;
+        var userName = user.FindFirst(ClaimTypes.Name)?.Value;
+        return userName ?? string.Empty;
     }
 }

@@ -4,6 +4,7 @@ using Bookify.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Bookify.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250131072413_FixStartTimeType")]
+    partial class FixStartTimeType
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -184,84 +187,6 @@ namespace Bookify.Infrastructure.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Companies", (string)null);
-                });
-
-            modelBuilder.Entity("Bookify.Domain_.Entities.ETicket", b =>
-                {
-                    b.Property<int>("TicketId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TicketId"));
-
-                    b.Property<string>("BranchName")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<DateTime>("CreatedAtUtc")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CreatedTime")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Language")
-                        .IsRequired()
-                        .HasMaxLength(10)
-                        .HasColumnType("nvarchar(10)");
-
-                    b.Property<DateTime?>("LastUpdatedAtUtc")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("LastUpdatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Message")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<string>("Number")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<int>("ServiceId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ServiceName")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("nvarchar(200)");
-
-                    b.Property<bool>("ShowArriveButton")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("Success")
-                        .HasColumnType("bit");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("ValidUntil")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
-                    b.HasKey("TicketId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("ETicket", (string)null);
                 });
 
             modelBuilder.Entity("Bookify.Domain_.Entities.OpeningTimeBranch", b =>
@@ -457,10 +382,10 @@ namespace Bookify.Infrastructure.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("ba6e8f9d-4e29-4e1f-9494-2bee7f93b4d5"),
+                            Id = new Guid("59b3f8de-f59b-4f62-b4cf-fd45034ee506"),
                             AccessFailedCount = 0,
                             ChatId = 0L,
-                            ConcurrencyStamp = "94a97d43-dd3c-455d-b33a-c68d8f179ded",
+                            ConcurrencyStamp = "2ce09139-4249-4464-9427-2e2c546c92e9",
                             Email = "admin@example.com",
                             EmailConfirmed = true,
                             FirstName = "admin",
@@ -468,7 +393,7 @@ namespace Bookify.Infrastructure.Persistence.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@EXAMPLE.COM",
                             NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEK3XivNZ0Ic0wCcf/aN0ZOqfqlckoSEcyTY2Ze6dX6BMWbXb7Z2kDEW5o69AJNcl7A==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEHz7NcGdnGuFGbNE6+51o+7vritld2HPs97zr9qfH1wWU+vO6YG6Oajash9DJG1rSA==",
                             PhoneNumberConfirmed = false,
                             TwoFactorEnabled = false,
                             UserName = "admin"
@@ -505,13 +430,13 @@ namespace Bookify.Infrastructure.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("242bd260-6fff-4867-9701-25c340d30e9b"),
+                            Id = new Guid("4b0238f8-ceeb-4896-9366-4f054d136cff"),
                             Name = "admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = new Guid("a2c67c36-9580-4697-abc7-a27b8f5a0153"),
+                            Id = new Guid("b17395de-ad6c-43ba-9059-70bdc80be587"),
                             Name = "user",
                             NormalizedName = "USER"
                         });
@@ -603,8 +528,8 @@ namespace Bookify.Infrastructure.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            UserId = new Guid("ba6e8f9d-4e29-4e1f-9494-2bee7f93b4d5"),
-                            RoleId = new Guid("242bd260-6fff-4867-9701-25c340d30e9b")
+                            UserId = new Guid("59b3f8de-f59b-4f62-b4cf-fd45034ee506"),
+                            RoleId = new Guid("4b0238f8-ceeb-4896-9366-4f054d136cff")
                         });
                 });
 
@@ -647,17 +572,6 @@ namespace Bookify.Infrastructure.Persistence.Migrations
                         .IsRequired();
 
                     b.Navigation("Companies");
-                });
-
-            modelBuilder.Entity("Bookify.Domain_.Entities.ETicket", b =>
-                {
-                    b.HasOne("Bookify.Domain_.Entities.User", "User")
-                        .WithMany("ETickets")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Bookify.Domain_.Entities.OpeningTimeBranch", b =>
@@ -761,8 +675,6 @@ namespace Bookify.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("Bookify.Domain_.Entities.User", b =>
                 {
                     b.Navigation("Bookings");
-
-                    b.Navigation("ETickets");
                 });
 #pragma warning restore 612, 618
         }

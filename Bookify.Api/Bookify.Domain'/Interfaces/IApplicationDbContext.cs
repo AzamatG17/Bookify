@@ -16,6 +16,7 @@ public interface IApplicationDbContext
     DbSet<OpeningTimeBranch> OpeningTimeBranches { get; set; }
     DbSet<ServiceTranslation> ServiceTranslations { get; set; }
     DbSet<Booking> Bookings { get; set; }
+    DbSet<ETicket> Etickets { get; set; }
 
     DatabaseFacade Database { get; }
     int SaveChanges();

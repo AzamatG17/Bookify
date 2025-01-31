@@ -1,5 +1,8 @@
-﻿using Bookify.Application.Interfaces.IServices;
+﻿using Bookify.Application.DTOs;
+using Bookify.Application.Interfaces.IServices;
 using Bookify.Application.Requests.Auth;
+using Bookify.Application.Requests.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Bookify.Api.Controllers;
@@ -97,5 +100,21 @@ public class AuthController : ControllerBase
         await _service.SendCodeForTelegramAsync(sendCodeTelegramRequest);
 
         return Ok();
+    }
+
+    /// <summary>
+    /// Get user information
+    /// </summary>
+    /// <returns></returns>
+    [HttpGet("user")]
+    [Authorize]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<UserDto> GetUserProfileAsync()
+    {
+        var reslut = await _service.GetUserInfoAsync();
+
+        return reslut;
     }
 }
