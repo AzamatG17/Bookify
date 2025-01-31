@@ -9,4 +9,5 @@ public class User : IdentityUser<Guid>
     public long ChatId { get; set; }
 
     public virtual ICollection<Booking> Bookings { get; set; }
+    public virtual ICollection<ETicket> ETickets { get; set; }
 }
