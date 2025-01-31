@@ -28,7 +28,9 @@ public static class DependencyInjection
         services.AddScoped<IListFreeTimesStore, ListFreeTimesStore>();
         services.AddScoped<IListFreeDaysStore, ListFreeDaysStore>();
         services.AddScoped<IBookingStore, BookingStore>();
+        services.AddScoped<IEticketStore, EticketStore>();
 
+        services.AddScoped<IEticketService, EticketService>();
         services.AddScoped<IFreeTimeService, FreeTimeService>();
         services.AddScoped<IBookingService, BookingService>();
         services.AddScoped<IServicesService, ServicesService>();
@@ -36,7 +38,7 @@ public static class DependencyInjection
         services.AddScoped<ICompaniesService, CompaniesService>();
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<ISmsCodeService, SmsCodeService>();
-
+        services.AddScoped<IBackgroundJobService, BackgroundJobService>();
 
         services.AddSingleton<IJwtTokenHandler, JwtTokenHandler>();
         services.AddSingleton<ICurrentUserService, CurrentUserService>();
