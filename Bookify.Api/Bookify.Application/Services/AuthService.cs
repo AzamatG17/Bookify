@@ -1,10 +1,12 @@
 ﻿using Bookify.Application.Constants;
+using Bookify.Application.DTOs;
 using Bookify.Application.Interfaces;
 using Bookify.Application.Interfaces.IServices;
 using Bookify.Application.Models;
 using Bookify.Application.Requests.Auth;
 using Bookify.Domain_.Entities;
 using Bookify.Domain_.Exceptions;
+using Bookify.Domain_.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,19 +14,30 @@ namespace Bookify.Application.Services;
 
 internal sealed class AuthService : IAuthService
 {
+    private readonly IApplicationDbContext _context;
     private readonly UserManager<User> _userManager;
     private readonly IJwtTokenHandler _jwtTokenHandler;
     private readonly ISmsCodeService _smsCodeService;
     private readonly ISmsService _smsService;
     private readonly ITelegramService _telegramService;
+    private readonly ICurrentUserService _currentUserService;
 
-    public AuthService(UserManager<User> userManager, IJwtTokenHandler jwtTokenHandler, ISmsCodeService smsCodeService, ISmsService smsService, ITelegramService telegramService)
+    public AuthService(
+        IApplicationDbContext context,
+        UserManager<User> userManager,
+        IJwtTokenHandler jwtTokenHandler, 
+        ISmsCodeService smsCodeService,
+        ISmsService smsService,
+        ITelegramService telegramService,
+        ICurrentUserService currentUserService)
     {
+        _context = context ?? throw new ArgumentNullException(nameof(context));
         _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
         _jwtTokenHandler = jwtTokenHandler ?? throw new ArgumentNullException(nameof(jwtTokenHandler));
         _smsCodeService = smsCodeService ?? throw new ArgumentNullException(nameof(smsCodeService));
         _smsService = smsService ?? throw new ArgumentNullException(nameof(smsService));
         _telegramService = telegramService ?? throw new ArgumentNullException(nameof(telegramService));
+        _currentUserService = currentUserService ?? throw new ArgumentNullException(nameof(currentUserService));
     }
 
     public async Task<string> LoginAsync(Requests.Auth.LoginRequest loginRequest)
@@ -164,5 +177,34 @@ internal sealed class AuthService : IAuthService
         var token = _jwtTokenHandler.GenerateToken(existingUser, roles);
 
         return token;
+    }
+
+    public async Task<UserDto> GetUserInfoAsync()
+    {
+        var userId = _currentUserService.GetUserId();
+
+        var user = await _context.Users
+            .AsNoTracking()
+            .Include(u => u.Bookings.Where(b => b.Success))
+            .FirstOrDefaultAsync(x => x.Id == userId)
+            ?? throw new EntityNotFoundException($"User is not exist.");
+
+        var userDto = new UserDto(
+            user.FirstName,
+            user.LastName,
+            user.PhoneNumber ?? "",
+            user.Bookings
+                .Where(b => b.Success) 
+                .Select(b => new BookingDto(
+                    b.BookingCode,
+                    b.ServiceName, 
+                    b.BranchName,  
+                    b.StartDate,
+                    b.StartTime.ToString()
+                ))
+                .ToList()
+        );
+
+        return userDto;
     }
 }
