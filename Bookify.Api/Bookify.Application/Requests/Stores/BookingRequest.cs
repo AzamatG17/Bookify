@@ -2,7 +2,7 @@
 
 public class BookingRequest
 {
-    public string BranchId { get; set; }
+    public int BranchId { get; set; }
     public string CustomerID { get; set; } = "";
     public string Email { get; set; }
     public string FirstName { get; set; }
@@ -11,7 +11,7 @@ public class BookingRequest
     public string Name { get; set; }
     public string Note { get; set; } = "";
     public string PhoneNumber { get; set; }
-    public string ServiceId { get; set; }
+    public int ServiceId { get; set; }
     public string StartDate { get; set; } // формат "yyyyMMdd"
     public string StartTime { get; set; } // формат "HH:mm:ss"
 }

@@ -2,5 +2,5 @@
 
 public record CreateEticketRequest(
     int ServiceId,
-    string LanguageId
+    string Language
     );
