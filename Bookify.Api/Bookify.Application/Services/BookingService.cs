@@ -40,12 +40,16 @@ internal sealed class BookingService(
 
         var user = await GetUserAsync(_currentUserService.GetUserId());
 
-        var bookingRequestModel = CreateBookingRequestModel(bookingRequest, service, user);
-
         CreateBookingResponse response = company.Projects switch
         {
-            Domain_.Enums.Projects.BookingService => await _store.CreateBookingForBookingServiceAsync(bookingRequestModel, company.BaseUrl),
-            //Domain_.Enums.Projects.Onlinet => await _store.CreateBookingOnlinetAsync(bookingRequestModel, company.BaseUrl),
+            Domain_.Enums.Projects.BookingService => 
+                await _store.CreateBookingForBookingServiceAsync(
+                    CreateBookingRequestModel(bookingRequest, service, user), company.BaseUrl),
+
+            Domain_.Enums.Projects.Onlinet => 
+                await _store.CreateBookingOnlinetAsync(
+                    CreateBookingRequest(bookingRequest, service, user), company.BaseUrl),
+
             _ => throw new NotSupportedException($"Unsupported project type: {company.Projects}")
         };
 
@@ -73,25 +77,6 @@ internal sealed class BookingService(
             ?? throw new EntityNotFoundException($"User with id: {userId} does not exist.");
     }
 
-    //private static BookingRequest CreateBookingRequestOnlinetModel(CreateBookingRequest request, Service service, User user)
-    //{
-    //    return new BookingRequest
-    //    {
-    //        BranchId = service.Branch.Id.ToString(),
-    //        ServiceId = service.Id.ToString(),
-    //        CustomerID = user.Id.ToString() ?? "",
-    //        Email = "test@gmail.com",
-    //        FirstName = user.FirstName,
-    //        LastName = user.LastName,
-    //        Name = $"{user.LastName} {user.FirstName}",
-    //        Note = "",
-    //        PhoneNumber = user.PhoneNumber ?? "",
-    //        LanguageShortId = request.Language,
-    //        StartDate = request.StartDate,
-    //        StartTime = request.StartTime
-    //    };
-    //}
-
     private static BookingForBookingServiceRequest CreateBookingRequestModel(CreateBookingRequest request, Service service, User user)
     {
         return new BookingForBookingServiceRequest
@@ -108,4 +93,22 @@ internal sealed class BookingService(
         };
     }
 
+    private static BookingRequest CreateBookingRequest(CreateBookingRequest request, Service service, User user)
+    {
+        return new BookingRequest
+        {
+            BranchId = service.Branch.BranchId,
+            CustomerID = "",
+            Email = "test@test.uz",
+            FirstName = user.FirstName,
+            LastName = user.LastName,
+            LanguageShortId = request.Language,
+            Name = $"{user.FirstName} {user.LastName}",
+            Note = "",
+            PhoneNumber = user.PhoneNumber ?? "",
+            ServiceId = service.ServiceId,
+            StartDate = request.StartDate.ToString(),
+            StartTime = request.StartTime
+        };
+    }
 }

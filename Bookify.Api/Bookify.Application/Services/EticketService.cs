@@ -89,7 +89,7 @@ internal sealed class EticketService : IEticketService
         {
             BranchId = service.Branch.BranchId,
             DeviceType = 3,
-            LanguageId = request.LanguageId,
+            LanguageId = request.Language,
             PhoneNumber = user.PhoneNumber ?? "",
             ServiceId = service.ServiceId,
         };
