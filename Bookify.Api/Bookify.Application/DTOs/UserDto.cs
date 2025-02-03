@@ -4,5 +4,6 @@ public record UserDto(
     string FirstName,
     string LastName,
     string PhoneNumber,
-    List<BookingDto> BookingDtos
+    List<BookingDto> BookingDtos,
+    List<ETicketDto> ETicketDtos
     );

@@ -188,11 +188,11 @@ namespace Bookify.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("Bookify.Domain_.Entities.ETicket", b =>
                 {
-                    b.Property<int>("TicketId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TicketId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("BranchName")
                         .IsRequired()
@@ -206,13 +206,9 @@ namespace Bookify.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("CreatedTime")
-                        .IsRequired()
+                    b.Property<DateTime>("CreatedTime")
                         .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Language")
                         .IsRequired()
@@ -249,6 +245,9 @@ namespace Bookify.Infrastructure.Persistence.Migrations
                     b.Property<bool>("Success")
                         .HasColumnType("bit");
 
+                    b.Property<int>("TicketId")
+                        .HasColumnType("int");
+
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
@@ -257,7 +256,7 @@ namespace Bookify.Infrastructure.Persistence.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.HasKey("TicketId");
+                    b.HasKey("Id");
 
                     b.HasIndex("UserId");
 
@@ -453,26 +452,6 @@ namespace Bookify.Infrastructure.Persistence.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("User", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("ba6e8f9d-4e29-4e1f-9494-2bee7f93b4d5"),
-                            AccessFailedCount = 0,
-                            ChatId = 0L,
-                            ConcurrencyStamp = "94a97d43-dd3c-455d-b33a-c68d8f179ded",
-                            Email = "admin@example.com",
-                            EmailConfirmed = true,
-                            FirstName = "admin",
-                            LastName = "admin",
-                            LockoutEnabled = false,
-                            NormalizedEmail = "ADMIN@EXAMPLE.COM",
-                            NormalizedUserName = "ADMIN",
-                            PasswordHash = "AQAAAAIAAYagAAAAEK3XivNZ0Ic0wCcf/aN0ZOqfqlckoSEcyTY2Ze6dX6BMWbXb7Z2kDEW5o69AJNcl7A==",
-                            PhoneNumberConfirmed = false,
-                            TwoFactorEnabled = false,
-                            UserName = "admin"
-                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<System.Guid>", b =>
@@ -501,20 +480,6 @@ namespace Bookify.Infrastructure.Persistence.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("Role", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("242bd260-6fff-4867-9701-25c340d30e9b"),
-                            Name = "admin",
-                            NormalizedName = "ADMIN"
-                        },
-                        new
-                        {
-                            Id = new Guid("a2c67c36-9580-4697-abc7-a27b8f5a0153"),
-                            Name = "user",
-                            NormalizedName = "USER"
-                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
@@ -599,13 +564,6 @@ namespace Bookify.Infrastructure.Persistence.Migrations
                     b.HasIndex("RoleId");
 
                     b.ToTable("UserRole", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            UserId = new Guid("ba6e8f9d-4e29-4e1f-9494-2bee7f93b4d5"),
-                            RoleId = new Guid("242bd260-6fff-4867-9701-25c340d30e9b")
-                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>

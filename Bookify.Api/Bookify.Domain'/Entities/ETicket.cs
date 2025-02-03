@@ -2,13 +2,13 @@
 
 namespace Bookify.Domain_.Entities;
 
-public class ETicket :AuditableEntity
+public class ETicket : AuditableEntity
 {
     public int ServiceId { get; set; }
     public string Language { get; set; }
     public string ServiceName { get; set; }
     public string BranchName { get; set; }
-    public string CreatedTime { get; set; }
+    public DateTime CreatedTime { get; set; }
     public string Message { get; set; }
     public string Number { get; set; }
     public bool Success { get; set; }

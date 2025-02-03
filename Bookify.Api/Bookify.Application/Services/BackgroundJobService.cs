@@ -4,6 +4,7 @@ using Bookify.Application.Responses;
 using Bookify.Domain_.Entities;
 using Bookify.Domain_.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System.Text.RegularExpressions;
 
 namespace Bookify.Application.Services;
 
@@ -42,22 +43,49 @@ internal sealed class BackgroundJobService : IBackgroundJobService
 
     public async Task SaveETicketAsync(EticketResponse response, CreateEticketRequest request, Guid userId)
     {
-        var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == userId)
+        try
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == userId)
             ?? throw new InvalidOperationException("User was not created correctly.");
 
-        var eTicket = new ETicket
-        {
-            UserId = user.Id,
-            User = user,
-            CreatedBy = user.UserName ?? "",
-            ServiceId = request.ServiceId,
-            Language = request.LanguageId,
-            Success = response.Success,
-            ServiceName = response.Service,
-            BranchName = response.BranchName
-        };
+            var eTicket = new ETicket
+            {
+                UserId = user.Id,
+                User = user,
+                CreatedBy = user.UserName ?? "",
+                ServiceId = request.ServiceId,
+                Language = request.Language,
+                Success = response.Success,
+                ServiceName = response.Service,
+                BranchName = response.BranchName,
+                CreatedTime = ParseJsonDate(response.CreatedTime),
+                Message = response.Message,
+                Number = response.Number,
+                ValidUntil = response.ValidUntil,
+                ShowArriveButton = response.ShowArriveButton,
+                TicketId = response.TicketId,
+            };
 
-        await _context.Etickets.AddAsync(eTicket);
-        await _context.SaveChangesAsync();
+            await _context.Etickets.AddAsync(eTicket);
+            await _context.SaveChangesAsync();
+        }
+        catch (Exception ex)
+        {
+
+            throw new Exception("", ex);
+        }
+    }
+
+    private static DateTime ParseJsonDate(string jsonDate)
+    {
+        var match = Regex.Match(jsonDate, @"\/Date\((\d+)([+-]\d{4})?\)\/");
+        if (match.Success)
+        {
+            var milliseconds = long.Parse(match.Groups[1].Value);
+            var dateTime = DateTimeOffset.FromUnixTimeMilliseconds(milliseconds).DateTime;
+            return dateTime;
+        }
+
+        return DateTime.UtcNow;
     }
 }
