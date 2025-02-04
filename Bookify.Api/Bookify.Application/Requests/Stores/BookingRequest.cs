@@ -2,16 +2,16 @@
 
 public class BookingRequest
 {
-    public int BranchId { get; set; }
-    public string CustomerID { get; set; } = "";
-    public string Email { get; set; }
-    public string FirstName { get; set; }
-    public string LanguageShortId { get; set; }
-    public string LastName { get; set; }
-    public string Name { get; set; }
-    public string Note { get; set; } = "";
-    public string PhoneNumber { get; set; }
-    public int ServiceId { get; set; }
-    public string StartDate { get; set; } // формат "yyyyMMdd"
-    public string StartTime { get; set; } // формат "HH:mm:ss"
+    public string branchId { get; set; }
+    public string customerID { get; set; } = "";
+    public string email { get; set; }
+    public string firstName { get; set; }
+    public string languageShortId { get; set; }
+    public string lastName { get; set; }
+    public string name { get; set; }
+    public string note { get; set; } = "";
+    public string phoneNumber { get; set; }
+    public string serviceId { get; set; }
+    public string startDate { get; set; } // формат "yyyyMMdd"
+    public string startTime { get; set; } // формат "HH:mm:ss"
 }
