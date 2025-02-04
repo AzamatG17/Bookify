@@ -50,12 +50,16 @@ internal sealed class EticketService : IEticketService
 
         var user = await GetUserAsync(_currentUserService.GetUserId());
 
-        var eticketRequestModel = CreateEticketRequestModel(request, service, user);
-
         EticketResponse response = company.Projects switch
         {
-            Domain_.Enums.Projects.BookingService => await _store.CreateTicketForBookingServiceAsync(eticketRequestModel, company.BaseUrl),
-            //Domain_.Enums.Projects.Onlinet => await _store.CreateBookingOnlinetAsync(bookingRequestModel, company.BaseUrl),
+            Domain_.Enums.Projects.BookingService => 
+                await _store.CreateTicketForBookingServiceAsync(
+                    CreateEticketRequestModel(request, service, user), company.BaseUrl),
+            
+            Domain_.Enums.Projects.Onlinet => 
+                await _store.CreateTicketForOnlinetAsync(
+                    CreateETicketOnlinetModel(request, service, user), company.BaseUrl),
+            
             _ => throw new NotSupportedException($"Unsupported project type: {company.Projects}")
         };
 
@@ -92,6 +96,19 @@ internal sealed class EticketService : IEticketService
             LanguageId = request.Language,
             PhoneNumber = user.PhoneNumber ?? "",
             ServiceId = service.ServiceId,
+        };
+    }
+
+    private static ETicketOnlinetRequest CreateETicketOnlinetModel(CreateEticketRequest request, Service service, User user)
+    {
+        return new ETicketOnlinetRequest
+        {
+            branchId = service.Branch.BranchId,
+            deviceType = 3,
+            languageId = request.Language,
+            phoneNumber = user.PhoneNumber ?? "",
+            serviceId = service.ServiceId,
+            deviceId = Guid.NewGuid().ToString(),
         };
     }
 

@@ -97,18 +97,23 @@ internal sealed class BookingService(
     {
         return new BookingRequest
         {
-            BranchId = service.Branch.BranchId,
-            CustomerID = "",
-            Email = "test@test.uz",
-            FirstName = user.FirstName,
-            LastName = user.LastName,
-            LanguageShortId = request.Language,
-            Name = $"{user.FirstName} {user.LastName}",
-            Note = "",
-            PhoneNumber = user.PhoneNumber ?? "",
-            ServiceId = service.ServiceId,
-            StartDate = request.StartDate.ToString(),
-            StartTime = request.StartTime
+            branchId = service.Branch.BranchId.ToString(),
+            customerID = "",
+            email = GenerateRandomEmail(),
+            firstName = user.FirstName,
+            lastName = user.LastName,
+            languageShortId = request.Language,
+            name = $"{user.FirstName} {user.LastName}",
+            note = "",
+            phoneNumber = user.PhoneNumber ?? "",
+            serviceId = service.ServiceId.ToString(),
+            startDate = request.StartDate.ToString("yyyyMMdd"),
+            startTime = request.StartTime
         };
+    }
+
+    private static string GenerateRandomEmail()
+    {
+        return $"user{Guid.NewGuid().ToString().Substring(0, 8)}@test.uz";
     }
 }

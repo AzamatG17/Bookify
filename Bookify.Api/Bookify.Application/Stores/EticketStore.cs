@@ -24,4 +24,15 @@ public class EticketStore : IEticketStore
 
         return response;
     }
+
+    public async Task<EticketResponse> CreateTicketForOnlinetAsync(ETicketOnlinetRequest request, string baseUrl)
+    {
+        ArgumentNullException.ThrowIfNull(nameof(request));
+
+        var endpoint = $"{baseUrl}/OnlinetBookingServiceRest/CreateNewTicket";
+
+        var response = await _client.PostAsync<EticketResponse, ETicketOnlinetRequest>(endpoint, request);
+
+        return response;
+    }
 }
