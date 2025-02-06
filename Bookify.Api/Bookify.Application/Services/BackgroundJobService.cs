@@ -59,7 +59,7 @@ internal sealed class BackgroundJobService : IBackgroundJobService
                 ServiceName = response.Service,
                 BranchName = response.BranchName,
                 CreatedTime = ParseJsonDate(response.CreatedTime),
-                Message = response.Message,
+                Message = response.Message ?? "",
                 Number = response.Number,
                 ValidUntil = response.ValidUntil,
                 ShowArriveButton = response.ShowArriveButton,

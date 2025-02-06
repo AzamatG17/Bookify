@@ -40,6 +40,16 @@ internal sealed class BookingService(
 
         var user = await GetUserAsync(_currentUserService.GetUserId());
 
+        bool existBooking = await _context.Bookings
+            .AnyAsync(b => b.UserId == user.Id &&
+                b.ServiceId == bookingRequest.ServiceId &&
+                b.StartDate == bookingRequest.StartDate);
+
+        if (existBooking)
+        {
+            throw new DuplicateBookingException("User has already booked a ticket for this service on the selected date.");
+        }
+
         CreateBookingResponse response = company.Projects switch
         {
             Domain_.Enums.Projects.BookingService => 
