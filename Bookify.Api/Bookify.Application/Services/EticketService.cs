@@ -50,6 +50,16 @@ internal sealed class EticketService : IEticketService
 
         var user = await GetUserAsync(_currentUserService.GetUserId());
 
+        bool existBooking = await _context.Etickets
+            .AnyAsync(b => b.UserId == user.Id &&
+                b.ServiceId == request.ServiceId &&
+                b.CreatedAtUtc.Date == DateTime.UtcNow.Date);
+
+        if (existBooking)
+        {
+            throw new DuplicateBookingException("User has already booked a ETicket for this service on the selected date.");
+        }
+
         EticketResponse response = company.Projects switch
         {
             Domain_.Enums.Projects.BookingService => 
@@ -106,9 +116,9 @@ internal sealed class EticketService : IEticketService
             branchId = service.Branch.BranchId,
             deviceType = 3,
             languageId = request.Language,
-            phoneNumber = user.PhoneNumber ?? "",
+            phoneNumber = "+998998907641",
             serviceId = service.ServiceId,
-            deviceId = Guid.NewGuid().ToString(),
+            deviceId = "sz7plvmtk8dxv9rdgqmjvt",
         };
     }
 

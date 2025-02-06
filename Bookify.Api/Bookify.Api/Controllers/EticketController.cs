@@ -9,11 +9,11 @@ namespace Bookify.Api.Controllers;
 //[Authorize]
 [Route("api/eticket")]
 [ApiController]
-public class EticketController : ControllerBase
+public class ETicketController : ControllerBase
 {
     private readonly IEticketService _service;
 
-    public EticketController(IEticketService service)
+    public ETicketController(IEticketService service)
     {
         _service = service ?? throw new ArgumentNullException(nameof(service));
     }

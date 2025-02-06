@@ -85,6 +85,12 @@ public sealed class ErrorHandlerMiddleware
             Title = "User Name Not Found",
             Detail = exception.Message
         },
+        DuplicateBookingException => new ProblemDetails
+        {
+            Status = StatusCodes.Status400BadRequest,
+            Title = "Duplicate Booking",
+            Detail = exception.Message
+        },
         _ => new ProblemDetails
         {
             Status = StatusCodes.Status500InternalServerError,
