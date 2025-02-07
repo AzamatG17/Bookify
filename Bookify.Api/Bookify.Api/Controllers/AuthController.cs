@@ -1,7 +1,6 @@
 ﻿using Bookify.Application.DTOs;
 using Bookify.Application.Interfaces.IServices;
 using Bookify.Application.Requests.Auth;
-using Bookify.Application.Requests.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

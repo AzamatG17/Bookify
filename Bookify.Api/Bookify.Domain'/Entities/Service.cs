@@ -8,5 +8,6 @@ public class Service : AuditableEntity
 
     public required int BranchId { get; set; }
     public virtual Branch Branch { get; set; }
+    public virtual ICollection<Booking> Bookings { get; set; }
     public virtual ICollection<ServiceTranslation> ServiceTranslations { get; set; }
 }
