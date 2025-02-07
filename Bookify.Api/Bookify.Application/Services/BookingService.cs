@@ -71,6 +71,24 @@ internal sealed class BookingService(
         return response;
     }
 
+    public async Task DeleteAsync(GetBookingRequest request)
+    {
+        ArgumentNullException.ThrowIfNull(nameof(request));
+
+        var user = await GetUserAsync(_currentUserService.GetUserId());
+
+        var booking = await _context.Bookings
+            .Include(s => s.Ser)
+            .AsNoTracking()
+            .FirstOrDefaultAsync(b => b.BookingCode == request.BookingCode && b.User.Id == user.Id)
+            ?? throw new EntityNotFoundException($"Booking with Booking code:{request.BookingCode} does not exist.");
+
+        _context.Bookings.Remove(booking);
+        await _context.SaveChangesAsync();
+
+        return;
+    }
+
     private async Task<Service> GetServiceAsync(int serviceId)
     {
         return await _context.Services
