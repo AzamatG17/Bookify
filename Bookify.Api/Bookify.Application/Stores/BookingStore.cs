@@ -1,10 +1,9 @@
-﻿using Bookify.Application.DTOs;
-using Bookify.Application.Interfaces;
+﻿using Bookify.Application.Interfaces;
 using Bookify.Application.Interfaces.Stores;
+using Bookify.Application.Models;
 using Bookify.Application.Requests.Stores;
 using Bookify.Application.Responses;
 using System.Globalization;
-using System.Text.RegularExpressions;
 
 namespace Bookify.Application.Stores;
 
@@ -39,6 +38,34 @@ public class BookingStore : IBookingStore
         var response = await _client.PostAsync<BookingOnlinetResponse, BookingRequest>(endpoint, request);
 
         return MapToBookingResponse(response);
+    }
+
+    public async Task<ResultBooking> DeleteBookingForBookingServiceAsync(
+        string baseUrl, string bookingCode, string clientId, string languageShortId, string startDate)
+    {
+        if (string.IsNullOrEmpty(baseUrl))
+            throw new ArgumentNullException(nameof(baseUrl));
+
+        if (string.IsNullOrEmpty(bookingCode) || string.IsNullOrEmpty(clientId) ||
+            string.IsNullOrEmpty(languageShortId) || string.IsNullOrEmpty(startDate))
+            throw new ArgumentException("One or more required parameters are missing.");
+
+        var endpoint = $"{baseUrl}/api/Booking/DeleteBooking?" +
+                       $"bookingCode={bookingCode}&clientId={clientId}&languageShortId={languageShortId}&startDate={startDate}";
+
+        return await _client.PostAsync<ResultBooking, object>(endpoint, null);
+    }
+
+    public async Task DeleteBookingForOnlinetAsync(string baseUrl)
+    {
+        //if (string.IsNullOrEmpty(baseUrl))
+        //    throw new ArgumentNullException(nameof(baseUrl));
+
+        //var endpoint = $"{baseUrl}/OnlinetBookingServiceRest/CreateBooking";
+
+        //var response = await _client.PostAsync<BookingOnlinetResponse, BookingRequest>(endpoint, request);
+
+        //return MapToBookingResponse(response);
     }
 
     private static CreateBookingResponse MapToBookingResponse(BookingOnlinetResponse bookingOnlinetResponse)
