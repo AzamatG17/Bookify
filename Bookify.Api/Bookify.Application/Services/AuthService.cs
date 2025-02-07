@@ -193,7 +193,7 @@ internal sealed class AuthService : IAuthService
         var userDto = new UserDto(
             user.FirstName,
             user.LastName,
-            user.PhoneNumber ?? "",
+            user.UserName ?? "",
             user.Bookings
                 .Select(b => new BookingDto(
                     b.BookingCode,

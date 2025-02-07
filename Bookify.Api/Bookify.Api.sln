@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.12.35521.163 d17.12
+VisualStudioVersion = 17.12.35521.163
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bookify.Api", "Bookify.Api\Bookify.Api.csproj", "{3888A560-2C89-4F35-8B0C-E099F5152194}"
 EndProject
@@ -10,6 +10,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bookify.Domain", "Bookify.Domain'\Bookify.Domain.csproj", "{0C141DFF-3BBB-4C4F-89AA-7EA1241171A8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bookify.Infrastructure", "Bookify.Infrastructure\Bookify.Infrastructure.csproj", "{0113A6F0-6036-4663-B1D6-2E963DBF20EC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{685E0510-6A99-40E6-BF9D-E8C74EBD5D38}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Bookify.Tests.Unit", "Tests\Bookify.Tests.Unit\Bookify.Tests.Unit\Bookify.Tests.Unit.csproj", "{B9C9F2CE-226D-4054-B9A4-335D461ADF58}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,8 +37,15 @@ Global
 		{0113A6F0-6036-4663-B1D6-2E963DBF20EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0113A6F0-6036-4663-B1D6-2E963DBF20EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0113A6F0-6036-4663-B1D6-2E963DBF20EC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B9C9F2CE-226D-4054-B9A4-335D461ADF58}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B9C9F2CE-226D-4054-B9A4-335D461ADF58}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B9C9F2CE-226D-4054-B9A4-335D461ADF58}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B9C9F2CE-226D-4054-B9A4-335D461ADF58}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{B9C9F2CE-226D-4054-B9A4-335D461ADF58} = {685E0510-6A99-40E6-BF9D-E8C74EBD5D38}
 	EndGlobalSection
 EndGlobal
