@@ -6,4 +6,5 @@ namespace Bookify.Application.Interfaces.Services;
 public interface IBookingService
 {
     Task<CreateBookingResponse> CreateAsync(CreateBookingRequest bookingRequest);
+    Task DeleteAsync(GetBookingRequest request);
 }
