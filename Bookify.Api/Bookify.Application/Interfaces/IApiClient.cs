@@ -7,4 +7,5 @@ public interface IApiClient
     Task PutAsync<TRequest>(string url, TRequest request);
     Task DeleteAsync(string url);
     Task<TResult> PostsAsync<TBody, TResult>(string url, TBody data);
+    Task<TResult> PostAsync<TResult>(string url);
 }
