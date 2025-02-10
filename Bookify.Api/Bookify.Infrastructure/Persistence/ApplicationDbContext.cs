@@ -72,48 +72,48 @@ public class ApplicationDbContext : IdentityDbContext<User, IdentityRole<Guid>, 
 
         #endregion
 
-        var adminRoleId = Guid.NewGuid();
-        var adminUserId = Guid.NewGuid();
-        var userId = Guid.NewGuid();
+        //var adminRoleId = Guid.NewGuid();
+        //var adminUserId = Guid.NewGuid();
+        //var userId = Guid.NewGuid();
 
-        modelBuilder.Entity<IdentityRole<Guid>>().HasData(
-            new IdentityRole<Guid>
-            {
-                Id = adminRoleId,
-                Name = RoleConsts.Admin,
-                NormalizedName = RoleConsts.Admin.ToUpper()
-            },
-            new IdentityRole<Guid>
-            {
-                Id = userId,
-                Name = RoleConsts.User,
-                NormalizedName = RoleConsts.User.ToUpper()
-            }
-        );
+        //modelBuilder.Entity<IdentityRole<Guid>>().HasData(
+        //    new IdentityRole<Guid>
+        //    {
+        //        Id = adminRoleId,
+        //        Name = RoleConsts.Admin,
+        //        NormalizedName = RoleConsts.Admin.ToUpper()
+        //    },
+        //    new IdentityRole<Guid>
+        //    {
+        //        Id = userId,
+        //        Name = RoleConsts.User,
+        //        NormalizedName = RoleConsts.User.ToUpper()
+        //    }
+        //);
 
-        var adminUser = new User
-        {
-            Id = adminUserId,
-            FirstName = "admin",
-            LastName = "admin",
-            UserName = "admin",
-            NormalizedUserName = "ADMIN",
-            Email = "admin@example.com",
-            NormalizedEmail = "ADMIN@EXAMPLE.COM",
-            EmailConfirmed = true,
-        };
+        //var adminUser = new User
+        //{
+        //    Id = adminUserId,
+        //    FirstName = "admin",
+        //    LastName = "admin",
+        //    UserName = "admin",
+        //    NormalizedUserName = "ADMIN",
+        //    Email = "admin@example.com",
+        //    NormalizedEmail = "ADMIN@EXAMPLE.COM",
+        //    EmailConfirmed = true,
+        //};
 
-        var passwordHasher = new PasswordHasher<User>();
-        adminUser.PasswordHash = passwordHasher.HashPassword(adminUser, "admin");
+        //var passwordHasher = new PasswordHasher<User>();
+        //adminUser.PasswordHash = passwordHasher.HashPassword(adminUser, "admin");
 
-        modelBuilder.Entity<User>().HasData(adminUser);
+        //modelBuilder.Entity<User>().HasData(adminUser);
 
-        modelBuilder.Entity<IdentityUserRole<Guid>>().HasData(
-            new IdentityUserRole<Guid>
-            {
-                UserId = adminUserId,
-                RoleId = adminRoleId
-            }
-        );
+        //modelBuilder.Entity<IdentityUserRole<Guid>>().HasData(
+        //    new IdentityUserRole<Guid>
+        //    {
+        //        UserId = adminUserId,
+        //        RoleId = adminRoleId
+        //    }
+        //);
     }
 }

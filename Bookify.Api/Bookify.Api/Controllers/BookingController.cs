@@ -35,4 +35,17 @@ public class BookingController : ControllerBase
 
         return response;
     }
+
+    [HttpDelete]
+    [Authorize]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status406NotAcceptable)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult> DeleteBookingAsync([FromBody] GetBookingRequest getBookingRequest)
+    {
+        await _service.DeleteAsync(getBookingRequest);
+
+        return Ok();
+    }
 }

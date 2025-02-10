@@ -52,9 +52,6 @@ internal sealed class ApiClient : IApiClient
         if (string.IsNullOrEmpty(url))
             throw new ArgumentNullException(nameof(url));
 
-        if (request == null)
-            throw new ArgumentNullException(nameof(request));
-
         var json = System.Text.Json.JsonSerializer.Serialize(request);
         var content = new StringContent(json, Encoding.UTF8, "application/json");
 
@@ -102,6 +99,31 @@ internal sealed class ApiClient : IApiClient
 
             throw new InvalidCastException("Could not deserialize response");
         }
+
+        return result;
+    }
+
+    public async Task<TResult> PostAsync<TResult>(string url)
+    {
+        if (string.IsNullOrEmpty(url))
+            throw new ArgumentNullException(nameof(url));
+
+        var response = await _client.PostAsync(url, null); // Отправляем без тела
+
+        if (!response.IsSuccessStatusCode)
+        {
+            var errorContent = await response.Content.ReadAsStringAsync();
+            throw new HttpRequestException($"Request failed: {response.StatusCode}, Details: {errorContent}");
+        }
+
+        var responseContent = await response.Content.ReadAsStringAsync();
+        var result = System.Text.Json.JsonSerializer.Deserialize<TResult>(responseContent, new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true
+        });
+
+        if (result == null)
+            throw new InvalidOperationException("Could not deserialize response");
 
         return result;
     }

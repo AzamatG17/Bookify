@@ -78,13 +78,22 @@ internal sealed class BookingService(
         var user = await GetUserAsync(_currentUserService.GetUserId());
 
         var booking = await _context.Bookings
-            .Include(s => s.Ser)
+            .Include(s => s.Service)
+                .ThenInclude(s => s.Branch)
+                    .ThenInclude(br => br.Companies)
             .AsNoTracking()
             .FirstOrDefaultAsync(b => b.BookingCode == request.BookingCode && b.User.Id == user.Id)
             ?? throw new EntityNotFoundException($"Booking with Booking code:{request.BookingCode} does not exist.");
 
-        _context.Bookings.Remove(booking);
-        await _context.SaveChangesAsync();
+        string date = booking.StartDate.ToString("yyyy-MM-dd");
+
+        var response = await _store.DeleteBookingForBookingServiceAsync(
+            booking.Service.Branch.Companies.BaseUrl, booking.BookingCode, "1", request.Language, date);
+
+        if (response.Success)
+        {
+            _backgroundJobClient.Enqueue(() => _backgroundJobService.DeleteBookingAsync(booking.Id));
+        }
 
         return;
     }
@@ -114,7 +123,7 @@ internal sealed class BookingService(
             FirstName = user.FirstName,
             LastName = user.LastName,
             LanguageShortId = request.Language,
-            PhoneNumber = user.PhoneNumber ?? "",
+            PhoneNumber = user.UserName ?? "",
             ServiceId = service.ServiceId,
             StartDate = request.StartDate.ToUniversalTime(),
             StartTime = request.StartTime

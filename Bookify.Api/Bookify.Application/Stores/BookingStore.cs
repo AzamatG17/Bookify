@@ -50,10 +50,10 @@ public class BookingStore : IBookingStore
             string.IsNullOrEmpty(languageShortId) || string.IsNullOrEmpty(startDate))
             throw new ArgumentException("One or more required parameters are missing.");
 
-        var endpoint = $"{baseUrl}/api/Booking/DeleteBooking?" +
+        var endpoint = $"{baseUrl}/api/Bookings/DeleteBooking?" +
                        $"bookingCode={bookingCode}&clientId={clientId}&languageShortId={languageShortId}&startDate={startDate}";
 
-        return await _client.PostAsync<ResultBooking, object>(endpoint, null);
+        return await _client.PostAsync<ResultBooking>(endpoint);
     }
 
     public async Task DeleteBookingForOnlinetAsync(string baseUrl)

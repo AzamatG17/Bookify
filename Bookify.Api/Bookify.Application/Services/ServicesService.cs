@@ -133,6 +133,11 @@ internal sealed class ServicesService : IServicesService
             query = query.Where(q => q.Services.Branch.CompanyId == serviceQuery.CompanyId);
         }
 
+        if (serviceQuery.BranchId.HasValue)
+        {
+            query = query.Where(q => q.Services.BranchId == serviceQuery.BranchId);
+        }
+
         query = serviceQuery.SortBy switch
         {
             "idDesc" => query.OrderByDescending(q => q.Id),
