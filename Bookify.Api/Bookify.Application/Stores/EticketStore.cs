@@ -1,5 +1,6 @@
 ﻿using Bookify.Application.Interfaces;
 using Bookify.Application.Interfaces.Stores;
+using Bookify.Application.Models;
 using Bookify.Application.Requests.Stores;
 using Bookify.Application.Responses;
 
@@ -34,5 +35,19 @@ public class EticketStore : IEticketStore
         var response = await _client.PostAsync<EticketResponse, ETicketOnlinetRequest>(endpoint, request);
 
         return response;
+    }
+
+    public async Task<ErrorResponse> DeleteETicketForBookingServiceAsync(
+        string baseUrl, string branchId, string number)
+    {
+        if (string.IsNullOrEmpty(baseUrl))
+            throw new ArgumentNullException(nameof(baseUrl));
+
+        if (string.IsNullOrEmpty(branchId) || string.IsNullOrEmpty(number))
+            throw new ArgumentException("One or more required parameters are missing.");
+
+        var endpoint = $"{baseUrl}/api/E_Ticket/DeleteTicket?branchId={branchId}&number={number}";
+
+        return await _client.PostAsync<ErrorResponse>(endpoint);
     }
 }

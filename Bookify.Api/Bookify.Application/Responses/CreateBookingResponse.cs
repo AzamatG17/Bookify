@@ -9,4 +9,5 @@ public class CreateBookingResponse
     public string BranchName { get; set; }
     public string ServiceName { get; set; }
     public bool Success { get; set; }
+    public string? ClientId { get; set; }
 }

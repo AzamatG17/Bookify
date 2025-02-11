@@ -81,6 +81,11 @@ internal sealed class EticketService : IEticketService
         return MapToETicketDto(response);
     }
 
+    public async Task DeleteTicketAsync()
+    {
+
+    }
+
     private async Task<Service> GetServiceAsync(int serviceId)
     {
         return await _context.Services

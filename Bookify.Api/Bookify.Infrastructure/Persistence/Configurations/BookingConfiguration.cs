@@ -41,6 +41,9 @@ internal class BookingConfiguration : IEntityTypeConfiguration<Booking>
             .IsRequired()
             .HasMaxLength(200);
 
+        builder.Property(b => b.ClientId)
+            .HasMaxLength(255);
+
         builder.HasOne(b => b.User)
             .WithMany(u => u.Bookings)
             .HasForeignKey(b => b.UserId)
