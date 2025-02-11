@@ -56,16 +56,21 @@ public class BookingStore : IBookingStore
         return await _client.PostAsync<ResultBooking>(endpoint);
     }
 
-    public async Task DeleteBookingForOnlinetAsync(string baseUrl)
+    public async Task<ResultBooking> DeleteBookingForOnlinetAsync(DeleteBookingRequest request , string baseUrl)
     {
-        //if (string.IsNullOrEmpty(baseUrl))
-        //    throw new ArgumentNullException(nameof(baseUrl));
+        if (string.IsNullOrEmpty(baseUrl))
+            throw new ArgumentNullException(nameof(baseUrl));
 
-        //var endpoint = $"{baseUrl}/OnlinetBookingServiceRest/CreateBooking";
+        var endpoint = $"{baseUrl}/OnlinetBookingServiceRest/DeleteBooking";
 
-        //var response = await _client.PostAsync<BookingOnlinetResponse, BookingRequest>(endpoint, request);
+        var result = await _client.PostAsync<DeleteBookingResult, DeleteBookingRequest>(endpoint, request);
 
-        //return MapToBookingResponse(response);
+        return new ResultBooking
+        {
+            Code = result.Code,
+            Message = result.Message,
+            Success = result.Success,
+        };
     }
 
     private static CreateBookingResponse MapToBookingResponse(BookingOnlinetResponse bookingOnlinetResponse)
@@ -87,6 +92,7 @@ public class BookingStore : IBookingStore
             BranchName = bookingOnlinetResponse.BranchName,
             ServiceName = bookingOnlinetResponse.ServiceName,
             Success = bookingOnlinetResponse.Success,
+            ClientId = bookingOnlinetResponse.ClientId,
         };
     }
 }
