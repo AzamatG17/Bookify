@@ -11,6 +11,7 @@ public class Booking : AuditableEntity
     public bool Success { get; set; }
     public string ServiceName { get; set; }
     public string BranchName { get; set; }
+    public string? ClientId { get; set; }
 
     public int ServiceId { get; set; }
     public virtual Service Service { get; set; }
