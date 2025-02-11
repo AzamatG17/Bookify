@@ -34,7 +34,8 @@ internal sealed class BackgroundJobService : IBackgroundJobService
             BookingCode = response.BookingCode,
             Success = response.Success,
             ServiceName = response.ServiceName,
-            BranchName = response.BranchName
+            BranchName = response.BranchName,
+            ClientId = response.ClientId ?? null
         };
 
         await _context.Bookings.AddAsync(booking);

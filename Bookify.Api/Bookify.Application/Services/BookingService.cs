@@ -1,6 +1,7 @@
 ﻿using Bookify.Application.Interfaces.IServices;
 using Bookify.Application.Interfaces.Services;
 using Bookify.Application.Interfaces.Stores;
+using Bookify.Application.Models;
 using Bookify.Application.Requests.Services;
 using Bookify.Application.Requests.Stores;
 using Bookify.Application.Responses;
@@ -10,7 +11,6 @@ using Bookify.Domain_.Interfaces;
 using Hangfire;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace Bookify.Application.Services;
 
@@ -85,15 +85,20 @@ internal sealed class BookingService(
             .FirstOrDefaultAsync(b => b.BookingCode == request.BookingCode && b.User.Id == user.Id)
             ?? throw new EntityNotFoundException($"Booking with Booking code:{request.BookingCode} does not exist.");
 
-        string date = booking.StartDate.ToString("yyyy-MM-dd");
-
-        var response = await _store.DeleteBookingForBookingServiceAsync(
-            booking.Service.Branch.Companies.BaseUrl, booking.BookingCode, "1", request.Language, date);
-
-        if (response.Success)
+        ResultBooking resultBooking = booking.Service.Branch.Companies.Projects switch
         {
-            _backgroundJobClient.Enqueue(() => _backgroundJobService.DeleteBookingAsync(booking.Id));
-        }
+            Domain_.Enums.Projects.BookingService =>
+                await _store.DeleteBookingForBookingServiceAsync(
+                    booking.Service.Branch.Companies.BaseUrl, booking.BookingCode, "1", booking.Language, booking.StartDate.ToString("yyyy-MM-dd")),
+
+            Domain_.Enums.Projects.Onlinet =>
+                await _store.DeleteBookingForOnlinetAsync(
+                    MapToDeletBookingRequest(booking), booking.Service.Branch.Companies.BaseUrl),
+
+            _ => throw new NotSupportedException($"Unsupported project type: {booking.Service.Branch.Companies.Projects}")
+        };
+
+        _backgroundJobClient.Enqueue(() => _backgroundJobService.DeleteBookingAsync(booking.Id));
 
         return;
     }
@@ -146,6 +151,17 @@ internal sealed class BookingService(
             serviceId = service.ServiceId.ToString(),
             startDate = request.StartDate.ToString("yyyyMMdd"),
             startTime = request.StartTime
+        };
+    }
+
+    private static DeleteBookingRequest MapToDeletBookingRequest(Booking request)
+    {
+        return new DeleteBookingRequest
+        {
+            BookingCode = request.BookingCode,
+            ClientId = request.ClientId ?? "",
+            LanguageShortId = request.Language,
+            StartDate = request.StartDate.ToString("yyyyMMdd")
         };
     }
 
