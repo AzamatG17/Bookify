@@ -1,6 +1,6 @@
 ﻿namespace Bookify.Application.Models;
 
-public class ResultBooking
+public class DeleteBookingResult
 {
     public int Code { get; set; }
     public string? Message { get; set; }
