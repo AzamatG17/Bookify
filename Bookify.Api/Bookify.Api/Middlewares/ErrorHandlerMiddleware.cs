@@ -91,6 +91,12 @@ public sealed class ErrorHandlerMiddleware
             Title = "Duplicate Booking",
             Detail = exception.Message
         },
+        Domain_.Exceptions.UnauthorizedAccessException => new ProblemDetails
+        {
+            Status = StatusCodes.Status403Forbidden,
+            Title = "Unauthorized Access",
+            Detail = exception.Message
+        },
         _ => new ProblemDetails
         {
             Status = StatusCodes.Status500InternalServerError,

@@ -186,6 +186,7 @@ internal sealed class AuthService : IAuthService
         var user = await _context.Users
             .AsNoTracking()
             .Include(u => u.ETickets.Where(e => e.Success))
+            .ThenInclude(s => s.Service)
             .Include(u => u.Bookings.Where(b => b.Success))
             .FirstOrDefaultAsync(x => x.Id == userId)
             ?? throw new EntityNotFoundException($"User is not exist.");
@@ -205,9 +206,11 @@ internal sealed class AuthService : IAuthService
                 .ToList(),
             user.ETickets
                 .Select(e => new ETicketDto(
+                    e.TicketId,
                     e.Number,
                     e.Message,
                     e.ServiceName,
+                    e.Service.BranchId,
                     e.BranchName,
                     e.BranchName,
                     e.ValidUntil

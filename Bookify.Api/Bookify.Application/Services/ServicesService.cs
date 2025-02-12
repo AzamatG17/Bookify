@@ -154,7 +154,12 @@ internal sealed class ServicesService : IServicesService
             service.Services.Id,
             service.Services.ServiceId,
             service.Name,
-            service.Services.Branch.Companies.Id
+            service.Services.Branch.Companies.Id,
+            service.Services.Branch.Companies.Name,
+            service.Services.Branch.Id,
+            service.Services.Branch.Name,
+            service.Services.Branch.CoordinateLatitude,
+            service.Services.Branch.CoordinateLongitude
         );
     }
 
@@ -164,6 +169,11 @@ internal sealed class ServicesService : IServicesService
             service.Id,
             service.ServiceId,
             "",
+            0,
+            "",
+            0,
+            "",
+            0,
             0
             );
     }

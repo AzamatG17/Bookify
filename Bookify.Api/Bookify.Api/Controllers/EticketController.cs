@@ -19,6 +19,20 @@ public class ETicketController : ControllerBase
     }
 
     /// <summary>
+    /// Get Eticket status
+    /// </summary>
+    /// <param name="request"></param>
+    /// <returns></returns>
+    [HttpGet("info")]
+    [Authorize]
+    public async Task<ActionResult> GetEticketStatusAsync([FromQuery] EticketStatusRequest request)
+    {
+        var result = await _service.GetETicketStatusAsync(request);
+
+        return Ok(result);
+    }
+
+    /// <summary>
     /// Create ETicket
     /// </summary>
     /// <param name="request"></param>
