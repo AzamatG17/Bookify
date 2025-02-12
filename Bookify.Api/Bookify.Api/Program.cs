@@ -18,9 +18,9 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
     {
-        policy.AllowAnyOrigin() // Разрешает доступ с любых доменов
-              .AllowAnyHeader() // Разрешает любые заголовки
-              .AllowAnyMethod(); // Разрешает любые HTTP-методы (GET, POST и т.д.)
+        policy.AllowAnyOrigin()
+              .AllowAnyHeader()
+              .AllowAnyMethod();
     });
 });
 
