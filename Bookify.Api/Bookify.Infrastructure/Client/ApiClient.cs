@@ -1,4 +1,5 @@
 ﻿using Bookify.Application.Interfaces;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System.Net.Http.Json;
@@ -30,7 +31,7 @@ internal sealed class ApiClient : IApiClient
         var content = await response.Content.ReadAsStringAsync();
 
         var result = System.Text.Json.JsonSerializer.Deserialize<TResult>(content, new JsonSerializerOptions
-        {
+        {   
             PropertyNameCaseInsensitive = true
         });
 
@@ -46,6 +47,24 @@ internal sealed class ApiClient : IApiClient
 
         return result;
     }
+
+    public async Task<HttpResponseMessage> GetAsync(string url)
+    {
+        if (string.IsNullOrEmpty(url))
+            throw new ArgumentNullException(nameof(url));
+
+        var request = new HttpRequestMessage(HttpMethod.Get, _client.BaseAddress?.AbsolutePath + url);
+
+        var response = await _client.SendAsync(request);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            throw new InvalidCastException($"{response.StatusCode}. Error fetching url: {url}");
+        }
+
+        return response;
+    }
+
 
     public async Task<TResult> PostAsync<TResult, TRequest>(string url, TRequest request)
     {
