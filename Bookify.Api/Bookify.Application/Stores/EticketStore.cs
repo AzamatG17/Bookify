@@ -1,6 +1,7 @@
 ﻿using Bookify.Application.Interfaces;
 using Bookify.Application.Interfaces.Stores;
 using Bookify.Application.Models;
+using Bookify.Application.Requests.Services;
 using Bookify.Application.Requests.Stores;
 using Bookify.Application.Responses;
 
@@ -13,6 +14,16 @@ public class EticketStore : IEticketStore
     public EticketStore(IApiClient client)
     {
         _client = client ?? throw new ArgumentNullException(nameof(client));
+    }
+
+    public async Task<object> GetEtickertStatusBookingServiceAsync(EticketStatusRequest request, string baseUrl)
+    {
+        if (string.IsNullOrEmpty(baseUrl))
+            throw new ArgumentNullException(nameof(baseUrl));
+
+        var endpoint = $"{baseUrl}/api/E_Ticket/info?BranchId={request.BranchId}&TicketId={request.TicketId}";
+
+        return await _client.GetAsync<object>(endpoint);
     }
 
     public async Task<EticketResponse> CreateTicketForBookingServiceAsync(EticketRequest request, string baseUrl)
