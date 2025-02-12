@@ -11,6 +11,7 @@ using Bookify.Domain_.Interfaces;
 using Hangfire;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace Bookify.Application.Services;
 
@@ -37,6 +38,36 @@ internal sealed class EticketService : IEticketService
         _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
         _backgroundJobService = backgroundJobService ?? throw new ArgumentNullException(nameof(backgroundJobService));
         _backgroundJobClient = backgroundJobClient ?? throw new ArgumentNullException(nameof(backgroundJobClient));
+    }
+
+    public async Task<object> GetETicketStatusAsync(EticketStatusRequest request)
+    {
+        ArgumentNullException.ThrowIfNull(nameof(request));
+
+        var eTicket = await _context.Etickets
+            .Include(u => u.User)
+            .Include(s => s.Service)
+            .ThenInclude(b => b.Branch)
+            .ThenInclude(c => c.Companies)
+            .FirstOrDefaultAsync(e => e.TicketId == request.TicketId && e.Service.Branch.BranchId == request.BranchId)
+            ?? throw new EntityNotFoundException($"ETicket with TickedId: {request.TicketId} does not exist in Branch: {request.BranchId}");
+
+        var user = await GetUserAsync(_currentUserService.GetUserId());
+
+        if (eTicket.User.Id != user.Id)
+        {
+            throw new Domain_.Exceptions.UnauthorizedAccessException("You do not have permission to access this eTicket.");
+        }
+
+        object result = eTicket.Service.Branch.Companies.Projects switch
+        {
+            Domain_.Enums.Projects.BookingService =>
+                await _store.GetEtickertStatusBookingServiceAsync(request, eTicket.Service.Branch.Companies.BaseUrl),
+
+            _ => throw new NotSupportedException($"Unsupported project type: {eTicket.Service.Branch.Companies.Projects}")
+        };
+
+        return result;
     }
 
     public async Task<ETicketDto> CreateTicketAsync(CreateEticketRequest request)
@@ -130,9 +161,11 @@ internal sealed class EticketService : IEticketService
     private static ETicketDto MapToETicketDto(EticketResponse e)
     {
         return new ETicketDto(
+            e.TicketId,
             e.Number,
             e.Message,
             e.Service,
+            e.BranchId,
             e.BranchName,
             e.BranchAddress,
             e.ValidUntil
