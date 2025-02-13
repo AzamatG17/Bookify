@@ -23,7 +23,7 @@ public class EticketStore : IEticketStore
 
         var endpoint = $"{baseUrl}/api/E_Ticket/info?BranchId={request.BranchId}&TicketId={request.TicketId}";
 
-        return await _client.GetAsync<object>(endpoint);
+        return await _client.GetStringAsync<object>(endpoint);
     }
 
     public async Task<EticketResponse> CreateTicketForBookingServiceAsync(EticketRequest request, string baseUrl)
