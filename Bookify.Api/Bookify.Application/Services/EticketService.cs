@@ -11,7 +11,6 @@ using Bookify.Domain_.Interfaces;
 using Hangfire;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace Bookify.Application.Services;
 
@@ -93,14 +92,14 @@ internal sealed class EticketService : IEticketService
 
         EticketResponse response = company.Projects switch
         {
-            Domain_.Enums.Projects.BookingService => 
+            Domain_.Enums.Projects.BookingService =>
                 await _store.CreateTicketForBookingServiceAsync(
                     CreateEticketRequestModel(request, service, user), company.BaseUrl),
-            
-            Domain_.Enums.Projects.Onlinet => 
+
+            Domain_.Enums.Projects.Onlinet =>
                 await _store.CreateTicketForOnlinetAsync(
                     CreateETicketOnlinetModel(request, service, user), company.BaseUrl),
-            
+
             _ => throw new NotSupportedException($"Unsupported project type: {company.Projects}")
         };
 
