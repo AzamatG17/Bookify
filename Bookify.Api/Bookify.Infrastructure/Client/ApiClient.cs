@@ -1,5 +1,4 @@
 ﻿using Bookify.Application.Interfaces;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System.Net.Http.Json;
@@ -48,21 +47,25 @@ internal sealed class ApiClient : IApiClient
         return result;
     }
 
-    public async Task<HttpResponseMessage> GetAsync(string url)
+    public async Task<TResult> GetStringAsync<TResult>(string url)
     {
-        if (string.IsNullOrEmpty(url))
-            throw new ArgumentNullException(nameof(url));
+        var response = await _client.GetAsync(url);
+        response.EnsureSuccessStatusCode();
 
-        var request = new HttpRequestMessage(HttpMethod.Get, _client.BaseAddress?.AbsolutePath + url);
+        var json = await response.Content.ReadAsStringAsync();
+        var result = JsonConvert.DeserializeObject<TResult>(json);
 
-        var response = await _client.SendAsync(request);
-
-        if (!response.IsSuccessStatusCode)
+        if (result is null)
         {
-            throw new InvalidCastException($"{response.StatusCode}. Error fetching url: {url}");
+            _logger.LogWarning(
+                "Response deserialization returned null for type {Type} from resource {Url} and method GET",
+                typeof(TResult),
+                url);
+
+            throw new InvalidCastException("Could not deserialize response");
         }
 
-        return response;
+        return result;
     }
 
 
