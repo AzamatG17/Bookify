@@ -6,7 +6,7 @@ public class Service : AuditableEntity
 {
     public required int ServiceId { get; set; }
 
-    public required int BranchId { get; set; }
+    public int? BranchId { get; set; }
     public virtual Branch Branch { get; set; }
     public virtual ICollection<Booking> Bookings { get; set; }
     public virtual ICollection<ETicket> ETickets { get; set; }

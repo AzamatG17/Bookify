@@ -5,7 +5,7 @@ public record ETicketDto(
     string Number,
     string Message,
     string ServiceName,
-    int BranchId,
+    int? BranchId,
     string BranchName,
     string BranchAddress,
     string ValidUntil
