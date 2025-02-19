@@ -22,7 +22,7 @@ internal sealed class EticketService : IEticketService
     private readonly ICurrentUserService _currentUserService;
     private readonly IBackgroundJobService _backgroundJobService;
     private readonly IBackgroundJobClient _backgroundJobClient;
-
+    
     public EticketService(
         IApplicationDbContext context,
         IEticketStore ticketStore,
@@ -148,10 +148,10 @@ internal sealed class EticketService : IEticketService
     {
         return new ETicketOnlinetRequest
         {
-            branchId = service.Branch.BranchId,
+            branchId = service.Branch.BranchId.ToString(),
             deviceType = 3,
             languageId = request.Language,
-            phoneNumber = "+998998907641",
+            phoneNumber = user.UserName,
             serviceId = service.ServiceId,
             deviceId = "sz7plvmtk8dxv9rdgqmjvt",
         };
@@ -164,6 +164,7 @@ internal sealed class EticketService : IEticketService
             e.Number,
             e.Message,
             e.Service,
+            0,
             e.BranchId,
             e.BranchName,
             e.BranchAddress,
