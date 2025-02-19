@@ -187,6 +187,7 @@ internal sealed class AuthService : IAuthService
             .AsNoTracking()
             .Include(u => u.ETickets.Where(e => e.Success))
             .ThenInclude(s => s.Service)
+            .ThenInclude(b => b.Branch)
             .Include(u => u.Bookings.Where(b => b.Success))
             .FirstOrDefaultAsync(x => x.Id == userId)
             ?? throw new EntityNotFoundException($"User is not exist.");
@@ -211,6 +212,7 @@ internal sealed class AuthService : IAuthService
                     e.Message,
                     e.ServiceName,
                     e.Service.BranchId,
+                    e.Service.Branch.BranchId,
                     e.BranchName,
                     e.BranchName,
                     e.ValidUntil

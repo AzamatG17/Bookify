@@ -43,7 +43,7 @@ public class EticketStore : IEticketStore
 
         var endpoint = $"{baseUrl}/OnlinetBookingServiceRest/CreateNewTicket";
 
-        var response = await _client.PostAsync<EticketResponse, ETicketOnlinetRequest>(endpoint, request);
+        var response = await _client.PostEncodeAsync<EticketResponse, ETicketOnlinetRequest>(endpoint, request);
 
         return response;
     }

@@ -42,12 +42,9 @@ builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-    app.UseDatabaseSeeder();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
+app.UseDatabaseSeeder();
 
 app.UseHangfireDashboard("/hangfire", new DashboardOptions
 {
