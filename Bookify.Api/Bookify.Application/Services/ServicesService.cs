@@ -23,13 +23,11 @@ internal sealed class ServicesService : IServicesService
 
     public async Task<List<ServiceDto>> GetAllAsync(ServiceQueryParameters serviceQueryParameters)
     {
-        ArgumentNullException.ThrowIfNull(nameof(serviceQueryParameters));
+        ArgumentNullException.ThrowIfNull(serviceQueryParameters);
 
-        var query = FilterService(serviceQueryParameters);
+        var query = await FilterService(serviceQueryParameters);
 
-        var services = await query;
-
-        return services.Select(service => MapToServiceDto(service)).ToList();
+        return query.Select(MapToServiceDto).ToList();
     }
 
     public async Task<ServiceDto> GetByIdAsync(ServiceByIdQueryParameters serviceByIdQueryParameters)
@@ -39,7 +37,7 @@ internal sealed class ServicesService : IServicesService
 
     public async Task<List<ServiceDto>> UpdateDataAsync(BranchRequest branchRequest)
     {
-        ArgumentNullException.ThrowIfNull(nameof(branchRequest));
+        ArgumentNullException.ThrowIfNull(branchRequest);
 
         using var transaction = await _context.Database.BeginTransactionAsync();
         
@@ -151,16 +149,16 @@ internal sealed class ServicesService : IServicesService
     private static ServiceDto MapToServiceDto(ServiceTranslation service)
     {
         return new ServiceDto(
-            service.Services.Id,
-            service.Services.ServiceId,
-            service.Name,
-            service.Services.Branch.Companies.Id,
-            service.Services.Branch.Companies.Name,
-            service.Services.Branch.Id,
-            service.Services.Branch.Name,
-            service.Services.Branch.CoordinateLatitude,
-            service.Services.Branch.CoordinateLongitude
-        );
+        service.Services.Id,
+        service.Services.ServiceId,
+        service.Name ?? "",
+        service.Services.Branch?.Companies?.Id ?? 0,
+        service.Services.Branch?.Companies?.Name ?? "",
+        service.Services.Branch?.Id ?? 0,
+        service.Services.Branch?.Name ?? "",
+        service.Services.Branch?.CoordinateLatitude ?? 0.0,
+        service.Services.Branch?.CoordinateLongitude ?? 0.0
+    );
     }
 
     private static ServiceDto MapToServiceDto(Service service)
