@@ -48,6 +48,13 @@ public class EticketStore : IEticketStore
         return response;
     }
 
+    public async Task<EticketDeleteStatus> DeleteBookingServiceAsync(string baseUrl, int branchId, string number)
+    {
+        var endpoint = $"{baseUrl}/api/E_Ticket/DeleteTicket?branchId={branchId}&number={number}";
+
+        return await _client.PostAsync<EticketDeleteStatus, object>(endpoint, null);
+    }
+
     public async Task<ErrorResponse> DeleteETicketForBookingServiceAsync(
         string baseUrl, string branchId, string number)
     {

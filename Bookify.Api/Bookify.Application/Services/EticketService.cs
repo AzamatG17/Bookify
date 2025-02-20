@@ -71,7 +71,7 @@ internal sealed class EticketService : IEticketService
 
     public async Task<ETicketDto> CreateTicketAsync(CreateEticketRequest request)
     {
-        ArgumentNullException.ThrowIfNull(nameof(request));
+        ArgumentNullException.ThrowIfNull(request);
 
         var service = await GetServiceAsync(request.ServiceId);
 
@@ -111,9 +111,28 @@ internal sealed class EticketService : IEticketService
         return MapToETicketDto(response);
     }
 
-    public async Task DeleteTicketAsync()
+    public async Task<EticketDeleteStatus> DeleteTicketAsync(DeleteEticketRequest request)
     {
+        ArgumentNullException.ThrowIfNull(request);
 
+        var user = await GetUserAsync(_currentUserService.GetUserId());
+
+        var eTicket = await _context.Etickets
+            .Include(s => s.Service)
+                .ThenInclude(s => s.Branch)
+                    .ThenInclude(br => br.Companies)
+            .AsNoTracking()
+            .FirstOrDefaultAsync(e => e.Number == request.Number && e.UserId == user.Id)
+            ?? throw new EntityNotFoundException($"ETicket with Number:{request.Number} does not exist.");
+
+        var result = await _store.DeleteBookingServiceAsync(eTicket.Service.Branch.Companies.BaseUrl, eTicket.Service.Branch.BranchId, request.Number);
+
+        if (result.Code == 0)
+        {
+            _backgroundJobClient.Enqueue(() => _backgroundJobService.DeleteEticketAsync(eTicket.Id));
+        }
+
+        return result;
     }
 
     private async Task<Service> GetServiceAsync(int serviceId)

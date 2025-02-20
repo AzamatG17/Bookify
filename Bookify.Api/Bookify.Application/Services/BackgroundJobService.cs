@@ -79,6 +79,16 @@ internal sealed class BackgroundJobService : IBackgroundJobService
         }
     }
 
+    public async Task DeleteEticketAsync(int eTicketId)
+    {
+        var eTicket = await _context.Etickets.FindAsync(eTicketId);
+        if (eTicket != null)
+        {
+            _context.Etickets.Remove(eTicket);
+            await _context.SaveChangesAsync();
+        }
+    }
+
     private static DateTime ParseJsonDate(string jsonDate)
     {
         var match = Regex.Match(jsonDate, @"\/Date\((\d+)([+-]\d{4})?\)\/");
