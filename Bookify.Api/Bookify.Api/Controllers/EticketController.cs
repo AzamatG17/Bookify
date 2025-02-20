@@ -1,6 +1,7 @@
 ﻿using Bookify.Application.DTOs;
 using Bookify.Application.Interfaces.Services;
 using Bookify.Application.Requests.Services;
+using Bookify.Application.Requests.Stores;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -48,5 +49,18 @@ public class ETicketController : ControllerBase
         var response = await _service.CreateTicketAsync(request);
 
         return response;
+    }
+
+    [HttpDelete]
+    [Authorize]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status406NotAcceptable)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult<EticketDeleteStatus>> DeleteEticketAsync([FromBody] DeleteEticketRequest request)
+    {
+        await _service.DeleteTicketAsync(request);
+
+        return Ok();
     }
 }
