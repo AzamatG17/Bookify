@@ -193,31 +193,34 @@ internal sealed class AuthService : IAuthService
             ?? throw new EntityNotFoundException($"User is not exist.");
 
         var userDto = new UserDto(
-            user.FirstName,
-            user.LastName,
-            user.UserName ?? "",
-            user.Bookings
-                .Select(b => new BookingDto(
-                    b.BookingCode,
-                    b.ServiceName, 
-                    b.BranchName,  
-                    b.StartDate,
-                    b.StartTime.ToString()
-                ))
-                .ToList(),
-            user.ETickets
-                .Select(e => new ETicketDto(
-                    e.TicketId,
-                    e.Number,
-                    e.Message,
-                    e.ServiceName,
-                    e.Service.BranchId,
-                    e.Service.Branch.BranchId,
-                    e.BranchName,
-                    e.BranchName,
-                    e.ValidUntil
-                )).ToList()
-        );
+                user.FirstName,
+                user.LastName,
+                user.UserName ?? "",
+                user.Bookings?
+                    .Where(b => b != null)
+                    .Select(b => new BookingDto(
+                        b.BookingCode,
+                        b.ServiceName,
+                        b.BranchName,
+                        b.StartDate,
+                        b.StartTime.ToString()
+                    ))
+                    .ToList() ?? new List<BookingDto>(),
+                user.ETickets?
+                    .Where(e => e != null)
+                    .Select(e => new ETicketDto(
+                        e.TicketId,
+                        e.Number,
+                        e.Message,
+                        e.ServiceName,
+                        e.Service?.BranchId ?? 0,
+                        e.Service?.Branch?.BranchId ?? 0,
+                        e.BranchName,
+                        e.BranchName,
+                        e.ValidUntil
+                    ))
+                    .ToList() ?? new List<ETicketDto>()
+            );
 
         return userDto;
     }
