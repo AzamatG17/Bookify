@@ -1,6 +1,5 @@
 ﻿using Bookify.Application.Interfaces;
 using Bookify.Application.Interfaces.IStores;
-using Bookify.Application.Models;
 using Bookify.Application.Responses;
 using Bookify.Domain_.Entities;
 
