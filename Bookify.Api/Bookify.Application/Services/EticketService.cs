@@ -6,6 +6,7 @@ using Bookify.Application.Requests.Services;
 using Bookify.Application.Requests.Stores;
 using Bookify.Application.Responses;
 using Bookify.Domain_.Entities;
+using Bookify.Domain_.Enums;
 using Bookify.Domain_.Exceptions;
 using Bookify.Domain_.Interfaces;
 using Hangfire;
@@ -22,7 +23,7 @@ internal sealed class EticketService : IEticketService
     private readonly ICurrentUserService _currentUserService;
     private readonly IBackgroundJobService _backgroundJobService;
     private readonly IBackgroundJobClient _backgroundJobClient;
-    
+     
     public EticketService(
         IApplicationDbContext context,
         IEticketStore ticketStore,
@@ -111,7 +112,7 @@ internal sealed class EticketService : IEticketService
         return MapToETicketDto(response);
     }
 
-    public async Task<EticketDeleteStatus> DeleteTicketAsync(DeleteEticketRequest request)
+    public async Task<DeleteResponse> DeleteTicketAsync(DeleteEticketRequest request)
     {
         ArgumentNullException.ThrowIfNull(request);
 
@@ -125,14 +126,18 @@ internal sealed class EticketService : IEticketService
             .FirstOrDefaultAsync(e => e.Number == request.Number && e.UserId == user.Id)
             ?? throw new EntityNotFoundException($"ETicket with Number:{request.Number} does not exist.");
 
-        var result = await _store.DeleteBookingServiceAsync(eTicket.Service.Branch.Companies.BaseUrl, eTicket.Service.Branch.BranchId, request.Number);
-
-        if (result.Code == 0)
+        DeleteResponse deleteResponse = eTicket.Service.Branch.Companies.Projects switch
         {
-            _backgroundJobClient.Enqueue(() => _backgroundJobService.DeleteEticketAsync(eTicket.Id));
-        }
+            Projects.BookingService =>
+                await _store.DeleteBookingServiceAsync(eTicket.Service.Branch.Companies.BaseUrl, eTicket.Service.Branch.BranchId, request.Number),
 
-        return result;
+            Projects.Onlinet =>
+                await _store.DeleteOnlinetAsync(eTicket.Service.Branch.Companies.BaseUrl, user.Id.ToString(), request.Number)
+        };
+
+        _backgroundJobClient.Enqueue(() => _backgroundJobService.DeleteEticketAsync(eTicket.Id));
+
+        return deleteResponse;
     }
 
     private async Task<Service> GetServiceAsync(int serviceId)
@@ -158,7 +163,7 @@ internal sealed class EticketService : IEticketService
             BranchId = service.Branch.BranchId,
             DeviceType = 3,
             LanguageId = request.Language,
-            PhoneNumber = user.PhoneNumber ?? "",
+            PhoneNumber = user.UserName ?? "",
             ServiceId = service.ServiceId,
         };
     }
@@ -172,7 +177,7 @@ internal sealed class EticketService : IEticketService
             languageId = request.Language,
             phoneNumber = user.UserName,
             serviceId = service.ServiceId,
-            deviceId = "sz7plvmtk8dxv9rdgqmjvt",
+            deviceId = user.Id.ToString(),
         };
     }
 
