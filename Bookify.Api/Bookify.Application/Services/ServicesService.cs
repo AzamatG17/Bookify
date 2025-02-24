@@ -158,7 +158,7 @@ internal sealed class ServicesService : IServicesService
         service.Services.Branch?.Name ?? "",
         service.Services.Branch?.CoordinateLatitude ?? 0.0,
         service.Services.Branch?.CoordinateLongitude ?? 0.0
-    );
+        );
     }
 
     private static ServiceDto MapToServiceDto(Service service)

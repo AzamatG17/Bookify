@@ -32,7 +32,7 @@ public class EticketStore : IEticketStore
 
         var endpoint = $"{baseUrl}/api/E_Ticket/CreateNewTicket";
 
-        var response = await _client.PostAsync<EticketResponse, EticketRequest>(endpoint, request);
+        var response = await _client.PostEncodeAsync<EticketResponse, EticketRequest>(endpoint, request);
 
         return response;
     }
@@ -48,11 +48,18 @@ public class EticketStore : IEticketStore
         return response;
     }
 
-    public async Task<EticketDeleteStatus> DeleteBookingServiceAsync(string baseUrl, int branchId, string number)
+    public async Task<DeleteResponse> DeleteBookingServiceAsync(string baseUrl, int branchId, string number)
     {
         var endpoint = $"{baseUrl}/api/E_Ticket/DeleteTicket?branchId={branchId}&number={number}";
 
-        return await _client.PostAsync<EticketDeleteStatus, object>(endpoint, null);
+        return await _client.PostAsync<DeleteResponse, object>(endpoint, null);
+    }
+
+    public async Task<DeleteResponse> DeleteOnlinetAsync(string baseUrl, string UserId, string number)
+    {
+        var endpoint = $"{baseUrl}/OnlinetBookingServiceRest/DeleteTicket?number={number}&deviceId={UserId}&token=&deviceType=3";
+
+        return await _client.GetStringAsync<DeleteResponse>(endpoint);
     }
 
     public async Task<ErrorResponse> DeleteETicketForBookingServiceAsync(

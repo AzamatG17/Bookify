@@ -1,5 +1,4 @@
-﻿using Bookify.Api.Helpers;
-using Bookify.Api.Middlewares;
+﻿using Bookify.Api.Middlewares;
 using Bookify.Domain_.Interfaces;
 
 namespace Bookify.Api.Extensions;

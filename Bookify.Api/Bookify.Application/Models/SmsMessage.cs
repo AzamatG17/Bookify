@@ -9,7 +9,6 @@ public sealed class SmsMessage
     public SmsMessage(string toNumber, string message)
         : this(toNumber, message, null)
     {
-
     }
 
     public SmsMessage(string toNumber, string message, string? subject)
