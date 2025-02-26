@@ -72,7 +72,7 @@ internal sealed class ServiceStore : IServiceStore
                 {
                     ServiceId = response.ServiceId,
                     BranchId = branchId,
-                    ServiceTranslations = new List<ServiceTranslation>()
+                    ServiceTranslations = []
                 };
                 serviceMap[response.ServiceId] = service;
             }

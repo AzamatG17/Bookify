@@ -23,7 +23,7 @@ internal sealed class EticketService : IEticketService
     private readonly ICurrentUserService _currentUserService;
     private readonly IBackgroundJobService _backgroundJobService;
     private readonly IBackgroundJobClient _backgroundJobClient;
-     
+    
     public EticketService(
         IApplicationDbContext context,
         IEticketStore ticketStore,
