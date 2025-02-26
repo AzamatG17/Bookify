@@ -1,15 +1,15 @@
-﻿using Bookify.Domain_.Entities;
+﻿using Bookify.Application.Interfaces;
+using Bookify.Domain_.Entities;
 using Bookify.Domain_.Interfaces;
+using Bookify.Infrastructure.Client;
 using Bookify.Infrastructure.Persistence;
 using Bookify.Infrastructure.Persistence.Interceptors;
+using Bookify.Infrastructure.SendNotification;
+using Bookify.Infrastructure.Sms;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.EntityFrameworkCore;
-using Bookify.Application.Interfaces;
-using Bookify.Infrastructure.Sms;
-using Bookify.Infrastructure.SendNotification;
-using Bookify.Infrastructure.Client;
 
 namespace Bookify.Infrastructure.Extensions;
 
