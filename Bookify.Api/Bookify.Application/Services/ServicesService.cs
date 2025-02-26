@@ -44,20 +44,27 @@ internal sealed class ServicesService : IServicesService
         try
         {
             var services = await _context.Services
+                .Include(st => st.ServiceTranslations)
                 .Where(s => s.BranchId == branchRequest.BranchId)
                 .ToListAsync();
 
-            if (services.Any())
-            {
-                _context.Services.RemoveRange(services);
-            }
-
             var newServices = await GetDataForServiceStore(branchRequest);
 
-            await _context.Services.AddRangeAsync(newServices);
+            foreach (var serviceDto in newServices)
+            {
+                var result = services.FirstOrDefault(x => x.ServiceId == serviceDto.ServiceId);
+                if (result is not null)
+                {
+                    _context.ServiceTranslations.RemoveRange(result.ServiceTranslations);
+                    result.ServiceTranslations = serviceDto.ServiceTranslations;
+                }
+                else
+                { 
+                    await _context.Services.AddAsync(serviceDto);
+                }
+            }
 
             await _context.SaveChangesAsync();
-
             await transaction.CommitAsync();
 
             return newServices.Select(MapToServiceDto).ToList();
@@ -152,6 +159,7 @@ internal sealed class ServicesService : IServicesService
         service.Services.Id,
         service.Services.ServiceId,
         service.Name ?? "",
+        service.Services.Branch.Companies.Color ?? "",
         service.Services.Branch?.Companies?.Id ?? 0,
         service.Services.Branch?.Companies?.Name ?? "",
         service.Services.Branch?.Id ?? 0,
@@ -166,6 +174,7 @@ internal sealed class ServicesService : IServicesService
         return new ServiceDto(
             service.Id,
             service.ServiceId,
+            "",
             "",
             0,
             "",

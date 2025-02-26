@@ -83,20 +83,34 @@ internal sealed class BranchService(IApplicationDbContext context, IBranchStore 
         try
         {
             var branches = await _context.Branches
+                .Include(op => op.OpeningTimeBranches)
                 .Where(b => b.CompanyId == request.Id)
                 .ToListAsync();
 
-            if (branches.Any())
-            {
-                _context.Branches.RemoveRange(branches);
-            }
-
             var newBranchesData = await GetByIdsAsync(request);
 
-            await _context.Branches.AddRangeAsync(newBranchesData);
+            foreach (var branch in newBranchesData)
+            {
+                var result = branches.FirstOrDefault(x => x.BranchId == branch.BranchId);
+
+                if (result is not null)
+                {
+                    result.BranchId = branch.BranchId;
+                    result.Name = branch.Name;
+                    result.BranchAddres = branch.BranchAddres;
+                    result.CoordinateLatitude = branch.CoordinateLatitude;
+                    result.CoordinateLongitude = branch.CoordinateLongitude;
+
+                    _context.OpeningTimeBranches.RemoveRange(result.OpeningTimeBranches);
+                    result.OpeningTimeBranches = branch.OpeningTimeBranches;
+                }
+                else
+                {
+                    await _context.Branches.AddAsync(branch);
+                }
+            }
 
             await _context.SaveChangesAsync();
-
             await transaction.CommitAsync();
 
             return newBranchesData;
