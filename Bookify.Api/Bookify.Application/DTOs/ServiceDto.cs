@@ -4,6 +4,7 @@ public record ServiceDto(
     int Id,
     int ServiceId, 
     string ServiceName,
+    string Color,
     int CompanyId,
     string CompanyName, 
     int BranchId,
