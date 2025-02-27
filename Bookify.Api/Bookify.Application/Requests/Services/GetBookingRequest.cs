@@ -1,5 +1,6 @@
 ﻿namespace Bookify.Application.Requests.Services;
 
 public record GetBookingRequest(
-    string BookingCode
+    string BookingCode,
+    string Language
     );
