@@ -106,6 +106,8 @@ internal sealed class EticketService : IEticketService
 
         if (response.Success)
         {
+            _backgroundJobClient.Enqueue(() => _backgroundJobService.SendETicketTelegram(response, user.Id, request.Language));
+
             _backgroundJobClient.Enqueue(() => _backgroundJobService.SaveETicketAsync(response, request, user.Id));
         }
 
@@ -135,6 +137,7 @@ internal sealed class EticketService : IEticketService
                 await _store.DeleteOnlinetAsync(eTicket.Service.Branch.Companies.BaseUrl, user.Id.ToString(), request.Number)
         };
 
+        _backgroundJobClient.Enqueue(() => _backgroundJobService.SendDeleteETicketTelegram(eTicket, user.Id, request.Language));
         _backgroundJobClient.Enqueue(() => _backgroundJobService.DeleteEticketAsync(eTicket.Id));
 
         return deleteResponse;

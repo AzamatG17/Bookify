@@ -27,7 +27,7 @@ internal sealed class BookingService(
     private readonly IBookingStore _store = store ?? throw new ArgumentNullException(nameof(store));
     private readonly IBackgroundJobClient _backgroundJobClient = backgroundJobClient ?? throw new ArgumentNullException(nameof(backgroundJobClient));
     private readonly IBackgroundJobService _backgroundJobService = backgroundJobService ?? throw new ArgumentNullException(nameof(backgroundJobService));
-    private readonly ICurrentUserService _currentUserService = currentUserService ?? throw new ArgumentNullException(nameof(currentUserService));  
+    private readonly ICurrentUserService _currentUserService = currentUserService ?? throw new ArgumentNullException(nameof(currentUserService));
 
     public async Task<CreateBookingResponse> CreateAsync(CreateBookingRequest bookingRequest)
     {
@@ -52,11 +52,11 @@ internal sealed class BookingService(
 
         CreateBookingResponse response = company.Projects switch
         {
-            Domain_.Enums.Projects.BookingService => 
+            Domain_.Enums.Projects.BookingService =>
                 await _store.CreateBookingForBookingServiceAsync(
                     CreateBookingRequestModel(bookingRequest, service, user), company.BaseUrl),
 
-            Domain_.Enums.Projects.Onlinet => 
+            Domain_.Enums.Projects.Onlinet =>
                 await _store.CreateBookingOnlinetAsync(
                     CreateBookingRequest(bookingRequest, service, user), company.BaseUrl),
 
@@ -65,6 +65,8 @@ internal sealed class BookingService(
 
         if (response.Success)
         {
+            _backgroundJobClient.Enqueue(() => _backgroundJobService.SendBookingCodeTelegram(response, user.Id, bookingRequest.Language));
+            
             _backgroundJobClient.Enqueue(() => _backgroundJobService.SaveBookingAsync(response, bookingRequest, user.Id));
         }
 
@@ -98,6 +100,7 @@ internal sealed class BookingService(
             _ => throw new NotSupportedException($"Unsupported project type: {booking.Service.Branch.Companies.Projects}")
         };
 
+        _backgroundJobClient.Enqueue(() => _backgroundJobService.SendDeleteBookingTelegram(booking, user.Id, request.Language));
         _backgroundJobClient.Enqueue(() => _backgroundJobService.DeleteBookingAsync(booking.Id));
 
         return;
