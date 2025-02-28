@@ -1,4 +1,5 @@
-﻿using Bookify.Application.Interfaces;
+﻿using Bookify.Application.DTOs;
+using Bookify.Application.Interfaces;
 using Bookify.Application.Interfaces.Services;
 using Bookify.Application.Requests.Services;
 using Bookify.Application.Responses;
@@ -20,75 +21,67 @@ internal sealed class BackgroundJobService : IBackgroundJobService
         _telegramService = telegramService ?? throw new ArgumentNullException(nameof(telegramService));
     }
 
-    public async Task SendETicketTelegram(EticketResponse response, Guid userId, string language)
+    public async Task SendETicketTelegram(EticketResponse response, Guid userId, string language, DateTime dateTime)
     {
         var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == userId)
             ?? throw new InvalidOperationException("User was not created correctly.");
 
         var message = language switch
         {
-            "uz" => $"Sizning elektron chiptangiz yaratildi!\n" +
+            "uz" => $"Sizning elektron chiptangiz yaratildi! ✅\n" +
                     $"Chipta kodi: {response.Number}\n" +
                     $"Xizmat: {response.Service}\n" +
                     $"Filial: {response.BranchName}\n" +
-                    $"Qabul qilingan sana: {response.CreatedTime}\n" +
-                    $"Gacha amal qiladi: {response.ValidUntil}",
+                    $"Qabul qilingan sana: {dateTime}",
 
-            "ru" => $"Ваш электронный билет успешно создан!\n" +
+            "ru" => $"Ваш электронный билет успешно создан! ✅\n" +
                     $"Код билета: {response.Number}\n" +
                     $"Услуга: {response.Service}\n" +
                     $"Филиал: {response.BranchName}\n" +
-                    $"Дата получения: {response.CreatedTime}\n" +
-                    $"Действителен до: {response.ValidUntil}",
+                    $"Дата получения: {dateTime}",
 
-            "en" => $"Your electronic ticket has been created!\n" +
+            "en" => $"Your electronic ticket has been created! ✅\n" +
                     $"Ticket code: {response.Number}\n" +
                     $"Service: {response.Service}\n" +
                     $"Branch: {response.BranchName}\n" +
-                    $"Received on: {response.CreatedTime}\n" +
-                    $"Valid until: {response.ValidUntil}",
+                    $"Received on: {dateTime}",
 
-            _ => $"Sizning elektron chiptangiz yaratildi!\n" +
+            _ => $"Sizning elektron chiptangiz yaratildi! ✅\n" +
                     $"Chipta kodi: {response.Number}\n" +
                     $"Xizmat: {response.Service}\n" +
                     $"Filial: {response.BranchName}\n" +
-                    $"Qabul qilingan sana: {response.CreatedTime}\n" +
-                    $"Vaqt: {response.ValidUntil}"
+                    $"Qabul qilingan sana: {dateTime}"
         };
 
         await _telegramService.SendMessageAsync(user.ChatId, message);
     }
 
-    public async Task SendDeleteETicketTelegram(ETicket response , Guid userId, string language)
+    public async Task SendDeleteETicketTelegram(EticketResponse response, Guid userId, string language)
     {
         var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == userId)
             ?? throw new InvalidOperationException("User was not created correctly.");
 
         var message = language switch
         {
-            "uz" => $"Sizning elektron chiptangiz o‘chirildi!\n" +
+            "uz" => $"Sizning elektron chiptangiz o‘chirildi! ❌\n" +
                     $"Chipta kodi: {response.Number}\n" +
                     $"Xizmat: {response.Service}\n" +
-                    $"Filial: {response.BranchName}\n" +
-                    $"Qabul qilingan sana: {response.CreatedTime}",
+                    $"Filial: {response.BranchName}",
 
-            "ru" => $"Ваш электронный билет был удалён!\n" +
+            "ru" => $"Ваш электронный билет был удалён! ❌\n" +
                     $"Код билета: {response.Number}\n" +
                     $"Услуга: {response.Service}\n" +
-                    $"Филиал: {response.BranchName}\n" +
-                    $"Дата получения: {response.CreatedTime}",
+                    $"Филиал: {response.BranchName}",
 
-            "en" => $"Your electronic ticket has been deleted!\n" +
+            "en" => $"Your electronic ticket has been deleted! ❌\n" +
                     $"Ticket code: {response.Number}\n" +
                     $"Service: {response.Service}\n" +
-                    $"Branch: {response.BranchName}\n" +
-                    $"Received on: {response.CreatedTime}",
+                    $"Branch: {response.BranchName}",
 
-            _ => $"Sizning elektron chiptangiz o‘chirildi!\n" +
+            _ => $"Sizning elektron chiptangiz o‘chirildi! ❌\n" +
                     $"Chipta kodi: {response.Number}\n" +
                     $"Xizmat: {response.Service}\n" +
-                    $"Filial: {response.BranchName}\n" +
-                    $"Qabul qilingan sana: {response.CreatedTime}"
+                    $"Filial: {response.BranchName}"
         };
 
         await _telegramService.SendMessageAsync(user.ChatId, message);
@@ -101,35 +94,35 @@ internal sealed class BackgroundJobService : IBackgroundJobService
 
         var message = language switch
         {
-            "uz" => $"Sizning chiptangiz yaratildi!\n" +
+            "uz" => $"Sizning chiptangiz yaratildi! ✅\n" +
                     $"Chipta kodi: {response.BookingCode}\n" +
                     $"Xizmat: {response.ServiceName}\n" +
                     $"Filial: {response.BranchName}\n" +
-                    $"Sana: {response.BookingDate.Date}\n" +
+                    $"Sana: {response.BookingDate.Date:dd.MM.yyyy}\n" +
                     $"Vaqt: {response.BookingTime}\n" +
                     $"Chipta olish uchun terminalga ushbu kodni kiriting.",
 
-            "ru" => $"Ваш билет успешно создан!\n" +
+            "ru" => $"Ваш билет успешно создан! ✅\n" +
                     $"Код билета: {response.BookingCode}\n" +
                     $"Услуга: {response.ServiceName}\n" +
                     $"Филиал: {response.BranchName}\n" +
-                    $"Дата: {response.BookingDate.Date}\n" +
+                    $"Дата: {response.BookingDate.Date:dd.MM.yyyy}\n" +
                     $"Время: {response.BookingTime}\n" +
                     $"Введите этот код в терминале, чтобы получить билет.",
 
-            "en" => $"Your ticket has been created!\n" +
+            "en" => $"Your ticket has been created! ✅\n" +
                     $"Ticket code: {response.BookingCode}\n" +
                     $"Service: {response.ServiceName}\n" +
                     $"Branch: {response.BranchName}\n" +
-                    $"Date: {response.BookingDate.Date}\n" +
+                    $"Date: {response.BookingDate.Date:dd.MM.yyyy}\n" +
                     $"Time: {response.BookingTime}\n" +
                     $"Enter this code in the terminal to get a ticket.",
 
-            _ => $"Sizning chiptangiz yaratildi!\n" +
+            _ => $"Sizning chiptangiz yaratildi! ✅\n" +
                     $"Chipta kodi: {response.BookingCode}\n" +
                     $"Xizmat: {response.ServiceName}\n" +
                     $"Filial: {response.BranchName}\n" +
-                    $"Sana: {response.BookingDate.Date}\n" +
+                    $"Sana: {response.BookingDate.Date:dd.MM.yyyy}\n" +
                     $"Vaqt: {response.BookingTime}\n" +
                     $"Chipta olish uchun terminalga ushbu kodni kiriting."
         };
@@ -137,39 +130,39 @@ internal sealed class BackgroundJobService : IBackgroundJobService
         await _telegramService.SendMessageAsync(user.ChatId, message);
     }
 
-    public async Task SendDeleteBookingTelegram(Booking response, Guid userId, string language)
+    public async Task SendDeleteBookingTelegram(BookingDto response, Guid userId, string language)
     {
         var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == userId)
             ?? throw new InvalidOperationException("User was not created correctly.");
 
         var message = language switch
         {
-            "uz" => $"Sizning chiptangiz o‘chirildi.\n" +
+            "uz" => $"Sizning chiptangiz o‘chirildi. ❌\n" +
                     $"Chipta kodi: {response.BookingCode}\n" +
                     $"Xizmat: {response.ServiceName}\n" +
                     $"Filial: {response.BranchName}\n" +
-                    $"Sana: {response.StartDate.Date}\n" +
+                    $"Sana: {response.StartDate.Date:dd.MM.yyyy}\n" +
                     $"Vaqt: {response.StartTime}",
 
-            "ru" => $"Ваш билет был удалён.\n" +
+            "ru" => $"Ваш билет был удалён. ❌\n" +
                     $"Код билета: {response.BookingCode}\n" +
                     $"Услуга: {response.ServiceName}\n" +
                     $"Филиал: {response.BranchName}\n" +
-                    $"Дата: {response.StartDate.Date}\n" +
+                    $"Дата: {response.StartDate.Date:dd.MM.yyyy}\n" +
                     $"Время: {response.StartTime}",
 
-            "en" => $"Your ticket has been deleted.\n" +
+            "en" => $"Your ticket has been deleted. ❌\n" +
                     $"Ticket code: {response.BookingCode}\n" +
                     $"Service: {response.ServiceName}\n" +
                     $"Branch: {response.BranchName}\n" +
-                    $"Date: {response.StartDate.Date}\n" +
+                    $"Date: {response.StartDate.Date:dd.MM.yyyy}\n" +
                     $"Time: {response.StartTime}",
 
-            _ => $"Sizning chiptangiz o‘chirildi.\n" +
+            _ => $"Sizning chiptangiz o‘chirildi. ❌\n" +
                     $"Chipta kodi: {response.BookingCode}\n" +
                     $"Xizmat: {response.ServiceName}\n" +
                     $"Filial: {response.BranchName}\n" +
-                    $"Sana: {response.StartDate.Date}\n" +
+                    $"Sana: {response.StartDate.Date:dd.MM.yyyy}\n" +
                     $"Vaqt: {response.StartTime}"
         };
 
@@ -201,7 +194,7 @@ internal sealed class BackgroundJobService : IBackgroundJobService
         await _context.SaveChangesAsync();
     }
 
-    public async Task SaveETicketAsync(EticketResponse response, CreateEticketRequest request, Guid userId)
+    public async Task SaveETicketAsync(EticketResponse response, CreateEticketRequest request, Guid userId, DateTime dateTime)
     {
         var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == userId)
             ?? throw new InvalidOperationException("User was not created correctly.");
@@ -216,7 +209,7 @@ internal sealed class BackgroundJobService : IBackgroundJobService
             Success = response.Success,
             ServiceName = response.Service,
             BranchName = response.BranchName,
-            CreatedTime = ParseJsonDate(response.CreatedTime),
+            CreatedTime = dateTime,
             Message = response.Message ?? "",
             Number = response.Number,
             ValidUntil = response.ValidUntil,
@@ -246,18 +239,5 @@ internal sealed class BackgroundJobService : IBackgroundJobService
             _context.Etickets.Remove(eTicket);
             await _context.SaveChangesAsync();
         }
-    }
-
-    private static DateTime ParseJsonDate(string jsonDate)
-    {
-        var match = Regex.Match(jsonDate, @"\/Date\((\d+)([+-]\d{4})?\)\/");
-        if (match.Success)
-        {
-            var milliseconds = long.Parse(match.Groups[1].Value);
-            var dateTime = DateTimeOffset.FromUnixTimeMilliseconds(milliseconds).DateTime;
-            return dateTime;
-        }
-
-        return DateTime.UtcNow;
     }
 }

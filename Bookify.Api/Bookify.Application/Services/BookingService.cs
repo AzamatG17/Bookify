@@ -1,4 +1,5 @@
-﻿using Bookify.Application.Interfaces.IServices;
+﻿using Bookify.Application.DTOs;
+using Bookify.Application.Interfaces.IServices;
 using Bookify.Application.Interfaces.Services;
 using Bookify.Application.Interfaces.Stores;
 using Bookify.Application.Models;
@@ -100,7 +101,7 @@ internal sealed class BookingService(
             _ => throw new NotSupportedException($"Unsupported project type: {booking.Service.Branch.Companies.Projects}")
         };
 
-        _backgroundJobClient.Enqueue(() => _backgroundJobService.SendDeleteBookingTelegram(booking, user.Id, request.Language));
+        _backgroundJobClient.Enqueue(() => _backgroundJobService.SendDeleteBookingTelegram(MapToCreateBookingResponse(booking), user.Id, request.Language));
         _backgroundJobClient.Enqueue(() => _backgroundJobService.DeleteBookingAsync(booking.Id));
 
         return;
@@ -166,6 +167,17 @@ internal sealed class BookingService(
             LanguageShortId = request.Language,
             StartDate = request.StartDate.ToString("yyyyMMdd")
         };
+    }
+
+    private static BookingDto MapToCreateBookingResponse(Booking b)
+    {
+        return new BookingDto(
+            b.BookingCode,
+            b.ServiceName,
+            b.BranchName,
+            b.StartDate,
+            b.StartTime
+            );
     }
 
     private static string GenerateRandomEmail()

@@ -106,9 +106,11 @@ internal sealed class EticketService : IEticketService
 
         if (response.Success)
         {
-            _backgroundJobClient.Enqueue(() => _backgroundJobService.SendETicketTelegram(response, user.Id, request.Language));
+            DateTime dateTime = DateTime.Now;
 
-            _backgroundJobClient.Enqueue(() => _backgroundJobService.SaveETicketAsync(response, request, user.Id));
+            _backgroundJobClient.Enqueue(() => _backgroundJobService.SendETicketTelegram(response, user.Id, request.Language, dateTime));
+
+            _backgroundJobClient.Enqueue(() => _backgroundJobService.SaveETicketAsync(response, request, user.Id, dateTime));
         }
 
         return MapToETicketDto(response);
@@ -137,8 +139,8 @@ internal sealed class EticketService : IEticketService
                 await _store.DeleteOnlinetAsync(eTicket.Service.Branch.Companies.BaseUrl, user.Id.ToString(), request.Number)
         };
 
-        _backgroundJobClient.Enqueue(() => _backgroundJobService.SendDeleteETicketTelegram(eTicket, user.Id, request.Language));
         _backgroundJobClient.Enqueue(() => _backgroundJobService.DeleteEticketAsync(eTicket.Id));
+        _backgroundJobClient.Enqueue(() => _backgroundJobService.SendDeleteETicketTelegram(MapToETicketResponse(eTicket), user.Id, request.Language));
 
         return deleteResponse;
     }
@@ -197,5 +199,16 @@ internal sealed class EticketService : IEticketService
             e.BranchAddress,
             e.ValidUntil
             );
+    }
+    private static EticketResponse MapToETicketResponse(ETicket e)
+    {
+        return new EticketResponse
+        {
+            Number = e.Number,
+            Service = e.ServiceName,
+            BranchAddress = e.Service?.Branch?.BranchAddres ?? "",
+            BranchName = e.BranchName,
+            CreatedTime = e.CreatedTime.ToString()
+        };
     }
 }
