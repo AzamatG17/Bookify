@@ -1,4 +1,6 @@
-﻿namespace Bookify.Application.DTOs;
+﻿using Bookify.Domain_.Enums;
+
+namespace Bookify.Application.DTOs;
 
 public record BranchDto(
     int Id,
@@ -7,6 +9,7 @@ public record BranchDto(
     string? BranchAddres,
     double? CoordinateLatitude,
     double? CoordinateLongitude,
+    Projects Projects,
     List<OpeningTimeDto> OpeningTimeDtos
     );
 
