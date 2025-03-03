@@ -17,6 +17,10 @@ public class BranchController : ControllerBase
         _service = service ?? throw new ArgumentNullException(nameof(service));
     }
 
+    /// <summary>
+    /// Get All Branches
+    /// </summary>
+    /// <returns></returns>
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]

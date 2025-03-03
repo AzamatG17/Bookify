@@ -25,17 +25,27 @@ internal sealed class CompaniesService(IApplicationDbContext context, IMapper ma
         return comapies ?? [];
     }
 
-    public async Task<CompaniesDto> GetByIdAsync(CompanyRequest request)
+    public async Task<List<CompaniesForAdminDto>> GetAllForAdminAsync()
+    {
+        var comapies = await _context.Companies
+            .AsNoTracking()
+            .ProjectTo<CompaniesForAdminDto>(_mapper.ConfigurationProvider)
+            .ToListAsync();
+
+        return comapies ?? [];
+    }
+
+    public async Task<CompaniesForAdminDto> GetByIdAsync(CompanyRequest request)
     {
         var company = await _context.Companies
             .AsNoTracking()
             .FirstOrDefaultAsync(x => x.Id == request.Id)
             ?? throw new EntityNotFoundException($"Company entity with id {request.Id} not found");
 
-        return _mapper.Map<CompaniesDto>(company);
+        return _mapper.Map<CompaniesForAdminDto>(company);
     }
 
-    public async Task<CompaniesDto> CreateAsync(CreateCompanyRequest request)
+    public async Task<CompaniesForAdminDto> CreateAsync(CreateCompanyRequest request)
     {
         ArgumentNullException.ThrowIfNull(request);
 
@@ -44,10 +54,10 @@ internal sealed class CompaniesService(IApplicationDbContext context, IMapper ma
         _context.Companies.Add(company);
         await _context.SaveChangesAsync();
 
-        return _mapper.Map<CompaniesDto>(company);
+        return _mapper.Map<CompaniesForAdminDto>(company);
     }
 
-    public async Task<CompaniesDto> UpdateAsync(UpdateCompanyRequest request)
+    public async Task<CompaniesForAdminDto> UpdateAsync(UpdateCompanyRequest request)
     {
         ArgumentNullException.ThrowIfNull(request);
 
@@ -60,7 +70,7 @@ internal sealed class CompaniesService(IApplicationDbContext context, IMapper ma
         _context.Companies.Update(company);
         await _context.SaveChangesAsync();
 
-        return _mapper.Map<CompaniesDto>(company);
+        return _mapper.Map<CompaniesForAdminDto>(company);
     }
 
     public async Task DeleteAsync(CompanyRequest companyRequest)

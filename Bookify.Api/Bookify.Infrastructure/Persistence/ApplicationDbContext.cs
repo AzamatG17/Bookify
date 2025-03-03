@@ -17,6 +17,7 @@ public class ApplicationDbContext : IdentityDbContext<User, IdentityRole<Guid>, 
         //Database.Migrate();
     }
 
+    
     public virtual DbSet<OpeningTimeBranch> OpeningTimeBranches { get; set; }
     public virtual DbSet<Branch> Branches { get; set; }
     public virtual DbSet<Companies> Companies { get; set; }

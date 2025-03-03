@@ -59,12 +59,12 @@ internal sealed class EticketService : IEticketService
             throw new Domain_.Exceptions.UnauthorizedAccessException("You do not have permission to access this eTicket.");
         }
 
-        object result = eTicket.Service.Branch.Companies.Projects switch
+        object result = eTicket.Service.Branch.Projects switch
         {
             Domain_.Enums.Projects.BookingService =>
-                await _store.GetEtickertStatusBookingServiceAsync(request, eTicket.Service.Branch.Companies.BaseUrl),
+                await _store.GetEtickertStatusBookingServiceAsync(request, eTicket.Service.Branch.Companies.BaseUrlForBookingService),
 
-            _ => throw new NotSupportedException($"Unsupported project type: {eTicket.Service.Branch.Companies.Projects}")
+            _ => throw new NotSupportedException($"Unsupported project type: {eTicket.Service.Branch.Projects}")
         };
 
         return result;
@@ -91,17 +91,17 @@ internal sealed class EticketService : IEticketService
             throw new DuplicateBookingException("User has already booked a ETicket for this service on the selected date.");
         }
 
-        EticketResponse response = company.Projects switch
+        EticketResponse response = service.Branch.Projects switch
         {
             Domain_.Enums.Projects.BookingService =>
                 await _store.CreateTicketForBookingServiceAsync(
-                    CreateEticketRequestModel(request, service, user), company.BaseUrl),
+                    CreateEticketRequestModel(request, service, user), company.BaseUrlForBookingService),
 
             Domain_.Enums.Projects.Onlinet =>
                 await _store.CreateTicketForOnlinetAsync(
-                    CreateETicketOnlinetModel(request, service, user), company.BaseUrl),
+                    CreateETicketOnlinetModel(request, service, user), company.BaseUrlForOnlinet),
 
-            _ => throw new NotSupportedException($"Unsupported project type: {company.Projects}")
+            _ => throw new NotSupportedException($"Unsupported project type: {service.Branch.Projects}")
         };
 
         if (response.Success)
@@ -130,13 +130,13 @@ internal sealed class EticketService : IEticketService
             .FirstOrDefaultAsync(e => e.Number == request.Number && e.UserId == user.Id)
             ?? throw new EntityNotFoundException($"ETicket with Number:{request.Number} does not exist.");
 
-        DeleteResponse deleteResponse = eTicket.Service.Branch.Companies.Projects switch
+        DeleteResponse deleteResponse = eTicket.Service.Branch.Projects switch
         {
             Projects.BookingService =>
-                await _store.DeleteBookingServiceAsync(eTicket.Service.Branch.Companies.BaseUrl, eTicket.Service.Branch.BranchId, request.Number),
+                await _store.DeleteBookingServiceAsync(eTicket.Service.Branch.Companies.BaseUrlForBookingService, eTicket.Service.Branch.BranchId, request.Number),
 
             Projects.Onlinet =>
-                await _store.DeleteOnlinetAsync(eTicket.Service.Branch.Companies.BaseUrl, user.Id.ToString(), request.Number)
+                await _store.DeleteOnlinetAsync(eTicket.Service.Branch.Companies.BaseUrlForOnlinet, user.Id.ToString(), request.Number)
         };
 
         _backgroundJobClient.Enqueue(() => _backgroundJobService.DeleteEticketAsync(eTicket.Id));
@@ -200,6 +200,7 @@ internal sealed class EticketService : IEticketService
             e.ValidUntil
             );
     }
+
     private static EticketResponse MapToETicketResponse(ETicket e)
     {
         return new EticketResponse

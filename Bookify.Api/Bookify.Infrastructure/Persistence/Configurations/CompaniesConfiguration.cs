@@ -15,11 +15,12 @@ internal class CompaniesConfiguration : IEntityTypeConfiguration<Companies>
             .HasMaxLength(100)
             .IsRequired();
 
-        builder.Property(c => c.BaseUrl)
+        builder.Property(c => c.BaseUrlForOnlinet)
             .HasMaxLength(255)
             .IsRequired();
 
-        builder.Property(c => c.Projects)
+        builder.Property(c => c.BaseUrlForBookingService)
+            .HasMaxLength(255)
             .IsRequired();
 
         builder.Property(c => c.LogoBase64);
