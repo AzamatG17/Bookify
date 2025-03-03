@@ -56,7 +56,7 @@ public class BookingStore : IBookingStore
         return await _client.PostAsync<ResultBooking>(endpoint);
     }
 
-    public async Task<ResultBooking> DeleteBookingForOnlinetAsync(DeleteBookingRequest request , string baseUrl)
+    public async Task<ResultBooking> DeleteBookingForOnlinetAsync(DeleteBookingRequest request, string baseUrl)
     {
         if (string.IsNullOrEmpty(baseUrl))
             throw new ArgumentNullException(nameof(baseUrl));

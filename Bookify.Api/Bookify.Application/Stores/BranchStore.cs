@@ -11,10 +11,10 @@ internal sealed class BranchStore(IApiClient apiClient) : IBranchStore
 
     public async Task<List<Branch>> GetAllAsync(Companies companies)
     {
-        if (string.IsNullOrEmpty(companies.BaseUrl))
-            throw new ArgumentNullException(nameof(companies.BaseUrl));
+        if (string.IsNullOrEmpty(companies.BaseUrlForBookingService))
+            throw new ArgumentNullException(nameof(companies.BaseUrlForBookingService));
 
-        var endpoint = $"{companies.BaseUrl}/api/Branches/ListBranches";
+        var endpoint = $"{companies.BaseUrlForBookingService}/api/Branches/ListBranches";
         var branches = await _apiClient.GetAsync<List<NewBranchResponse>>(endpoint);
 
         return MapToBranch(branches, companies.Id);
@@ -22,10 +22,10 @@ internal sealed class BranchStore(IApiClient apiClient) : IBranchStore
 
     public async Task<List<Branch>> GetAllForOnlinetAsync(Companies companies)
     {
-        if (string.IsNullOrEmpty(companies.BaseUrl))
-            throw new ArgumentNullException(nameof(companies.BaseUrl));
+        if (string.IsNullOrEmpty(companies.BaseUrlForOnlinet))
+            throw new ArgumentNullException(nameof(companies.BaseUrlForOnlinet));
 
-        var endpoint = $"{companies.BaseUrl}/OnlinetBookingServiceRest/ListBranches";
+        var endpoint = $"{companies.BaseUrlForOnlinet}/OnlinetBookingServiceRest/ListBranches";
         var branches = await _apiClient.GetAsync<List<BranchResponse>>(endpoint);
 
         return MapToOnlinetBranch(branches, companies.Id);
@@ -40,6 +40,7 @@ internal sealed class BranchStore(IApiClient apiClient) : IBranchStore
             BranchAddres = r.BranchAddress,
             CoordinateLatitude = r.BranchCoordinates.Latitude,
             CoordinateLongitude = r.BranchCoordinates.Longitude,
+            Projects = Domain_.Enums.Projects.BookingService,
             OpeningTimeBranches = r.BranchOpenHours?.Select(o => new OpeningTimeBranch
             {
                 Day = o.Day,
@@ -58,6 +59,7 @@ internal sealed class BranchStore(IApiClient apiClient) : IBranchStore
             BranchAddres = r.BranchAddress,
             CoordinateLatitude = r.BranchCoordinates.Latitude,
             CoordinateLongitude = r.BranchCoordinates.Longitude,
+            Projects = Domain_.Enums.Projects.Onlinet,
             OpeningTimeBranches = r.BranchOpeningTime?.Select(o => new OpeningTimeBranch
             {
                 Day = o.Day,

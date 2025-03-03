@@ -16,8 +16,8 @@ internal sealed class ServiceStore : IServiceStore
 
     public async Task<List<Service>> GetDataOnlinetAsync(Branch branch, List<string> languages)
     {
-        if (string.IsNullOrEmpty(branch.Companies.BaseUrl))
-            throw new ArgumentNullException(nameof(branch.Companies.BaseUrl));
+        if (string.IsNullOrEmpty(branch.Companies.BaseUrlForOnlinet))
+            throw new ArgumentNullException(nameof(branch.Companies.BaseUrlForOnlinet));
         if (languages == null || languages.Count == 0)
             throw new ArgumentNullException(nameof(languages));
 
@@ -25,7 +25,7 @@ internal sealed class ServiceStore : IServiceStore
 
         foreach (var language in languages)
         {
-            var endpoint = $"{branch.Companies.BaseUrl}/OnlinetBookingServiceRest/ListServices?BranchId={branch.BranchId}&languageShortId={language}";
+            var endpoint = $"{branch.Companies.BaseUrlForOnlinet}/OnlinetBookingServiceRest/ListServices?BranchId={branch.BranchId}&languageShortId={language}";
 
             var serviceResponses = await _client.GetAsync<List<ServiceResponse>>(endpoint);
 
@@ -40,8 +40,8 @@ internal sealed class ServiceStore : IServiceStore
 
     public async Task<List<Service>> GetDataBookingServiceAsync(Branch branch, List<string> languages)
     {
-        if (string.IsNullOrEmpty(branch.Companies.BaseUrl))
-            throw new ArgumentNullException(nameof(branch.Companies.BaseUrl));
+        if (string.IsNullOrEmpty(branch.Companies.BaseUrlForBookingService))
+            throw new ArgumentNullException(nameof(branch.Companies.BaseUrlForBookingService));
         if (languages == null || languages.Count == 0)
             throw new ArgumentNullException(nameof(languages));
 
@@ -49,7 +49,7 @@ internal sealed class ServiceStore : IServiceStore
 
         foreach (var language in languages)
         {
-            var endpoint = $"{branch.Companies.BaseUrl}/api/ListServices?BranchId={branch.BranchId}&languageShortId={language}";
+            var endpoint = $"{branch.Companies.BaseUrlForBookingService}/api/ListServices?BranchId={branch.BranchId}&languageShortId={language}";
 
             var serviceResponses = await _client.GetAsync<List<ServiceResponse>>(endpoint);
 
