@@ -36,6 +36,22 @@ public class CompaniesController : ControllerBase
     }
 
     /// <summary>
+    /// Get a list of Comapnies for Admin
+    /// </summary>
+    /// <returns></returns>
+    [Authorize(Policy = "Admin")]
+    [HttpGet("info")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult<List<CompaniesForAdminDto>>> GetCompanyAllForAdminAsync()
+    {
+        var companies = await _service.GetAllForAdminAsync();
+
+        return Ok(companies);
+    }
+
+    /// <summary>
     /// Gets company by Id.
     /// </summary>
     /// <param name="request">The Company Id</param>
