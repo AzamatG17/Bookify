@@ -1,12 +1,10 @@
-﻿using Bookify.Domain_.Enums;
-
-namespace Bookify.Application.Requests.Services;
+﻿namespace Bookify.Application.Requests.Services;
 
 public record UpdateCompanyRequest(
     int Id,
     string Name,
-    string BaseUrl,
-    Projects Projects,
+    string? BaseUrlForOnlinet,
+    string? BaseUrlForBookingService,
     string LogoBase64,
     string Color,
     string BackgroundColor
