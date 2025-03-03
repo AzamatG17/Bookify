@@ -21,6 +21,9 @@ internal class BranchConfiguration : IEntityTypeConfiguration<Branch>
 
         builder.Property(c => c.CoordinateLongitude);
 
+        builder.Property(c => c.Projects)
+            .IsRequired();
+
         builder.HasOne(c => c.Companies)
             .WithMany(b => b.Branches)
             .HasForeignKey(c => c.CompanyId)
