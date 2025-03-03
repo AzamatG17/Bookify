@@ -10,6 +10,7 @@ internal sealed class CompaniesMappings : Profile
     public CompaniesMappings()
     {
         CreateMap<Companies, CompaniesDto>();
+        CreateMap<Companies, CompaniesForAdminDto>();
         CreateMap<CreateCompanyRequest, Companies>();
         CreateMap<UpdateCompanyRequest, Companies>();
     }
