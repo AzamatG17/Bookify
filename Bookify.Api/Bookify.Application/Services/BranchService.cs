@@ -6,6 +6,7 @@ using Bookify.Domain_.Entities;
 using Bookify.Domain_.Exceptions;
 using Bookify.Domain_.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System.Xml;
 
 namespace Bookify.Application.Services;
 
@@ -25,7 +26,6 @@ internal sealed class BranchService(IApplicationDbContext context, IBranchStore 
         var result = branches.Select(c => new CompanyWithBranchesDto(
             c.Id,
             c.Name,
-            c.Projects,
             c.Color,
             c.BackgroundColor,
             c.Branches.Select(b => new BranchDto(
@@ -35,6 +35,7 @@ internal sealed class BranchService(IApplicationDbContext context, IBranchStore 
                 b.BranchAddres,
                 b.CoordinateLatitude,
                 b.CoordinateLongitude,
+                b.Projects,
                 b.OpeningTimeBranches.Select(o => new DTOs.OpeningTimeDto(
                         o.Day,
                         o.OpenTime
@@ -57,7 +58,6 @@ internal sealed class BranchService(IApplicationDbContext context, IBranchStore 
         var result = new CompanyWithBranchesDto(
             branch.Id,
             branch.Name,
-            branch.Projects,
             branch.Color,
             branch.BackgroundColor,
             branch.Branches?.Select(b => new BranchDto(
@@ -67,6 +67,7 @@ internal sealed class BranchService(IApplicationDbContext context, IBranchStore 
                 b.BranchAddres,
                 b.CoordinateLatitude,
                 b.CoordinateLongitude,
+                b.Projects,
                 b.OpeningTimeBranches?.Select(o => new DTOs.OpeningTimeDto(
                     o.Day,
                     o.OpenTime
@@ -87,7 +88,7 @@ internal sealed class BranchService(IApplicationDbContext context, IBranchStore 
                 .Where(b => b.CompanyId == request.Id)
                 .ToListAsync();
 
-            var newBranchesData = await GetByIdsAsync(request);
+            var newBranchesData = await GetByIdsAsync(request.Id);
 
             foreach (var branch in newBranchesData)
             {
@@ -123,26 +124,25 @@ internal sealed class BranchService(IApplicationDbContext context, IBranchStore 
         }
     }
 
-    private async Task<List<Branch>> GetByIdsAsync(CompanyRequest request)
+    private async Task<List<Branch>> GetByIdsAsync(int request)
     {
         var company = await _context.Companies
             .AsNoTracking()
-            .FirstOrDefaultAsync(c => c.Id == request.Id);
-
-        if (company is null)
-        {
-            throw new EntityNotFoundException($"Company with id:{request.Id} does not exist.");
-        }
+            .FirstOrDefaultAsync(c => c.Id == request)
+            ?? throw new EntityNotFoundException($"Company with id:{request} does not exist.");
 
         List<Branch> branches = [];
 
-        if (company.Projects == Domain_.Enums.Projects.BookingService)
+        if (!string.IsNullOrWhiteSpace(company.BaseUrlForBookingService))
         {
-            branches = await _branchStore.GetAllAsync(company);
+            var result = await _branchStore.GetAllAsync(company);
+            branches.AddRange(result);
         }
-        else if (company.Projects == Domain_.Enums.Projects.Onlinet)
+
+        if (!string.IsNullOrWhiteSpace(company.BaseUrlForOnlinet))
         {
-            branches = await _branchStore.GetAllForOnlinetAsync(company);
+            var result = await _branchStore.GetAllForOnlinetAsync(company);
+            branches.AddRange(result);
         }
 
         return branches;

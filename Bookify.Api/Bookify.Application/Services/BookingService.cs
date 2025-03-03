@@ -51,23 +51,23 @@ internal sealed class BookingService(
             throw new DuplicateBookingException("User has already booked a ticket for this service on the selected date.");
         }
 
-        CreateBookingResponse response = company.Projects switch
+        CreateBookingResponse response = service.Branch.Projects switch
         {
             Domain_.Enums.Projects.BookingService =>
                 await _store.CreateBookingForBookingServiceAsync(
-                    CreateBookingRequestModel(bookingRequest, service, user), company.BaseUrl),
+                    CreateBookingRequestModel(bookingRequest, service, user), company.BaseUrlForBookingService),
 
             Domain_.Enums.Projects.Onlinet =>
                 await _store.CreateBookingOnlinetAsync(
-                    CreateBookingRequest(bookingRequest, service, user), company.BaseUrl),
+                    CreateBookingRequest(bookingRequest, service, user), company.BaseUrlForOnlinet),
 
-            _ => throw new NotSupportedException($"Unsupported project type: {company.Projects}")
+            _ => throw new NotSupportedException($"Unsupported project type: {service.Branch.Projects}")
         };
 
         if (response.Success)
         {
             _backgroundJobClient.Enqueue(() => _backgroundJobService.SendBookingCodeTelegram(response, user.Id, bookingRequest.Language));
-            
+
             _backgroundJobClient.Enqueue(() => _backgroundJobService.SaveBookingAsync(response, bookingRequest, user.Id));
         }
 
@@ -88,17 +88,17 @@ internal sealed class BookingService(
             .FirstOrDefaultAsync(b => b.BookingCode == request.BookingCode && b.User.Id == user.Id)
             ?? throw new EntityNotFoundException($"Booking with Booking code:{request.BookingCode} does not exist.");
 
-        ResultBooking resultBooking = booking.Service.Branch.Companies.Projects switch
+        ResultBooking resultBooking = booking.Service.Branch.Projects switch
         {
             Domain_.Enums.Projects.BookingService =>
                 await _store.DeleteBookingForBookingServiceAsync(
-                    booking.Service.Branch.Companies.BaseUrl, booking.BookingCode, "1", booking.Language, booking.StartDate.ToString("yyyy-MM-dd")),
+                    booking.Service.Branch.Companies.BaseUrlForBookingService, booking.BookingCode, "1", booking.Language, booking.StartDate.ToString("yyyy-MM-dd")),
 
             Domain_.Enums.Projects.Onlinet =>
                 await _store.DeleteBookingForOnlinetAsync(
-                    MapToDeletBookingRequest(booking), booking.Service.Branch.Companies.BaseUrl),
+                    MapToDeletBookingRequest(booking), booking.Service.Branch.Companies.BaseUrlForOnlinet),
 
-            _ => throw new NotSupportedException($"Unsupported project type: {booking.Service.Branch.Companies.Projects}")
+            _ => throw new NotSupportedException($"Unsupported project type: {booking.Service.Branch.Projects}")
         };
 
         _backgroundJobClient.Enqueue(() => _backgroundJobService.SendDeleteBookingTelegram(MapToCreateBookingResponse(booking), user.Id, request.Language));

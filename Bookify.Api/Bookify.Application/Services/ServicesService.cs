@@ -1,12 +1,12 @@
-﻿using Bookify.Application.Requests.Services;
+﻿using Bookify.Application.DTOs;
+using Bookify.Application.Interfaces.Services;
+using Bookify.Application.Interfaces.Stores;
+using Bookify.Application.QueryParameters;
+using Bookify.Application.Requests.Services;
+using Bookify.Domain_.Entities;
 using Bookify.Domain_.Exceptions;
 using Bookify.Domain_.Interfaces;
-using Bookify.Domain_.Entities;
 using Microsoft.EntityFrameworkCore;
-using Bookify.Application.Interfaces.Stores;
-using Bookify.Application.Interfaces.Services;
-using Bookify.Application.DTOs;
-using Bookify.Application.QueryParameters;
 
 namespace Bookify.Application.Services;
 
@@ -40,7 +40,7 @@ internal sealed class ServicesService : IServicesService
         ArgumentNullException.ThrowIfNull(branchRequest);
 
         using var transaction = await _context.Database.BeginTransactionAsync();
-        
+
         try
         {
             var services = await _context.Services
@@ -59,7 +59,7 @@ internal sealed class ServicesService : IServicesService
                     result.ServiceTranslations = serviceDto.ServiceTranslations;
                 }
                 else
-                { 
+                {
                     await _context.Services.AddAsync(serviceDto);
                 }
             }
@@ -85,11 +85,12 @@ internal sealed class ServicesService : IServicesService
                 Id = x.Id,
                 BranchId = x.BranchId,
                 Name = x.Name,
+                Projects = x.Projects,
                 Companies = new Companies
                 {
-                    Projects = x.Companies.Projects,
                     Name = x.Companies.Name,
-                    BaseUrl = x.Companies.BaseUrl
+                    BaseUrlForOnlinet = x.Companies.BaseUrlForOnlinet,
+                    BaseUrlForBookingService = x.Companies.BaseUrlForBookingService
                 }
             })
             .AsNoTracking()
@@ -102,11 +103,11 @@ internal sealed class ServicesService : IServicesService
             "en", "ru", "uz"
         };
 
-        if (branch.Companies.Projects == Domain_.Enums.Projects.BookingService)
+        if (branch.Projects == Domain_.Enums.Projects.BookingService)
         {
             services = await _serviceStore.GetDataBookingServiceAsync(branch, Language);
         }
-        else if (branch.Companies.Projects == Domain_.Enums.Projects.Onlinet)
+        else if (branch.Projects == Domain_.Enums.Projects.Onlinet)
         {
             services = await _serviceStore.GetDataOnlinetAsync(branch, Language);
         }

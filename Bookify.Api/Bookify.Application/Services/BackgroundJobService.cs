@@ -6,7 +6,6 @@ using Bookify.Application.Responses;
 using Bookify.Domain_.Entities;
 using Bookify.Domain_.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using System.Text.RegularExpressions;
 
 namespace Bookify.Application.Services;
 
@@ -32,25 +31,25 @@ internal sealed class BackgroundJobService : IBackgroundJobService
                     $"Chipta kodi: {response.Number}\n" +
                     $"Xizmat: {response.Service}\n" +
                     $"Filial: {response.BranchName}\n" +
-                    $"Qabul qilingan sana: {dateTime}",
+                    $"Qabul qilingan sana: {dateTime.ToString("dd.MM.yyyy HH:mm")}",
 
             "ru" => $"Ваш электронный билет успешно создан! ✅\n" +
                     $"Код билета: {response.Number}\n" +
                     $"Услуга: {response.Service}\n" +
                     $"Филиал: {response.BranchName}\n" +
-                    $"Дата получения: {dateTime}",
+                    $"Дата получения: {dateTime.ToString("dd.MM.yyyy HH:mm")}",
 
             "en" => $"Your electronic ticket has been created! ✅\n" +
                     $"Ticket code: {response.Number}\n" +
                     $"Service: {response.Service}\n" +
                     $"Branch: {response.BranchName}\n" +
-                    $"Received on: {dateTime}",
+                    $"Received on: {dateTime.ToString("dd.MM.yyyy HH:mm")}",
 
             _ => $"Sizning elektron chiptangiz yaratildi! ✅\n" +
                     $"Chipta kodi: {response.Number}\n" +
                     $"Xizmat: {response.Service}\n" +
                     $"Filial: {response.BranchName}\n" +
-                    $"Qabul qilingan sana: {dateTime}"
+                    $"Qabul qilingan sana: {dateTime.ToString("dd.MM.yyyy HH:mm")}"
         };
 
         await _telegramService.SendMessageAsync(user.ChatId, message);

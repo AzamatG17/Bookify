@@ -34,15 +34,15 @@ internal sealed class FreeTimeService : IFreeTimeService
 
         List<FreeDayDto> result = [];
 
-        if (service.Branch.Companies.Projects == Domain_.Enums.Projects.BookingService)
+        if (service.Branch.Projects == Domain_.Enums.Projects.BookingService)
         {
             result = await _listFreeDaysStore.GetDataBookingServiceAsync(
-            service.Branch.BranchId, service.ServiceId, freeTimeRequest.DateOnly, service.Branch.Companies.BaseUrl);
+            service.Branch.BranchId, service.ServiceId, freeTimeRequest.DateOnly, service.Branch.Companies.BaseUrlForBookingService);
         }
-        else if (service.Branch.Companies.Projects == Domain_.Enums.Projects.Onlinet)
+        else if (service.Branch.Projects == Domain_.Enums.Projects.Onlinet)
         {
             result = await _listFreeDaysStore.GetDataOnlinetAsync(
-            service.Branch.BranchId, service.ServiceId, freeTimeRequest.DateOnly, service.Branch.Companies.BaseUrl);
+            service.Branch.BranchId, service.ServiceId, freeTimeRequest.DateOnly, service.Branch.Companies.BaseUrlForOnlinet);
         }
 
         return result;
@@ -61,15 +61,15 @@ internal sealed class FreeTimeService : IFreeTimeService
 
         List<FreeTimeDto> result = [];
 
-        if (service.Branch.Companies.Projects == Domain_.Enums.Projects.BookingService)
+        if (service.Branch.Projects == Domain_.Enums.Projects.BookingService)
         {
             result = await _listFreeTimesStore.GetDataBookingServiceAsync(
-            service.Branch.BranchId, service.ServiceId, freeTimeRequest.DateOnly, service.Branch.Companies.BaseUrl);
+            service.Branch.BranchId, service.ServiceId, freeTimeRequest.DateOnly, service.Branch.Companies.BaseUrlForBookingService);
         }
-        else if (service.Branch.Companies.Projects == Domain_.Enums.Projects.Onlinet)
+        else if (service.Branch.Projects == Domain_.Enums.Projects.Onlinet)
         {
             result = await _listFreeTimesStore.GetDataOnlinetAsync(
-            service.Branch.BranchId, service.ServiceId, freeTimeRequest.DateOnly, service.Branch.Companies.BaseUrl);
+            service.Branch.BranchId, service.ServiceId, freeTimeRequest.DateOnly, service.Branch.Companies.BaseUrlForOnlinet);
         }
 
         return result;
