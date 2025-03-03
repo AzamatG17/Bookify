@@ -17,14 +17,6 @@ public class UpdateCompanyRequestValidator : AbstractValidator<UpdateCompanyRequ
             .MaximumLength(100)
             .WithMessage("Name must not exceed 100 characters.");
 
-        RuleFor(x => x.BaseUrl)
-            .NotEmpty()
-            .WithMessage("BaseUrl is required.");
-
-        RuleFor(x => x.Projects)
-            .NotNull()
-            .WithMessage("Projects cannot be null.");
-
         RuleFor(x => x.LogoBase64)
             .NotNull()
             .WithMessage("Logo cannot be null.");
