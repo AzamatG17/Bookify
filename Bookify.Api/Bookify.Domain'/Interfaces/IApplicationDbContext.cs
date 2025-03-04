@@ -7,6 +7,8 @@ namespace Bookify.Domain_.Interfaces;
 
 public interface IApplicationDbContext
 {
+    DbSet<PredefinedText> PredefinedTexts { get; set; }
+    DbSet<ServiceRating> ServiceRatings { get; set; }
     DbSet<User> Users { get; set; }
     DbSet<IdentityRole<Guid>> Roles { get; set; }
     DbSet<IdentityUserRole<Guid>> UserRoles { get; set; }
