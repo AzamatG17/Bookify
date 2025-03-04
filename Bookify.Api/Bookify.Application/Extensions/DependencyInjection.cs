@@ -30,6 +30,8 @@ public static class DependencyInjection
         services.AddScoped<IBookingStore, BookingStore>();
         services.AddScoped<IEticketStore, EticketStore>();
 
+        services.AddScoped<IPredefinedTextService, PredefinedTextService>();
+        services.AddScoped<IServiceRatingService, ServiceRatingService>();
         services.AddScoped<IEticketService, EticketService>();
         services.AddScoped<IFreeTimeService, FreeTimeService>();
         services.AddScoped<IBookingService, BookingService>();

@@ -66,7 +66,7 @@ internal sealed class CompaniesService(IApplicationDbContext context, IMapper ma
             ?? throw new EntityNotFoundException($"Company with id:{request.Id} does not exist.");
 
         _mapper.Map(request, company);
-
+            
         _context.Companies.Update(company);
         await _context.SaveChangesAsync();
 

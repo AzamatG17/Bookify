@@ -6,7 +6,6 @@ using Bookify.Domain_.Entities;
 using Bookify.Domain_.Exceptions;
 using Bookify.Domain_.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using System.Xml;
 
 namespace Bookify.Application.Services;
 
@@ -110,6 +109,12 @@ internal sealed class BranchService(IApplicationDbContext context, IBranchStore 
                     await _context.Branches.AddAsync(branch);
                 }
             }
+
+            var branchesToRemove = branches
+                .Where(b => !newBranchesData.Any(nb => nb.BranchId == b.BranchId))
+                .ToList();
+
+            _context.Branches.RemoveRange(branchesToRemove);
 
             await _context.SaveChangesAsync();
             await transaction.CommitAsync();
