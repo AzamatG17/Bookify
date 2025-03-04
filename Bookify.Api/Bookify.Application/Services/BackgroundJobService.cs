@@ -222,21 +222,43 @@ internal sealed class BackgroundJobService : IBackgroundJobService
 
     public async Task DeleteBookingAsync(int bookingId)
     {
+        var serviceRatings = await _context.ServiceRatings
+        .Where(x => x.BookingId == bookingId)
+        .ToListAsync();
+
         var existingBooking = await _context.Bookings.FindAsync(bookingId);
+
+        if (serviceRatings.Any())
+        {
+            _context.ServiceRatings.RemoveRange(serviceRatings);
+        }
+
         if (existingBooking != null)
         {
             _context.Bookings.Remove(existingBooking);
-            await _context.SaveChangesAsync();
         }
+
+        await _context.SaveChangesAsync();
     }
 
     public async Task DeleteEticketAsync(int eTicketId)
     {
+        var serviceRatings = await _context.ServiceRatings
+        .Where(x => x.BookingId == eTicketId)
+        .ToListAsync();
+
         var eTicket = await _context.Etickets.FindAsync(eTicketId);
+
+        if (serviceRatings.Any())
+        {
+            _context.ServiceRatings.RemoveRange(serviceRatings);
+        }
+
         if (eTicket != null)
         {
             _context.Etickets.Remove(eTicket);
-            await _context.SaveChangesAsync();
         }
+
+        await _context.SaveChangesAsync();
     }
 }

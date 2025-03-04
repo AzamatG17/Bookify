@@ -64,6 +64,12 @@ internal sealed class ServicesService : IServicesService
                 }
             }
 
+            var serviceToRemove = services
+                .Where(s => !newServices.Any(ns => ns.ServiceId == s.ServiceId))
+                .ToList();
+
+            _context.Services.RemoveRange(serviceToRemove);
+
             await _context.SaveChangesAsync();
             await transaction.CommitAsync();
 
