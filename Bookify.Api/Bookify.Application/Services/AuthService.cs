@@ -25,7 +25,7 @@ internal sealed class AuthService : IAuthService
     public AuthService(
         IApplicationDbContext context,
         UserManager<User> userManager,
-        IJwtTokenHandler jwtTokenHandler, 
+        IJwtTokenHandler jwtTokenHandler,
         ISmsCodeService smsCodeService,
         ISmsService smsService,
         ITelegramService telegramService,
@@ -45,11 +45,11 @@ internal sealed class AuthService : IAuthService
         ArgumentNullException.ThrowIfNullOrEmpty(nameof(loginRequest));
 
         var existingUser = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == loginRequest.PhoneNumber)
-            ?? throw new UserNameNotExistException($"Phone Number: {loginRequest.PhoneNumber} does not exist.");
+            ?? throw new UserNameNotExistException($"Номер телефона: {loginRequest.PhoneNumber} не существует.");
 
         if (!_smsCodeService.ValidateCode(loginRequest.PhoneNumber, loginRequest.Code))
         {
-            throw new SmsCodeValidationException("The code is invalid or expired. Retry again.");
+            throw new SmsCodeValidationException("Код недействителен или просрочен. Повторите попытку.");
         }
 
         var roles = await _userManager.GetRolesAsync(existingUser);
@@ -64,11 +64,11 @@ internal sealed class AuthService : IAuthService
         ArgumentNullException.ThrowIfNull(nameof(loginForTelegramRequest));
 
         var existingUser = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == loginForTelegramRequest.PhoneNumber)
-            ?? throw new UserNameNotExistException($"Phone Number: {loginForTelegramRequest.PhoneNumber} does not exist.");
+            ?? throw new UserNameNotExistException($"Номер телефона: {loginForTelegramRequest.PhoneNumber} не существует.");
 
         if (existingUser.ChatId != loginForTelegramRequest.ChatId)
         {
-            throw new ChatIdValidationException("The provided ChatId is invalid for the given phone number.");
+            throw new ChatIdValidationException("Указанный ChatId недействителен для данного номера телефона.");
         }
 
         var roles = await _userManager.GetRolesAsync(existingUser);
@@ -94,7 +94,7 @@ internal sealed class AuthService : IAuthService
             if (!updateResult.Succeeded)
             {
                 var errors = string.Join("; ", updateResult.Errors.Select(e => e.Description));
-                throw new InvalidOperationException($"User creation failed: {errors}");
+                throw new InvalidOperationException($"Не удалось создать пользователя: {errors}");
             }
 
             return;
@@ -117,14 +117,14 @@ internal sealed class AuthService : IAuthService
         if (!createResult.Succeeded)
         {
             var errors = string.Join("; ", createResult.Errors.Select(e => e.Description));
-            throw new InvalidOperationException($"User creation failed: {errors}");
+            throw new InvalidOperationException($"Не удалось создать пользователя: {errors}");
         }
 
         var addToRoleResult = await _userManager.AddToRoleAsync(newUser, RoleConsts.User);
         if (!addToRoleResult.Succeeded)
         {
             var errors = string.Join("; ", addToRoleResult.Errors.Select(e => e.Description));
-            throw new InvalidOperationException($"Failed to assign role 'User': {errors}");
+            throw new InvalidOperationException($"Не удалось назначить роль «Пользователь»: {errors}");
         }
     }
 
@@ -144,7 +144,7 @@ internal sealed class AuthService : IAuthService
         ArgumentNullException.ThrowIfNull(nameof(sendCodeTelegramRequest));
 
         var existingUser = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == sendCodeTelegramRequest.PhoneNumber)
-            ?? throw new UserNameNotExistException($"Phone Number: {sendCodeTelegramRequest.PhoneNumber} does not exist. Re-register!");
+            ?? throw new UserNameNotExistException($"Номер телефона: {sendCodeTelegramRequest.PhoneNumber} не существует. Перерегистрируйтесь!");
 
         var smsCode = new Random().Next(1000, 9999).ToString();
         _smsCodeService.SaveCode(sendCodeTelegramRequest.PhoneNumber, smsCode);
@@ -164,12 +164,12 @@ internal sealed class AuthService : IAuthService
         ArgumentNullException.ThrowIfNullOrEmpty(nameof(request));
 
         var existingUser = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == request.Login)
-            ?? throw new UserNameNotExistException($"Login: {request.Login} does not exist.");
+            ?? throw new UserNameNotExistException($"Логин: {request.Login} не существует.");
 
         var isPasswordValid = await _userManager.CheckPasswordAsync(existingUser, request.Password);
         if (!isPasswordValid)
         {
-            throw new InvalidPasswordException("The provided password is incorrect.");
+            throw new InvalidPasswordException("Предоставленный пароль неверный.");
         }
 
         var roles = await _userManager.GetRolesAsync(existingUser);
@@ -190,7 +190,7 @@ internal sealed class AuthService : IAuthService
             .ThenInclude(b => b.Branch)
             .Include(u => u.Bookings.Where(b => b.Success))
             .FirstOrDefaultAsync(x => x.Id == userId)
-            ?? throw new EntityNotFoundException($"User is not exist.");
+            ?? throw new EntityNotFoundException($"Пользователь не существует.");
 
         var userDto = new UserDto(
                 user.FirstName,
@@ -215,6 +215,7 @@ internal sealed class AuthService : IAuthService
                         e.ServiceName,
                         e.Service?.BranchId ?? 0,
                         e.Service?.Branch?.BranchId ?? 0,
+                        e.Service.Branch.Projects,
                         e.BranchName,
                         e.BranchName,
                         e.ValidUntil

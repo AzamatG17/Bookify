@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Bookify.Api.Controllers;
 
-[Route("predefinedText")]
+[Route("api/predefinedText")]
 public class PredefinedTextController : ControllerBase
 {
     private readonly IPredefinedTextService _service;
