@@ -41,67 +41,68 @@ public sealed class ErrorHandlerMiddleware
     }
 
     private static ProblemDetails GetErrorDetails(Exception exception)
-    => exception switch
+        => exception switch
     {
         EntityNotFoundException => new ProblemDetails
         {
             Status = StatusCodes.Status404NotFound,
-            Title = "Not Found",
+            Title = "Не найдено",
             Detail = exception.Message
         },
         UserNameAlreadyTakenException => new ProblemDetails
         {
             Status = StatusCodes.Status400BadRequest,
-            Title = "User Name already taken",
+            Title = "Имя пользователя уже занято",
             Detail = exception.Message
         },
         ChatIdValidationException => new ProblemDetails
         {
             Status = StatusCodes.Status400BadRequest,
-            Title = "Invalid Chat ID",
+            Title = "Недействительный идентификатор чата",
             Detail = exception.Message
         },
         InvalidPasswordException => new ProblemDetails
         {
             Status = StatusCodes.Status400BadRequest,
-            Title = "Invalid Password",
+            Title = "Неверный пароль",
             Detail = exception.Message
         },
         InvalidUpdateDataException => new ProblemDetails
         {
             Status = StatusCodes.Status400BadRequest,
-            Title = "Invalid Update Data",
+            Title = "Недействительные данные для обновления",
             Detail = exception.Message
         },
         SmsCodeValidationException => new ProblemDetails
         {
             Status = StatusCodes.Status400BadRequest,
-            Title = "Invalid SMS Code",
+            Title = "Недействительный SMS-код",
             Detail = exception.Message
         },
         UserNameNotExistException => new ProblemDetails
         {
             Status = StatusCodes.Status404NotFound,
-            Title = "User Name Not Found",
+            Title = "Имя пользователя не найдено",
             Detail = exception.Message
         },
         DuplicateBookingException => new ProblemDetails
         {
             Status = StatusCodes.Status400BadRequest,
-            Title = "Duplicate Booking",
+            Title = "Дублирование бронирования",
             Detail = exception.Message
         },
         Domain_.Exceptions.UnauthorizedAccessException => new ProblemDetails
         {
             Status = StatusCodes.Status403Forbidden,
-            Title = "Unauthorized Access",
+            Title = "Несанкционированный доступ",
             Detail = exception.Message
         },
         _ => new ProblemDetails
         {
             Status = StatusCodes.Status500InternalServerError,
-            Title = "Internal Server Error",
+            Title = "Внутренняя ошибка сервера",
             Detail = exception.Message
         }
     };
+
 }
