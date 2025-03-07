@@ -8,11 +8,11 @@ public class CreateETicketRequestValidator : AbstractValidator<CreateEticketRequ
     public CreateETicketRequestValidator()
     {
         RuleFor(t => t.ServiceId)
-            .GreaterThan(0).WithMessage("ServiceId must be greater than 0.");
+            .GreaterThan(0).WithMessage("ServiceId должен быть больше 0.");
 
         RuleFor(x => x.Language)
-            .NotEmpty().WithMessage("Language is required.")
-            .Must(IsValidLanguage).WithMessage("Language must be a valid ISO code (e.g., 'en', 'ru', 'uz').");
+            .NotEmpty().WithMessage("Язык обязателен.")
+            .Must(IsValidLanguage).WithMessage("Язык должен быть валидным ISO-кодом (например, 'en', 'ru', 'uz').");
     }
 
     private bool IsValidLanguage(string language)

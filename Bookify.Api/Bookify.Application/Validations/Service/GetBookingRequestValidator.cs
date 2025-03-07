@@ -8,12 +8,12 @@ public class GetBookingRequestValidator : AbstractValidator<GetBookingRequest>
     public GetBookingRequestValidator()
     {
         RuleFor(b => b.BookingCode)
-            .NotEmpty().WithMessage("Booking code is required.")
-            .Length(6, 15).WithMessage("Booking code must be between 6 and 15 characters.");
+            .NotEmpty().WithMessage("Код бронирования обязателен для заполнения.")
+            .Length(6, 15).WithMessage("Код бронирования должен содержать от 6 до 15 символов.");
 
         RuleFor(x => x.Language)
-            .NotEmpty().WithMessage("Language is required.")
-            .Must(IsValidLanguage).WithMessage("Language must be a valid ISO code (e.g., 'en', 'ru', 'uz').");
+            .NotEmpty().WithMessage("Язык обязателен для заполнения.")
+            .Must(IsValidLanguage).WithMessage("Язык должен быть допустимым ISO-кодом (например, 'en', 'ru', 'uz').");
     }
 
     private bool IsValidLanguage(string language)

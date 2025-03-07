@@ -9,28 +9,28 @@ public class UpdateCompanyRequestValidator : AbstractValidator<UpdateCompanyRequ
     {
         RuleFor(x => x.Id)
             .GreaterThan(0)
-            .WithMessage("CompanyId must be greater than 0.");
+            .WithMessage("CompanyId должен быть больше 0.");
 
         RuleFor(x => x.Name)
             .NotEmpty()
-            .WithMessage("Name is required.")
+            .WithMessage("Название обязательно для заполнения.")
             .MaximumLength(100)
-            .WithMessage("Name must not exceed 100 characters.");
+            .WithMessage("Название не должно превышать 100 символов.");
 
         RuleFor(x => x.LogoBase64)
             .NotNull()
-            .WithMessage("Logo cannot be null.");
+            .WithMessage("Логотип не может быть null.");
 
         RuleFor(x => x.Color)
             .NotEmpty()
-            .WithMessage("Color is required.")
+            .WithMessage("Цвет обязателен для заполнения.")
             .Matches("^#[0-9a-fA-F]{6}$")
-            .WithMessage("Color must be a valid hex color code (e.g., #FFFFFF).");
+            .WithMessage("Цвет должен быть в формате шестнадцатеричного кода (например, #FFFFFF).");
 
         RuleFor(x => x.BackgroundColor)
             .NotEmpty()
-            .WithMessage("BackgroundColor is required.")
+            .WithMessage("Фон обязателен для заполнения.")
             .Matches("^#[0-9a-fA-F]{6}$")
-            .WithMessage("BackgroundColor must be a valid hex color code (e.g., #FFFFFF).");
+            .WithMessage("Фон должен быть в формате шестнадцатеричного кода (например, #FFFFFF).");
     }
 }

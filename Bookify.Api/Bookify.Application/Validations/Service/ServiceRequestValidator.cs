@@ -9,11 +9,11 @@ public class ServiceRequestValidator : AbstractValidator<ServiceRequest>
     {
         RuleFor(x => x.BranchId)
             .GreaterThan(0)
-            .WithMessage("BranchId must be greater than 0.");
+            .WithMessage("BranchId должен быть больше 0.");
 
         RuleFor(x => x.Language)
-            .NotEmpty().WithMessage("Language is required.")
-            .Must(IsValidLanguage).WithMessage("Language must be a valid ISO code (e.g., 'en', 'ru', 'uz').");
+            .NotEmpty().WithMessage("Язык обязателен для заполнения.")
+            .Must(IsValidLanguage).WithMessage("Язык должен быть допустимым ISO-кодом (например, 'en', 'ru', 'uz').");
     }
 
     private bool IsValidLanguage(string language)

@@ -52,7 +52,7 @@ internal sealed class BranchService(IApplicationDbContext context, IBranchStore 
             .ThenInclude(o => o.OpeningTimeBranches)
             .AsNoTracking()
             .FirstOrDefaultAsync(c => c.Id == request.Id)
-            ?? throw new EntityNotFoundException($"Company with id does not exist.");
+            ?? throw new EntityNotFoundException($"Компания с идентификатором: {request.Id} не найдена.");
 
         var result = new CompanyWithBranchesDto(
             branch.Id,
@@ -125,7 +125,7 @@ internal sealed class BranchService(IApplicationDbContext context, IBranchStore 
         {
             await transaction.RollbackAsync();
 
-            throw new InvalidUpdateDataException("Failed to update company branches. See inner exception for details.", ex);
+            throw new InvalidUpdateDataException("Не удалось обновить филиалы компании. Подробности во внутреннем исключении.", ex);
         }
     }
 
@@ -134,7 +134,7 @@ internal sealed class BranchService(IApplicationDbContext context, IBranchStore 
         var company = await _context.Companies
             .AsNoTracking()
             .FirstOrDefaultAsync(c => c.Id == request)
-            ?? throw new EntityNotFoundException($"Company with id:{request} does not exist.");
+            ?? throw new EntityNotFoundException($"Компания с идентификатором: {request} не найдена.");
 
         List<Branch> branches = [];
 

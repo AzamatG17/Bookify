@@ -8,9 +8,9 @@ public class EticketStatusRequestValidator : AbstractValidator<EticketStatusRequ
     public EticketStatusRequestValidator()
     {
         RuleFor(x => x.TicketId)
-            .GreaterThan(0).WithMessage("TicketId must be greater than 0");
+            .GreaterThan(0).WithMessage("ID билета должен быть больше 0.");
 
         RuleFor(x => x.BranchId)
-            .GreaterThan(0).WithMessage("BranchId must be greater than 0");
+            .GreaterThan(0).WithMessage("ID филиала должен быть больше 0.");
     }
 }

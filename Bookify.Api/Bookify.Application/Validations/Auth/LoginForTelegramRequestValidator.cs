@@ -9,7 +9,7 @@ public class LoginForTelegramRequestValidator : AbstractValidator<LoginForTelegr
     {
         RuleFor(x => x.PhoneNumber)
             .NotEmpty()
-            .WithMessage("Phone number is required.")
+            .WithMessage("Номер телефона обязателен.")
             .Must((request, phoneNumber, context) =>
             {
                 if (phoneNumber!.Length == 9)
@@ -24,9 +24,9 @@ public class LoginForTelegramRequestValidator : AbstractValidator<LoginForTelegr
 
                 return false;
             }).
-            WithMessage("Phone number must be in the format +998XXXXXXXXX.");
+            WithMessage("Номер телефона должен быть в формате +998XXXXXXXXX.");
 
         RuleFor(x => x.ChatId)
-            .GreaterThan(0).WithMessage("Chat ID must be a positive number.");
+            .GreaterThan(0).WithMessage("Chat ID должен быть положительным числом.");
     }
 }

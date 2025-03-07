@@ -163,16 +163,16 @@ internal sealed class ServicesService : IServicesService
     private static ServiceDto MapToServiceDto(ServiceTranslation service)
     {
         return new ServiceDto(
-        service.Services.Id,
-        service.Services.ServiceId,
-        service.Name ?? "",
-        service.Services.Branch.Companies.Color ?? "",
-        service.Services.Branch?.Companies?.Id ?? 0,
-        service.Services.Branch?.Companies?.Name ?? "",
-        service.Services.Branch?.Id ?? 0,
-        service.Services.Branch?.Name ?? "",
-        service.Services.Branch?.CoordinateLatitude ?? 0.0,
-        service.Services.Branch?.CoordinateLongitude ?? 0.0
+            service.Services.Id,
+            service.Services.ServiceId,
+            service.Name ?? "",
+            service.Services.Branch.Companies.Color ?? "",
+            service.Services.Branch?.Companies?.Id ?? 0,
+            service.Services.Branch?.Companies?.Name ?? "",
+            service.Services.Branch?.Id ?? 0,
+            service.Services.Branch?.Name ?? "",
+            service.Services.Branch?.CoordinateLatitude ?? 0.0,
+            service.Services.Branch?.CoordinateLongitude ?? 0.0
         );
     }
 

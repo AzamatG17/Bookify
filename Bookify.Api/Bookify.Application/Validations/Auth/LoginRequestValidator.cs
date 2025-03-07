@@ -9,7 +9,7 @@ public class LoginRequestValidator : AbstractValidator<LoginRequest>
     {
         RuleFor(x => x.PhoneNumber)
             .NotEmpty()
-            .WithMessage("Phone number is required.")
+            .WithMessage("Номер телефона обязателен.")
             .Must((request, phoneNumber, context) =>
             {
                 if (phoneNumber!.Length == 9)
@@ -24,12 +24,12 @@ public class LoginRequestValidator : AbstractValidator<LoginRequest>
 
                 return false;
             }).
-            WithMessage("Phone number must be in the format +998XXXXXXXXX.");
+            WithMessage("Номер телефона должен быть в формате +998XXXXXXXXX.");
 
         RuleFor(x => x.Code)
             .NotEmpty()
-            .WithMessage("Code is required.")
+            .WithMessage("Требуется код.")
             .Matches(@"^\d{4}$")
-            .WithMessage("Code must be a 4-digit number.");
+            .WithMessage("Код должен состоять из 4 цифр.");
     }
 }

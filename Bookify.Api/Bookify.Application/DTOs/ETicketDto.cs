@@ -1,4 +1,6 @@
-﻿namespace Bookify.Application.DTOs;
+﻿using Bookify.Domain_.Enums;
+
+namespace Bookify.Application.DTOs;
 
 public record ETicketDto(
     int ETicketId,
@@ -7,6 +9,7 @@ public record ETicketDto(
     string ServiceName,
     int? BranchId,
     int? SecondBranchId,
+    Projects? Projects,
     string BranchName,
     string BranchAddress,
     string ValidUntil

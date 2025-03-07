@@ -9,24 +9,24 @@ public class CreateCompanyRequestValidator : AbstractValidator<CreateCompanyRequ
     {
         RuleFor(x => x.Name)
             .NotEmpty()
-            .WithMessage("Name is required.")
+            .WithMessage("Название обязательно.")
             .MaximumLength(100)
-            .WithMessage("Name must not exceed 100 characters.");
+            .WithMessage("Название не должно превышать 100 символов.");
 
         RuleFor(x => x.LogoBase64)
             .NotNull()
-            .WithMessage("Logo cannot be null.");
+            .WithMessage("Логотип не может быть null.");
 
         RuleFor(x => x.Color)
             .NotEmpty()
-            .WithMessage("Color is required.")
+            .WithMessage("Цвет обязателен.")
             .Matches("^#[0-9a-fA-F]{6}$")
-            .WithMessage("Color must be a valid hex color code (e.g., #FFFFFF).");
+            .WithMessage("Цвет должен быть валидным шестнадцатеричным кодом (например, #FFFFFF).");
 
         RuleFor(x => x.BackgroundColor)
             .NotEmpty()
-            .WithMessage("BackgroundColor is required.")
+            .WithMessage("Фоновый цвет обязателен.")
             .Matches("^#[0-9a-fA-F]{6}$")
-            .WithMessage("BackgroundColor must be a valid hex color code (e.g., #FFFFFF).");
+            .WithMessage("Фоновый цвет должен быть валидным шестнадцатеричным кодом (например, #FFFFFF).");
     }
 }

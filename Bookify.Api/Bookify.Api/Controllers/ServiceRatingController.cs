@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Bookify.Api.Controllers;
 
-[Route("serviceRating")]
+[Route("api/serviceRating")]
 [ApiController]
 public class ServiceRatingController : ControllerBase
 {
@@ -21,6 +21,7 @@ public class ServiceRatingController : ControllerBase
     /// </summary>
     /// <returns></returns>
     [HttpGet]
+    [Authorize(Policy = "Admin")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
@@ -37,7 +38,7 @@ public class ServiceRatingController : ControllerBase
     /// <param name="request"></param>
     /// <returns></returns>
     [HttpPost]
-    [Authorize(Policy = "Admin")]
+    [Authorize]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status406NotAcceptable)]
