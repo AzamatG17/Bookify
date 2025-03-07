@@ -4,16 +4,19 @@ using Bookify.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace Bookify.Infrastructure.Persistence.Migrations
+namespace Bookify.Infrastructure.Persistece.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250305043336_add-new-entity-ServiceRating")]
+    partial class addnewentityServiceRating
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -34,9 +37,6 @@ namespace Bookify.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
-
-                    b.Property<int>("BookingId")
-                        .HasColumnType("int");
 
                     b.Property<string>("BranchName")
                         .IsRequired()
@@ -223,9 +223,6 @@ namespace Bookify.Infrastructure.Persistence.Migrations
                     b.Property<DateTime>("CreatedTime")
                         .HasMaxLength(50)
                         .HasColumnType("datetime2");
-
-                    b.Property<int>("ETicketId")
-                        .HasColumnType("int");
 
                     b.Property<string>("Language")
                         .IsRequired()
