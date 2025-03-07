@@ -11,6 +11,8 @@ internal class ETicketConfiguration : IEntityTypeConfiguration<ETicket>
         builder.ToTable(nameof(ETicket));
         builder.HasKey(c => c.Id);
 
+        builder.Property(e => e.ETicketId);
+
         builder.Property(e => e.TicketId)
             .IsRequired();
 
