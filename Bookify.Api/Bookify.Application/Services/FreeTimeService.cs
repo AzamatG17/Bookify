@@ -30,7 +30,7 @@ internal sealed class FreeTimeService : IFreeTimeService
             .ThenInclude(c => c.Companies)
             .AsNoTracking()
             .FirstOrDefaultAsync(x => x.Id == freeTimeRequest.ServiceId)
-            ?? throw new EntityNotFoundException($"Service with id: {freeTimeRequest.ServiceId} does not exist.");
+            ?? throw new EntityNotFoundException($"Служба с идентификатором: {freeTimeRequest.ServiceId} не существует.");
 
         List<FreeDayDto> result = [];
 
@@ -57,7 +57,7 @@ internal sealed class FreeTimeService : IFreeTimeService
             .ThenInclude(c => c.Companies)
             .AsNoTracking()
             .FirstOrDefaultAsync(x => x.Id == freeTimeRequest.ServiceId)
-            ?? throw new EntityNotFoundException($"Service with id: {freeTimeRequest.ServiceId} does not exist.");
+            ?? throw new EntityNotFoundException($"Служба с идентификатором: {freeTimeRequest.ServiceId} не существует.");
 
         List<FreeTimeDto> result = [];
 

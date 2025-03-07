@@ -49,8 +49,9 @@ internal sealed class EticketService : IEticketService
             .Include(s => s.Service)
             .ThenInclude(b => b.Branch)
             .ThenInclude(c => c.Companies)
+            .AsNoTracking()
             .FirstOrDefaultAsync(e => e.TicketId == request.TicketId && e.Service.Branch.BranchId == request.BranchId)
-            ?? throw new EntityNotFoundException($"ETicket with TickedId: {request.TicketId} does not exist in Branch: {request.BranchId}");
+            ?? throw new EntityNotFoundException($"ETicket с идентификатором: {request.TicketId} не найден в филиале: {request.BranchId}");
 
         var user = await GetUserAsync(_currentUserService.GetUserId());
 
@@ -64,7 +65,7 @@ internal sealed class EticketService : IEticketService
             Domain_.Enums.Projects.BookingService =>
                 await _store.GetEtickertStatusBookingServiceAsync(request, eTicket.Service.Branch.Companies.BaseUrlForBookingService),
 
-            _ => throw new NotSupportedException($"Unsupported project type: {eTicket.Service.Branch.Projects}")
+            _ => throw new NotSupportedException($"Тип проекта не поддерживается: {eTicket.Service.Branch.Projects}")
         };
 
         return result;
@@ -77,7 +78,7 @@ internal sealed class EticketService : IEticketService
         var service = await GetServiceAsync(request.ServiceId);
 
         var company = (service.Branch?.Companies)
-            ?? throw new InvalidOperationException("Branch is not associated with a company.");
+            ?? throw new InvalidOperationException("Филиал не связан с компанией.");
 
         var user = await GetUserAsync(_currentUserService.GetUserId());
 
@@ -88,7 +89,7 @@ internal sealed class EticketService : IEticketService
 
         if (existBooking)
         {
-            throw new DuplicateBookingException("User has already booked a ETicket for this service on the selected date.");
+            throw new DuplicateBookingException("Пользователь уже забронировал eTicket для этого сервиса на выбранную дату.");
         }
 
         EticketResponse response = service.Branch.Projects switch
@@ -101,19 +102,19 @@ internal sealed class EticketService : IEticketService
                 await _store.CreateTicketForOnlinetAsync(
                     CreateETicketOnlinetModel(request, service, user), company.BaseUrlForOnlinet),
 
-            _ => throw new NotSupportedException($"Unsupported project type: {service.Branch.Projects}")
+            _ => throw new NotSupportedException($"Тип проекта не поддерживается: {service.Branch.Projects}")
         };
 
         if (response.Success)
         {
             DateTime dateTime = DateTime.Now;
 
-            _backgroundJobClient.Enqueue(() => _backgroundJobService.SendETicketTelegram(response, user.Id, request.Language, dateTime));
-
             _backgroundJobClient.Enqueue(() => _backgroundJobService.SaveETicketAsync(response, request, user.Id, dateTime));
+            
+            _backgroundJobClient.Enqueue(() => _backgroundJobService.SendETicketTelegram(response, user.Id, request.Language, dateTime));
         }
 
-        return MapToETicketDto(response);
+        return MapToETicketDto(response, service.Branch.Projects);
     }
 
     public async Task<DeleteResponse> DeleteTicketAsync(DeleteEticketRequest request)
@@ -128,7 +129,7 @@ internal sealed class EticketService : IEticketService
                     .ThenInclude(br => br.Companies)
             .AsNoTracking()
             .FirstOrDefaultAsync(e => e.Number == request.Number && e.UserId == user.Id)
-            ?? throw new EntityNotFoundException($"ETicket with Number:{request.Number} does not exist.");
+            ?? throw new EntityNotFoundException($"ETicket с номером: {request.Number} не найден.");
 
         DeleteResponse deleteResponse = eTicket.Service.Branch.Projects switch
         {
@@ -151,14 +152,14 @@ internal sealed class EticketService : IEticketService
             .Include(s => s.Branch)
             .ThenInclude(b => b.Companies)
             .FirstOrDefaultAsync(s => s.Id == serviceId)
-            ?? throw new EntityNotFoundException($"Service with id: {serviceId} does not exist.");
+            ?? throw new EntityNotFoundException($"Сервис с идентификатором: {serviceId} не найден.");
     }
 
     private async Task<User> GetUserAsync(Guid userId)
     {
         return await _userManager.Users
             .FirstOrDefaultAsync(u => u.Id == userId)
-            ?? throw new EntityNotFoundException($"User with id: {userId} does not exist.");
+            ?? throw new EntityNotFoundException($"Пользователь с идентификатором: {userId} не найден.");
     }
 
     private static EticketRequest CreateEticketRequestModel(CreateEticketRequest request, Service service, User user)
@@ -186,7 +187,7 @@ internal sealed class EticketService : IEticketService
         };
     }
 
-    private static ETicketDto MapToETicketDto(EticketResponse e)
+    private static ETicketDto MapToETicketDto(EticketResponse e, Projects projects)
     {
         return new ETicketDto(
             e.TicketId,
@@ -195,6 +196,7 @@ internal sealed class EticketService : IEticketService
             e.Service,
             0,
             e.BranchId,
+            projects,
             e.BranchName,
             e.BranchAddress,
             e.ValidUntil

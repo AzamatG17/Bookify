@@ -23,7 +23,7 @@ internal sealed class BackgroundJobService : IBackgroundJobService
     public async Task SendETicketTelegram(EticketResponse response, Guid userId, string language, DateTime dateTime)
     {
         var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == userId)
-            ?? throw new InvalidOperationException("User was not created correctly.");
+            ?? throw new InvalidOperationException("Пользователь не был создан правильно.");
 
         var message = language switch
         {
@@ -58,7 +58,7 @@ internal sealed class BackgroundJobService : IBackgroundJobService
     public async Task SendDeleteETicketTelegram(EticketResponse response, Guid userId, string language)
     {
         var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == userId)
-            ?? throw new InvalidOperationException("User was not created correctly.");
+            ?? throw new InvalidOperationException("Пользователь не был создан правильно.");
 
         var message = language switch
         {
@@ -89,7 +89,7 @@ internal sealed class BackgroundJobService : IBackgroundJobService
     public async Task SendBookingCodeTelegram(CreateBookingResponse response, Guid userId, string language)
     {
         var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == userId)
-            ?? throw new InvalidOperationException("User was not created correctly.");
+            ?? throw new InvalidOperationException("Пользователь не был создан правильно.");
 
         var message = language switch
         {
@@ -132,7 +132,7 @@ internal sealed class BackgroundJobService : IBackgroundJobService
     public async Task SendDeleteBookingTelegram(BookingDto response, Guid userId, string language)
     {
         var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == userId)
-            ?? throw new InvalidOperationException("User was not created correctly.");
+            ?? throw new InvalidOperationException("Пользователь не был создан правильно.");
 
         var message = language switch
         {
@@ -171,10 +171,11 @@ internal sealed class BackgroundJobService : IBackgroundJobService
     public async Task SaveBookingAsync(CreateBookingResponse response, CreateBookingRequest bookingRequest, Guid userId)
     {
         var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == userId)
-            ?? throw new InvalidOperationException("User was not created correctly.");
+            ?? throw new InvalidOperationException("Пользователь не был создан правильно.");
 
         var booking = new Booking
         {
+            BookingId = response.BookingId,
             UserId = user.Id,
             User = user,
             CreatedBy = user.UserName ?? "",
@@ -196,10 +197,11 @@ internal sealed class BackgroundJobService : IBackgroundJobService
     public async Task SaveETicketAsync(EticketResponse response, CreateEticketRequest request, Guid userId, DateTime dateTime)
     {
         var user = await _context.Users.FirstOrDefaultAsync(x => x.Id == userId)
-            ?? throw new InvalidOperationException("User was not created correctly.");
+            ?? throw new InvalidOperationException("Пользователь не был создан правильно.");
 
         var eTicket = new ETicket
         {
+            ETicketId = response.TicketId,
             UserId = user.Id,
             User = user,
             CreatedBy = user.UserName ?? "",
@@ -244,7 +246,7 @@ internal sealed class BackgroundJobService : IBackgroundJobService
     public async Task DeleteEticketAsync(int eTicketId)
     {
         var serviceRatings = await _context.ServiceRatings
-        .Where(x => x.BookingId == eTicketId)
+        .Where(x => x.ETicketId == eTicketId)
         .ToListAsync();
 
         var eTicket = await _context.Etickets.FindAsync(eTicketId);

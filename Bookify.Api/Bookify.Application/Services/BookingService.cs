@@ -37,7 +37,7 @@ internal sealed class BookingService(
         var service = await GetServiceAsync(bookingRequest.ServiceId);
 
         var company = (service.Branch?.Companies)
-            ?? throw new InvalidOperationException("Branch is not associated with a company.");
+            ?? throw new InvalidOperationException("Филиал не связан с компанией.");
 
         var user = await GetUserAsync(_currentUserService.GetUserId());
 
@@ -61,14 +61,15 @@ internal sealed class BookingService(
                 await _store.CreateBookingOnlinetAsync(
                     CreateBookingRequest(bookingRequest, service, user), company.BaseUrlForOnlinet),
 
-            _ => throw new NotSupportedException($"Unsupported project type: {service.Branch.Projects}")
+            _ => throw new NotSupportedException($"Неподдерживаемый тип проекта: {service.Branch.Projects}")
         };
 
         if (response.Success)
         {
+            _backgroundJobClient.Enqueue(() => _backgroundJobService.SaveBookingAsync(response, bookingRequest, user.Id));
+            
             _backgroundJobClient.Enqueue(() => _backgroundJobService.SendBookingCodeTelegram(response, user.Id, bookingRequest.Language));
 
-            _backgroundJobClient.Enqueue(() => _backgroundJobService.SaveBookingAsync(response, bookingRequest, user.Id));
         }
 
         return response;
@@ -86,7 +87,7 @@ internal sealed class BookingService(
                     .ThenInclude(br => br.Companies)
             .AsNoTracking()
             .FirstOrDefaultAsync(b => b.BookingCode == request.BookingCode && b.User.Id == user.Id)
-            ?? throw new EntityNotFoundException($"Booking with Booking code:{request.BookingCode} does not exist.");
+            ?? throw new EntityNotFoundException($"Бронирование с кодом: {request.BookingCode} не найдено.");
 
         ResultBooking resultBooking = booking.Service.Branch.Projects switch
         {
@@ -98,7 +99,7 @@ internal sealed class BookingService(
                 await _store.DeleteBookingForOnlinetAsync(
                     MapToDeletBookingRequest(booking), booking.Service.Branch.Companies.BaseUrlForOnlinet),
 
-            _ => throw new NotSupportedException($"Unsupported project type: {booking.Service.Branch.Projects}")
+            _ => throw new NotSupportedException($"Неподдерживаемый тип проекта: {booking.Service.Branch.Projects}")
         };
 
         _backgroundJobClient.Enqueue(() => _backgroundJobService.SendDeleteBookingTelegram(MapToCreateBookingResponse(booking), user.Id, request.Language));
@@ -113,14 +114,14 @@ internal sealed class BookingService(
             .Include(s => s.Branch)
             .ThenInclude(b => b.Companies)
             .FirstOrDefaultAsync(s => s.Id == serviceId)
-            ?? throw new EntityNotFoundException($"Service with id: {serviceId} does not exist.");
+            ?? throw new EntityNotFoundException($"Услуга с идентификатором: {serviceId} не найдена.");
     }
 
     private async Task<User> GetUserAsync(Guid userId)
     {
         return await _userManager.Users
             .FirstOrDefaultAsync(u => u.Id == userId)
-            ?? throw new EntityNotFoundException($"User with id: {userId} does not exist.");
+            ?? throw new EntityNotFoundException($"Пользователь с идентификатором: {userId} не найден.");
     }
 
     private static BookingForBookingServiceRequest CreateBookingRequestModel(CreateBookingRequest request, Service service, User user)

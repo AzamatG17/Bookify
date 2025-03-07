@@ -40,7 +40,7 @@ internal sealed class CompaniesService(IApplicationDbContext context, IMapper ma
         var company = await _context.Companies
             .AsNoTracking()
             .FirstOrDefaultAsync(x => x.Id == request.Id)
-            ?? throw new EntityNotFoundException($"Company entity with id {request.Id} not found");
+            ?? throw new EntityNotFoundException($"Компания с идентификатором: {request.Id} не найдена");
 
         return _mapper.Map<CompaniesForAdminDto>(company);
     }
