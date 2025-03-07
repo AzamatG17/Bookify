@@ -9,6 +9,6 @@ public class BranchRequestValidator : AbstractValidator<BranchRequest>
     {
         RuleFor(x => x.BranchId)
             .GreaterThan(0)
-            .WithMessage("BranchId must be greater than 0.");
+            .WithMessage("BranchId должен быть больше 0.");
     }
 }

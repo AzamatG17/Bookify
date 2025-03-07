@@ -8,8 +8,7 @@ public class RegisterRequestValidator : AbstractValidator<RegisterRequest>
     public RegisterRequestValidator()
     {
         RuleFor(x => x.PhoneNumber)
-            .NotEmpty()
-            .WithMessage("Phone number is required.")
+            .NotEmpty().WithMessage("Номер телефона обязателен.")
             .Must((request, phoneNumber, context) =>
             {
                 if (phoneNumber!.Length == 9)
@@ -23,18 +22,17 @@ public class RegisterRequestValidator : AbstractValidator<RegisterRequest>
                 }
 
                 return false;
-            }).
-            WithMessage("Phone number must be in the format +998XXXXXXXXX.");
+            }).WithMessage("Номер телефона должен быть в формате +998XXXXXXXXX.");
 
         RuleFor(x => x.FirstName)
-            .NotEmpty().WithMessage("First name is required.")
-            .MaximumLength(50).WithMessage("First name cannot exceed 50 characters.");
+            .NotEmpty().WithMessage("Имя обязательно.")
+            .MaximumLength(50).WithMessage("Имя не должно превышать 50 символов.");
 
         RuleFor(x => x.LastName)
-            .NotEmpty().WithMessage("Last name is required.")
-            .MaximumLength(50).WithMessage("Last name cannot exceed 50 characters.");
+            .NotEmpty().WithMessage("Фамилия обязательна.")
+            .MaximumLength(50).WithMessage("Фамилия не должна превышать 50 символов.");
 
         RuleFor(x => x.ChatId)
-            .GreaterThan(0).WithMessage("Chat ID must be a positive number.");
+            .GreaterThan(0).WithMessage("Chat ID должен быть положительным числом.");
     }
 }

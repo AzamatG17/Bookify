@@ -9,18 +9,18 @@ public class CreateBookingRequestValidator : AbstractValidator<CreateBookingRequ
     public CreateBookingRequestValidator()
     {
         RuleFor(x => x.ServiceId)
-            .GreaterThan(0).WithMessage("ServiceId must be greater than 0.");
+            .GreaterThan(0).WithMessage("ServiceId должен быть больше 0.");
 
         RuleFor(x => x.StartDate)
             .GreaterThan(DateTime.Now.Date.AddDays(-1))
-            .WithMessage("Date must be in the future.");
+            .WithMessage("Дата должна быть в будущем.");
 
         RuleFor(x => x.StartTime)
-            .Must(BeValidTimeFormat).WithMessage("StartTime must be in HH:mm:ss format.");
+            .Must(BeValidTimeFormat).WithMessage("StartTime должен быть в формате HH:mm:ss.");
 
         RuleFor(x => x.Language)
-            .NotEmpty().WithMessage("Language is required.")
-            .Must(IsValidLanguage).WithMessage("Language must be a valid ISO code (e.g., 'en', 'ru', 'uz').");
+            .NotEmpty().WithMessage("Язык обязателен.")
+            .Must(IsValidLanguage).WithMessage("Язык должен быть валидным ISO-кодом (например, 'en', 'ru', 'uz').");
     }
 
     private bool IsValidLanguage(string language)

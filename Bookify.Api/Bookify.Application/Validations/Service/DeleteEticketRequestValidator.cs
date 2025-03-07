@@ -8,14 +8,14 @@ public class DeleteEticketRequestValidator : AbstractValidator<DeleteEticketRequ
     public DeleteEticketRequestValidator()
     {
         RuleFor(x => x.Number)
-            .NotEmpty().WithMessage("Ticket number is required.");
+            .NotEmpty().WithMessage("Номер билета обязателен.");
 
         RuleFor(x => x.SecondBranchId)
-            .GreaterThan(0).WithMessage("Second branch ID must be greater than zero.");
+            .GreaterThan(0).WithMessage("ID второй ветки должен быть больше нуля.");
 
         RuleFor(x => x.Language)
-            .NotEmpty().WithMessage("Language is required.")
-            .Must(IsValidLanguage).WithMessage("Language must be a valid ISO code (e.g., 'en', 'ru', 'uz').");
+            .NotEmpty().WithMessage("Язык обязателен.")
+            .Must(IsValidLanguage).WithMessage("Язык должен быть валидным ISO-кодом (например, 'en', 'ru', 'uz').");
     }
 
     private bool IsValidLanguage(string language)

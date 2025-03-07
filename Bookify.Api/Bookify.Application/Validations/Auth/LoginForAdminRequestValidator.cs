@@ -8,9 +8,9 @@ public class LoginForAdminRequestValidator : AbstractValidator<LoginForAdminRequ
     public LoginForAdminRequestValidator()
     {
         RuleFor(request => request.Login)
-            .NotEmpty().WithMessage("Login is required.");
+            .NotEmpty().WithMessage("Логин обязателен для заполнения.");
 
         RuleFor(request => request.Password)
-            .NotEmpty().WithMessage("Password is required.");
+            .NotEmpty().WithMessage("Пароль обязателен для заполнения.");
     }
 }

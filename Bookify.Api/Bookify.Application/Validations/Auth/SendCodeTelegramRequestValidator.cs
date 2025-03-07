@@ -9,7 +9,7 @@ public class SendCodeTelegramRequestValidator : AbstractValidator<SendCodeTelegr
     {
         RuleFor(x => x.PhoneNumber)
             .NotEmpty()
-            .WithMessage("Phone number is required.")
+            .WithMessage("Номер телефона обязателен.")
             .Must((request, phoneNumber, context) =>
             {
                 if (phoneNumber!.Length == 9)
@@ -23,12 +23,11 @@ public class SendCodeTelegramRequestValidator : AbstractValidator<SendCodeTelegr
                 }
 
                 return false;
-            }).
-            WithMessage("Phone number must be in the format +998XXXXXXXXX.");
+            }).WithMessage("Номер телефона должен быть в формате +998XXXXXXXXX.");
 
         RuleFor(x => x.Language)
-            .NotEmpty().WithMessage("Language is required.")
-            .Must(IsValidLanguage).WithMessage("Language must be a valid ISO code (e.g., 'en', 'ru', 'uz').");
+            .NotEmpty().WithMessage("Язык обязателен.")
+            .Must(IsValidLanguage).WithMessage("Язык должен быть валидным ISO-кодом (например, 'en', 'ru', 'uz').");
     }
 
     private bool IsValidLanguage(string language)
