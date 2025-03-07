@@ -2,9 +2,9 @@
 
 public enum SmileyRating
 {
-    Excellent = 1,
-    Good = 2,
+    Terrible = 1,
+    Bad = 2,
     Average = 3,
-    Bad = 4,
-    Terrible = 5
+    Good = 4,
+    Excellent = 5
 }
