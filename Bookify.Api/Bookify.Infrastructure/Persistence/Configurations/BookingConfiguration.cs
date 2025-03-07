@@ -11,6 +11,8 @@ internal class BookingConfiguration : IEntityTypeConfiguration<Booking>
         builder.ToTable(nameof(Booking));
         builder.HasKey(c => c.Id);
 
+        builder.Property(c => c.BookingId);
+
         builder.Property(b => b.ServiceId)
             .IsRequired();
 

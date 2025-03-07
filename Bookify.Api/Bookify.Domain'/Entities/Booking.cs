@@ -4,6 +4,7 @@ namespace Bookify.Domain_.Entities;
 
 public class Booking : AuditableEntity
 {
+    public int BookingId { get; set; }
     public DateTime StartDate { get; set; }
     public string StartTime { get; set; }
     public string Language { get; set; }
