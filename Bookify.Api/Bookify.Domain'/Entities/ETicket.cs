@@ -4,6 +4,7 @@ namespace Bookify.Domain_.Entities;
 
 public class ETicket : AuditableEntity
 {
+    public int ETicketId { get; set; }
     public string Language { get; set; }
     public string ServiceName { get; set; }
     public string BranchName { get; set; }
