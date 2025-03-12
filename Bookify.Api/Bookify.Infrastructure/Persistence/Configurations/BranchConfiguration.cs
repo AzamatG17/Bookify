@@ -37,6 +37,6 @@ internal class BranchConfiguration : IEntityTypeConfiguration<Branch>
         builder.HasMany(c => c.Services)
             .WithOne(b => b.Branch)
             .HasForeignKey(b => b.BranchId)
-            .OnDelete(DeleteBehavior.SetNull);
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

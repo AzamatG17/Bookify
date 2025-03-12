@@ -15,6 +15,8 @@ internal class CompaniesConfiguration : IEntityTypeConfiguration<Companies>
             .HasMaxLength(100)
             .IsRequired();
 
+        builder.Property(c => c.Description);
+
         builder.Property(c => c.BaseUrlForOnlinet)
             .HasMaxLength(255)
             .IsRequired();
