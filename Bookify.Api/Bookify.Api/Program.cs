@@ -1,7 +1,9 @@
 using Bookify.Api.Extensions;
 using Bookify.Application.Extensions;
+using Bookify.Infrastructure.Persistence;
 using Hangfire;
 using Hangfire.Dashboard.BasicAuthorization;
+using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Serilog.Events;
 
@@ -42,9 +44,18 @@ builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 
-app.UseSwagger();
-app.UseSwaggerUI();
-app.UseDatabaseSeeder();
+if (app.Environment.IsDevelopment())
+{
+    using (var scope = app.Services.CreateScope())
+    {
+        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        db.Database.Migrate();
+    }
+
+    app.UseSwagger();
+    app.UseSwaggerUI();
+    app.UseDatabaseSeeder();
+}
 
 app.UseHangfireDashboard("/hangfire", new DashboardOptions
 {
