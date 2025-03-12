@@ -42,10 +42,10 @@ internal sealed class BranchStore(IApiClient apiClient) : IBranchStore
             CoordinateLongitude = r.BranchCoordinates.Longitude,
             Projects = Domain_.Enums.Projects.BookingService,
             OpeningTimeBranches = r.BranchOpenHours?.Select(o => new OpeningTimeBranch
-            {
-                Day = o.Day,
-                OpenTime = o.OpenTime
-            }).ToList() ?? new List<OpeningTimeBranch>(),
+                {
+                    Day = o.Day,
+                    OpenTime = o.OpenTime
+                }).ToList() ?? [],
             CompanyId = companyId
         }).ToList();
     }
@@ -61,10 +61,10 @@ internal sealed class BranchStore(IApiClient apiClient) : IBranchStore
             CoordinateLongitude = r.BranchCoordinates.Longitude,
             Projects = Domain_.Enums.Projects.Onlinet,
             OpeningTimeBranches = r.BranchOpeningTime?.Select(o => new OpeningTimeBranch
-            {
-                Day = o.Day,
-                OpenTime = o.OpenTime
-            }).ToList() ?? new List<OpeningTimeBranch>(),
+                {
+                    Day = o.Day,
+                    OpenTime = o.OpenTime
+                }).ToList() ?? [],
             CompanyId = companyId
         }).ToList();
     }

@@ -23,9 +23,7 @@ public class BookingStore : IBookingStore
 
         var endpoint = $"{baseUrl}/api/Bookings/CreateBooking";
 
-        var response = await _client.PostAsync<CreateBookingResponse, BookingForBookingServiceRequest>(endpoint, request);
-
-        return response;
+        return await _client.PostAsync<CreateBookingResponse, BookingForBookingServiceRequest>(endpoint, request);
     }
 
     public async Task<CreateBookingResponse> CreateBookingOnlinetAsync(BookingRequest request, string baseUrl)

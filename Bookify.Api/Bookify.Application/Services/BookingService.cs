@@ -32,7 +32,7 @@ internal sealed class BookingService(
 
     public async Task<CreateBookingResponse> CreateAsync(CreateBookingRequest bookingRequest)
     {
-        ArgumentNullException.ThrowIfNull(nameof(bookingRequest));
+        ArgumentNullException.ThrowIfNull(bookingRequest);
 
         var service = await GetServiceAsync(bookingRequest.ServiceId);
 
@@ -77,7 +77,7 @@ internal sealed class BookingService(
 
     public async Task DeleteAsync(GetBookingRequest request)
     {
-        ArgumentNullException.ThrowIfNull(nameof(request));
+        ArgumentNullException.ThrowIfNull(request);
 
         var user = await GetUserAsync(_currentUserService.GetUserId());
 
