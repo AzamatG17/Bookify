@@ -225,8 +225,8 @@ internal sealed class BackgroundJobService : IBackgroundJobService
     public async Task DeleteBookingAsync(int bookingId)
     {
         var serviceRatings = await _context.ServiceRatings
-        .Where(x => x.BookingId == bookingId)
-        .ToListAsync();
+            .Where(x => x.BookingId == bookingId)
+            .ToListAsync();
 
         var existingBooking = await _context.Bookings.FindAsync(bookingId);
 
@@ -246,8 +246,8 @@ internal sealed class BackgroundJobService : IBackgroundJobService
     public async Task DeleteEticketAsync(int eTicketId)
     {
         var serviceRatings = await _context.ServiceRatings
-        .Where(x => x.ETicketId == eTicketId)
-        .ToListAsync();
+            .Where(x => x.ETicketId == eTicketId)
+            .ToListAsync();
 
         var eTicket = await _context.Etickets.FindAsync(eTicketId);
 

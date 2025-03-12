@@ -23,7 +23,7 @@ internal sealed class FreeTimeService : IFreeTimeService
 
     public async Task<List<FreeDayDto>> GetFreeDayListAsync(FreeTimeRequest freeTimeRequest)
     {
-        ArgumentNullException.ThrowIfNull(nameof(freeTimeRequest));
+        ArgumentNullException.ThrowIfNull(freeTimeRequest);
 
         var service = await _context.Services
             .Include(b => b.Branch)
@@ -50,7 +50,7 @@ internal sealed class FreeTimeService : IFreeTimeService
 
     public async Task<List<FreeTimeDto>> GetFreeTimeListAsync(FreeTimeRequest freeTimeRequest)
     {
-        ArgumentNullException.ThrowIfNull(nameof(freeTimeRequest));
+        ArgumentNullException.ThrowIfNull(freeTimeRequest);
 
         var service = await _context.Services
             .Include(b => b.Branch)

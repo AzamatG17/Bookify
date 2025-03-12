@@ -42,7 +42,7 @@ internal sealed class AuthService : IAuthService
 
     public async Task<string> LoginAsync(Requests.Auth.LoginRequest loginRequest)
     {
-        ArgumentNullException.ThrowIfNullOrEmpty(nameof(loginRequest));
+        ArgumentNullException.ThrowIfNull(loginRequest);
 
         var existingUser = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == loginRequest.PhoneNumber)
             ?? throw new UserNameNotExistException($"Номер телефона: {loginRequest.PhoneNumber} не существует.");
@@ -61,7 +61,7 @@ internal sealed class AuthService : IAuthService
 
     public async Task<string> LoginForTelegramAsync(LoginForTelegramRequest loginForTelegramRequest)
     {
-        ArgumentNullException.ThrowIfNull(nameof(loginForTelegramRequest));
+        ArgumentNullException.ThrowIfNull(loginForTelegramRequest);
 
         var existingUser = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == loginForTelegramRequest.PhoneNumber)
             ?? throw new UserNameNotExistException($"Номер телефона: {loginForTelegramRequest.PhoneNumber} не существует.");
@@ -80,7 +80,7 @@ internal sealed class AuthService : IAuthService
 
     public async Task RegisterAsync(Requests.Auth.RegisterRequest request)
     {
-        ArgumentNullException.ThrowIfNull(nameof(request));
+        ArgumentNullException.ThrowIfNull(request);
 
         var existingUser = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == request.PhoneNumber);
         if (existingUser is not null)
@@ -130,7 +130,7 @@ internal sealed class AuthService : IAuthService
 
     public async Task SendSmsCodeAsync(SendSmsCodeRequest sendSmsCodeRequest)
     {
-        ArgumentNullException.ThrowIfNull(nameof(sendSmsCodeRequest));
+        ArgumentNullException.ThrowIfNull(sendSmsCodeRequest);
 
         var smsCode = new Random().Next(1000, 9999).ToString();
         _smsCodeService.SaveCode(sendSmsCodeRequest.PhoneNumber, smsCode);
@@ -141,7 +141,7 @@ internal sealed class AuthService : IAuthService
 
     public async Task SendCodeForTelegramAsync(SendCodeTelegramRequest sendCodeTelegramRequest)
     {
-        ArgumentNullException.ThrowIfNull(nameof(sendCodeTelegramRequest));
+        ArgumentNullException.ThrowIfNull(sendCodeTelegramRequest);
 
         var existingUser = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == sendCodeTelegramRequest.PhoneNumber)
             ?? throw new UserNameNotExistException($"Номер телефона: {sendCodeTelegramRequest.PhoneNumber} не существует. Перерегистрируйтесь!");
@@ -161,7 +161,7 @@ internal sealed class AuthService : IAuthService
 
     public async Task<string> LoginForAdminAsync(LoginForAdminRequest request)
     {
-        ArgumentNullException.ThrowIfNullOrEmpty(nameof(request));
+        ArgumentNullException.ThrowIfNull(request);
 
         var existingUser = await _userManager.Users.FirstOrDefaultAsync(u => u.UserName == request.Login)
             ?? throw new UserNameNotExistException($"Логин: {request.Login} не существует.");

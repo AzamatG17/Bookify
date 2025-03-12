@@ -42,7 +42,7 @@ internal sealed class EticketService : IEticketService
 
     public async Task<object> GetETicketStatusAsync(EticketStatusRequest request)
     {
-        ArgumentNullException.ThrowIfNull(nameof(request));
+        ArgumentNullException.ThrowIfNull(request);
 
         var eTicket = await _context.Etickets
             .Include(u => u.User)
