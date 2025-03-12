@@ -32,9 +32,7 @@ public class EticketStore : IEticketStore
 
         var endpoint = $"{baseUrl}/api/E_Ticket/CreateNewTicket";
 
-        var response = await _client.PostEncodeAsync<EticketResponse, EticketRequest>(endpoint, request);
-
-        return response;
+        return await _client.PostEncodeAsync<EticketResponse, EticketRequest>(endpoint, request);
     }
 
     public async Task<EticketResponse> CreateTicketForOnlinetAsync(ETicketOnlinetRequest request, string baseUrl)
@@ -43,9 +41,7 @@ public class EticketStore : IEticketStore
 
         var endpoint = $"{baseUrl}/OnlinetBookingServiceRest/CreateNewTicket";
 
-        var response = await _client.PostEncodeAsync<EticketResponse, ETicketOnlinetRequest>(endpoint, request);
-
-        return response;
+        return await _client.PostEncodeAsync<EticketResponse, ETicketOnlinetRequest>(endpoint, request);
     }
 
     public async Task<DeleteResponse> DeleteBookingServiceAsync(string baseUrl, int branchId, string number)
