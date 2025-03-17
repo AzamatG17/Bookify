@@ -97,6 +97,18 @@ public sealed class ErrorHandlerMiddleware
             Title = "Несанкционированный доступ",
             Detail = exception.Message
         },
+        InvalidUserAgentException => new ProblemDetails
+        {
+            Status = StatusCodes.Status403Forbidden,
+            Title = "Недопустимый User-Agent",
+            Detail = exception.Message
+        },
+        InvalidTokenException => new ProblemDetails
+        {
+            Status = StatusCodes.Status401Unauthorized,
+            Title = "Недействительный токен",
+            Detail = exception.Message
+        },
         _ => new ProblemDetails
         {
             Status = StatusCodes.Status500InternalServerError,
@@ -104,5 +116,4 @@ public sealed class ErrorHandlerMiddleware
             Detail = exception.Message
         }
     };
-
 }

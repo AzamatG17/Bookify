@@ -28,6 +28,7 @@ public static class DependencyInjection
         services.AddScoped<ISmsService, SmsService>();
         services.AddScoped<ITelegramService, TelegramService>();
         services.AddScoped<IApiClient, ApiClient>();
+        services.AddScoped<IAesEncryptionService, AesEncryptionService>();
 
         AddIdentity(services);
 

@@ -1,6 +1,7 @@
 ﻿using Bookify.Application.Interfaces;
 using Bookify.Application.Interfaces.Stores;
 using Bookify.Application.Models;
+using Bookify.Application.Requests.Services;
 using Bookify.Application.Requests.Stores;
 using Bookify.Application.Responses;
 using System.Globalization;
@@ -14,6 +15,16 @@ public class BookingStore : IBookingStore
     public BookingStore(IApiClient client)
     {
         _client = client ?? throw new ArgumentNullException(nameof(client));
+    }
+
+    public async Task<object> GetBookingStatusAsync(GetBookingStatusRequest request, string baseUrl)
+    {
+        if (string.IsNullOrEmpty(baseUrl))
+            throw new ArgumentNullException(nameof(baseUrl));
+
+        var endpoint = $"{baseUrl}/api/Bookings/infoBooking?bookingNumber={request.BookingCode}";
+
+        return await _client.GetStringAsync<object>(endpoint);
     }
 
     public async Task<CreateBookingResponse> CreateBookingForBookingServiceAsync(BookingForBookingServiceRequest request, string baseUrl)

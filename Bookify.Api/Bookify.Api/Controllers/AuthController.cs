@@ -1,8 +1,10 @@
 ﻿using Bookify.Application.DTOs;
 using Bookify.Application.Interfaces.IServices;
 using Bookify.Application.Requests.Auth;
+using Bookify.Domain_.Exceptions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Cryptography;
 
 namespace Bookify.Api.Controllers;
 
@@ -115,5 +117,24 @@ public class AuthController : ControllerBase
         var reslut = await _service.GetUserInfoAsync();
 
         return reslut;
+    }
+
+    /// <summary>
+    /// Get user profile for Telegram by tokenId and chatId.
+    /// </summary>
+    /// <param name="tokenId"></param>
+    /// <returns></returns>
+    [HttpGet("userDate")]
+    public async Task<ActionResult<UserDto>> GetUserProfileForTelegramAsync([FromQuery] GetUserDataForTelegramRequest request)
+    {
+        //var userAgent = Request.Headers["User-Agent"].ToString();
+        //if (!userAgent.Contains("AZAMAT Corporation", StringComparison.OrdinalIgnoreCase))
+        //{
+        //    throw new InvalidUserAgentException("Недопустимый User-Agent. Доступ запрещен.");
+        //}
+
+        var result = await _service.GetUserInfoWithChatIdAndTokenId(request.chatId, request.tokenId);
+
+        return Ok(result);
     }
 }

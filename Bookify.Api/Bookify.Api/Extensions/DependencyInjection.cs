@@ -40,6 +40,12 @@ internal static class DependencyInjection
             .Bind(configuration.GetSection(BotTokenOptions.SectionName))
             .ValidateDataAnnotations()
             .ValidateOnStart();
+
+        services
+            .AddOptions<EncryptionOptions>()
+            .Bind(configuration.GetSection(EncryptionOptions.SectionName))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
     }
 
     private static void AddControllers(this IServiceCollection services)
