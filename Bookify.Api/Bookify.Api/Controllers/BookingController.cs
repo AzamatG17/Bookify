@@ -19,6 +19,20 @@ public class BookingController : ControllerBase
     }
 
     /// <summary>
+    /// Get Booking status
+    /// </summary>
+    /// <param name="request"></param>
+    /// <returns></returns>
+    [HttpGet("info")]
+    [Authorize]
+    public async Task<ActionResult> GetBookingStatusAsync([FromQuery] GetBookingStatusRequest request)
+    {
+        var result = await _service.GetBookingStatusAsync(request);
+
+        return Ok(result);
+    }
+
+    /// <summary>
     /// Create a new Booking.
     /// </summary>
     /// <param name="request"></param>
