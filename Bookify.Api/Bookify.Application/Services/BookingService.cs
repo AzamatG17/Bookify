@@ -30,6 +30,32 @@ internal sealed class BookingService(
     private readonly IBackgroundJobService _backgroundJobService = backgroundJobService ?? throw new ArgumentNullException(nameof(backgroundJobService));
     private readonly ICurrentUserService _currentUserService = currentUserService ?? throw new ArgumentNullException(nameof(currentUserService));
 
+    public async Task<object> GetBookingStatusAsync(GetBookingStatusRequest request)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+
+        var booking = await _context.Bookings
+            .Include(u => u.User)
+            .Include(s => s.Service)
+            .ThenInclude(b => b.Branch)
+            .ThenInclude(c => c.Companies)
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.BookingCode == request.BookingCode
+                && x.Service.Branch.BranchId == request.SecondBranchId)
+            ?? throw new EntityNotFoundException($"Booking с идентификатором: {request.BookingCode} не найден в филиале: {request.SecondBranchId}");
+        
+        var user = await GetUserAsync(_currentUserService.GetUserId());
+
+        if (booking.User.Id != user.Id)
+        {
+            throw new Domain_.Exceptions.UnauthorizedAccessException("You do not have permission to access this eTicket.");
+        }
+
+        object result = await _store.GetBookingStatusAsync(request, booking.Service.Branch.Companies.BaseUrlForBookingService);
+
+        return result;
+    }
+
     public async Task<CreateBookingResponse> CreateAsync(CreateBookingRequest bookingRequest)
     {
         ArgumentNullException.ThrowIfNull(bookingRequest);
@@ -48,7 +74,7 @@ internal sealed class BookingService(
 
         if (existBooking)
         {
-            throw new DuplicateBookingException("User has already booked a ticket for this service on the selected date.");
+            throw new DuplicateBookingException("Вы уже забронировали билет на эту услугу на выбранную дату.");
         }
 
         CreateBookingResponse response = service.Branch.Projects switch
@@ -175,6 +201,8 @@ internal sealed class BookingService(
         return new BookingDto(
             b.BookingCode,
             b.ServiceName,
+            0,
+            0,
             b.BranchName,
             b.StartDate,
             b.StartTime
