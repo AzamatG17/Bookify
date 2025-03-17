@@ -21,6 +21,7 @@ internal sealed class AuthService : IAuthService
     private readonly ISmsService _smsService;
     private readonly ITelegramService _telegramService;
     private readonly ICurrentUserService _currentUserService;
+    private readonly IAesEncryptionService _aesEncryptionService;
 
     public AuthService(
         IApplicationDbContext context,
@@ -29,7 +30,8 @@ internal sealed class AuthService : IAuthService
         ISmsCodeService smsCodeService,
         ISmsService smsService,
         ITelegramService telegramService,
-        ICurrentUserService currentUserService)
+        ICurrentUserService currentUserService,
+        IAesEncryptionService aesEncryptionService)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));
         _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
@@ -38,6 +40,7 @@ internal sealed class AuthService : IAuthService
         _smsService = smsService ?? throw new ArgumentNullException(nameof(smsService));
         _telegramService = telegramService ?? throw new ArgumentNullException(nameof(telegramService));
         _currentUserService = currentUserService ?? throw new ArgumentNullException(nameof(currentUserService));
+        _aesEncryptionService = aesEncryptionService ?? throw new ArgumentNullException(nameof(aesEncryptionService));
     }
 
     public async Task<string> LoginAsync(Requests.Auth.LoginRequest loginRequest)
@@ -156,6 +159,7 @@ internal sealed class AuthService : IAuthService
             "en" => $"Verification code: {smsCode}",
             _ => $"Tasdiqlovchi kod: {smsCode}"
         };
+
         await _telegramService.SendMessageAsync(existingUser.ChatId, message);
     }
 
@@ -189,6 +193,8 @@ internal sealed class AuthService : IAuthService
             .ThenInclude(s => s.Service)
             .ThenInclude(b => b.Branch)
             .Include(u => u.Bookings.Where(b => b.Success))
+            .ThenInclude(s => s.Service)
+            .ThenInclude(b => b.Branch)
             .FirstOrDefaultAsync(x => x.Id == userId)
             ?? throw new EntityNotFoundException($"Пользователь не существует.");
 
@@ -201,6 +207,8 @@ internal sealed class AuthService : IAuthService
                     .Select(b => new BookingDto(
                         b.BookingCode,
                         b.ServiceName,
+                        b.Service?.BranchId ?? 0,
+                        b.Service?.Branch?.BranchId ?? 0,
                         b.BranchName,
                         b.StartDate,
                         b.StartTime.ToString()
@@ -224,5 +232,63 @@ internal sealed class AuthService : IAuthService
             );
 
         return userDto;
+    }
+
+    public async Task<UserDto> GetUserInfoWithChatId(int chatId)
+    {
+        var user = await _context.Users
+            .AsNoTracking()
+            .Include(u => u.ETickets.Where(e => e.Success))
+            .ThenInclude(s => s.Service)
+            .ThenInclude(b => b.Branch)
+            .Include(u => u.Bookings.Where(b => b.Success))
+            .FirstOrDefaultAsync(x => x.ChatId == chatId)
+            ?? throw new EntityNotFoundException($"Пользователь не существует.");
+
+        var userDto = new UserDto(
+                user.FirstName,
+                user.LastName,
+                user.UserName ?? "",
+                user.Bookings?
+                    .Where(b => b != null)
+                    .Select(b => new BookingDto(
+                        b.BookingCode,
+                        b.ServiceName,
+                        b.Service?.BranchId ?? 0,
+                        b.Service?.Branch?.BranchId ?? 0,
+                        b.BranchName,
+                        b.StartDate,
+                        b.StartTime.ToString()
+                    ))
+                    .ToList() ?? new List<BookingDto>(),
+                user.ETickets?
+                    .Where(e => e != null)
+                    .Select(e => new ETicketDto(
+                        e.TicketId,
+                        e.Number,
+                        e.Message,
+                        e.ServiceName,
+                        e.Service?.BranchId ?? 0,
+                        e.Service?.Branch?.BranchId ?? 0,
+                        e.Service.Branch.Projects,
+                        e.BranchName,
+                        e.BranchName,
+                        e.ValidUntil
+                    ))
+                    .ToList() ?? new List<ETicketDto>()
+            );
+
+        return userDto;
+    }
+
+    public async Task<UserDto> GetUserInfoWithChatIdAndTokenId(int chatId, string tokenId)
+    {
+        var token = await _aesEncryptionService.Decrypt(tokenId);
+        if (!token)
+        {
+            throw new InvalidTokenException("Расшифрованный токен недействителен.");
+        }
+
+        return await GetUserInfoWithChatId(chatId);
     }
 }

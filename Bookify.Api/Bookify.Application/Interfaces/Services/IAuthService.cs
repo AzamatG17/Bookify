@@ -12,4 +12,6 @@ public interface IAuthService
     Task SendCodeForTelegramAsync(SendCodeTelegramRequest sendCodeTelegramRequest);
     Task<string> LoginForAdminAsync(LoginForAdminRequest request);
     Task<UserDto> GetUserInfoAsync();
+    Task<UserDto> GetUserInfoWithChatId(int chatId);
+    Task<UserDto> GetUserInfoWithChatIdAndTokenId(int chatId, string tokenId);
 }
