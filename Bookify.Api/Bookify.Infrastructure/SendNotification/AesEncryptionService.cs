@@ -20,38 +20,42 @@ public class AesEncryptionService : IAesEncryptionService
 
     public async Task<bool> Decrypt(string cipherText)
     {
-        byte[] encryptedData = Convert.FromBase64String(cipherText);
-
-        using var aes = Aes.Create();
-        aes.Key = Encoding.UTF8.GetBytes(_encryptionOptions.Key);
-        aes.IV = Encoding.UTF8.GetBytes(_encryptionOptions.IV);
-
-        using var decryptor = aes.CreateDecryptor();
-        using var ms = new MemoryStream(encryptedData);
-        using var cs = new CryptoStream(ms, decryptor, CryptoStreamMode.Read);
-        using var sr = new StreamReader(cs);
-        var decryptedToken = await sr.ReadToEndAsync();
-
-        int lastDashIndex = decryptedToken.LastIndexOf("S5S");
-        if (lastDashIndex == -1) return false;
-
-        string token = decryptedToken[..lastDashIndex];
-        string timestamp = decryptedToken[(lastDashIndex + 3)..];
-
-        if (!DateTime.TryParseExact(timestamp, "yyyy-MM-ddTHH:mm:ss.fffZ",
-            CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out var tokenTime))
+        try
         {
-            return false;
-        }
+            byte[] encryptedData = Convert.FromBase64String(cipherText);
 
-        if (DateTime.UtcNow > tokenTime.AddMinutes(1))
+            using var aes = Aes.Create();
+            aes.Key = Encoding.UTF8.GetBytes(_encryptionOptions.Key);
+            aes.IV = Encoding.UTF8.GetBytes(_encryptionOptions.IV);
+
+            using var decryptor = aes.CreateDecryptor();
+            using var ms = new MemoryStream(encryptedData);
+            using var cs = new CryptoStream(ms, decryptor, CryptoStreamMode.Read);
+            using var sr = new StreamReader(cs);
+            var decryptedToken = await sr.ReadToEndAsync();
+
+            int lastDashIndex = decryptedToken.LastIndexOf("S5S");
+            if (lastDashIndex == -1) return false;
+
+            string token = decryptedToken[..lastDashIndex];
+            string timestamp = decryptedToken[(lastDashIndex + 3)..];
+
+            if (!DateTime.TryParseExact(timestamp, "yyyyMMdd",
+                CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out var tokenTime))
+            {
+                return false;
+            }
+
+            if (tokenTime.Date != DateTime.UtcNow.Date)
+            {
+                return false;
+            }
+
+            return token == _botTokenOptions.TelegramToken;
+        }
+        catch (Exception ex)
         {
-            return false;
+            throw new Exception("Ошибка: неверный формат шифрованных данных.", ex);
         }
-
-        return token == _botTokenOptions.TelegramToken;
     }
 }
-
-
-
