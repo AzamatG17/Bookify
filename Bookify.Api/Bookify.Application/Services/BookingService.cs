@@ -67,14 +67,23 @@ internal sealed class BookingService(
 
         var user = await GetUserAsync(_currentUserService.GetUserId());
 
-        bool existBooking = await _context.Bookings
-            .AnyAsync(b => b.UserId == user.Id &&
+        var booking = await _context.Bookings
+            .Where(b => b.UserId == user.Id &&
                 b.ServiceId == bookingRequest.ServiceId &&
-                b.StartDate == bookingRequest.StartDate);
-
-        if (existBooking)
+                b.StartDate == bookingRequest.StartDate)
+            .OrderByDescending(b => b.Id)
+            .FirstOrDefaultAsync();
+         
+        if (booking is not null)
         {
-            throw new DuplicateBookingException("Вы уже забронировали билет на эту услугу на выбранную дату.");
+            var bookingStartTime = TimeSpan.Parse(booking.StartTime);
+
+            if (bookingStartTime >= DateTime.Now.TimeOfDay ||
+                (bookingStartTime <= DateTime.Now.TimeOfDay &&
+                !(await _store.GetBookingIsActive(booking.BookingCode, company.BaseUrlForBookingService)).IsActive))
+            {
+                throw new DuplicateBookingException("Вы уже забронировали билет на эту услугу на выбранную дату.");
+            }
         }
 
         CreateBookingResponse response = service.Branch.Projects switch

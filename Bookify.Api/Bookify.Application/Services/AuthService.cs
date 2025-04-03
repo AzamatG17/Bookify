@@ -81,7 +81,7 @@ internal sealed class AuthService : IAuthService
         return token;
     }
 
-    public async Task RegisterAsync(Requests.Auth.RegisterRequest request)
+    public async Task RegisterAsync(RegisterRequest request)
     {
         ArgumentNullException.ThrowIfNull(request);
 
@@ -92,6 +92,7 @@ internal sealed class AuthService : IAuthService
             existingUser.FirstName = request.FirstName;
             existingUser.LastName = request.LastName;
             existingUser.ChatId = request.ChatId;
+            existingUser.Language = request.Language;
 
             var updateResult = await _userManager.UpdateAsync(existingUser);
             if (!updateResult.Succeeded)
@@ -114,6 +115,7 @@ internal sealed class AuthService : IAuthService
             LastName = request.LastName,
             UserName = request.PhoneNumber,
             ChatId = request.ChatId,
+            Language = request.Language,
         };
 
         var createResult = await _userManager.CreateAsync(newUser);
