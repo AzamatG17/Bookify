@@ -1,4 +1,5 @@
-﻿using Bookify.Application.Interfaces;
+﻿using Bookify.Application.BackgroundJobs;
+using Bookify.Application.Interfaces;
 using Bookify.Application.Interfaces.IServices;
 using Bookify.Application.Interfaces.IStores;
 using Bookify.Application.Interfaces.Services;
@@ -44,6 +45,8 @@ public static class DependencyInjection
 
         services.AddSingleton<IJwtTokenHandler, JwtTokenHandler>();
         services.AddSingleton<ICurrentUserService, CurrentUserService>();
+
+        services.AddHostedService<DailyReportService>();
 
         AddBackgroundJobs(services, configuration);
 
