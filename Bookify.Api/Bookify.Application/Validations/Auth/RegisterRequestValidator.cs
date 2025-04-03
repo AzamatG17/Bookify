@@ -34,5 +34,15 @@ public class RegisterRequestValidator : AbstractValidator<RegisterRequest>
 
         RuleFor(x => x.ChatId)
             .GreaterThan(0).WithMessage("Chat ID должен быть положительным числом.");
+
+        RuleFor(x => x.Language)
+            .NotEmpty().WithMessage("Язык обязателен.")
+            .Must(IsValidLanguage).WithMessage("Язык должен быть валидным ISO-кодом (например, 'en', 'ru', 'uz').");
+    }
+
+    private bool IsValidLanguage(string language)
+    {
+        var validLanguages = new[] { "en", "ru", "uz" };
+        return validLanguages.Contains(language.ToLower());
     }
 }

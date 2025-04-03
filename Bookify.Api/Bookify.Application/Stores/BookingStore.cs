@@ -17,6 +17,16 @@ public class BookingStore : IBookingStore
         _client = client ?? throw new ArgumentNullException(nameof(client));
     }
 
+    public async Task<BookingStatusResponse> GetBookingIsActive(string BookingCode, string baseUrl)
+    {
+        if (string.IsNullOrEmpty(baseUrl))
+            throw new ArgumentNullException(nameof(baseUrl));
+
+        var endpoint = $"{baseUrl}/api/Bookings/checkBooking?bookingNumber={BookingCode}";
+
+        return await _client.GetAsync<BookingStatusResponse>(endpoint);
+    }
+
     public async Task<object> GetBookingStatusAsync(GetBookingStatusRequest request, string baseUrl)
     {
         if (string.IsNullOrEmpty(baseUrl))
