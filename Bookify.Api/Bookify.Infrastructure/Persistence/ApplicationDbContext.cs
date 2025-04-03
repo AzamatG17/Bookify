@@ -1,5 +1,4 @@
-﻿using Bookify.Application.Constants;
-using Bookify.Domain_.Entities;
+﻿using Bookify.Domain_.Entities;
 using Bookify.Domain_.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;

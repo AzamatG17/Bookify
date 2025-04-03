@@ -4,5 +4,6 @@ public sealed record RegisterRequest(
     string PhoneNumber,
     string FirstName,
     string LastName,
-    long ChatId
+    long ChatId,
+    string Language
     );

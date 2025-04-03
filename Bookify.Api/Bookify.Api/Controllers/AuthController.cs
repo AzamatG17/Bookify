@@ -1,10 +1,8 @@
 ﻿using Bookify.Application.DTOs;
 using Bookify.Application.Interfaces.IServices;
 using Bookify.Application.Requests.Auth;
-using Bookify.Domain_.Exceptions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Cryptography;
 
 namespace Bookify.Api.Controllers;
 
