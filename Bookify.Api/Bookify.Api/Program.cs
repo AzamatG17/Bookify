@@ -1,4 +1,4 @@
-using Bookify.Api.Extensions;
+﻿using Bookify.Api.Extensions;
 using Bookify.Application.Extensions;
 using Bookify.Infrastructure.Persistence;
 using Hangfire;
@@ -44,14 +44,22 @@ builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 
+#region Configure Migrations
+try
+{
+    using var scope = app.Services.CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    db.Database.Migrate();
+}
+catch (Exception ex)
+{
+    Log.Fatal(ex, "❌ Ошибка при выполнении миграции базы данных");
+    throw;
+}
+#endregion
+
 if (app.Environment.IsDevelopment())
 {
-    using (var scope = app.Services.CreateScope())
-    {
-        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        db.Database.Migrate();
-    }
-
     app.UseSwagger();
     app.UseSwaggerUI();
     app.UseDatabaseSeeder();
@@ -73,7 +81,7 @@ app.UseHangfireDashboard("/hangfire", new DashboardOptions
                 }
             ]
 
-        }) ]
+        })]
 });
 
 app.UseCors("AllowAll");
@@ -88,4 +96,15 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.Run();
+try
+{
+    app.Run();
+}
+catch (Exception ex)
+{
+    Log.Fatal(ex, "❌ Host terminated unexpectedly");
+}
+finally
+{
+    Log.CloseAndFlush();
+}

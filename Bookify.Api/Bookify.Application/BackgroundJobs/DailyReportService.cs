@@ -4,41 +4,74 @@ using Bookify.Domain_.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace Bookify.Application.BackgroundJobs;
 
 internal sealed class DailyReportService : BackgroundService
 {
     private readonly IServiceProvider _serviceProvider;
+    private readonly ILogger<DailyReportService> _logger;
 
-    public DailyReportService(IServiceProvider serviceProvider)
+    public DailyReportService(IServiceProvider serviceProvider, ILogger<DailyReportService> logger)
     {
-        _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider)); 
+        _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        while (!stoppingToken.IsCancellationRequested)
+        _logger.LogInformation("⏱ DailyReportService started");
+
+        try
         {
-            var now = DateTime.UtcNow;
-            var nextRunTime = now.Date.AddHours(8);
-
-            if (now > nextRunTime)
+            while (!stoppingToken.IsCancellationRequested)
             {
-                nextRunTime = nextRunTime.AddDays(1);
-            }
+                var now = DateTime.UtcNow;
+                var nextRunTime = now.Date.AddHours(8);
 
-            var delay = nextRunTime - now;
-            await Task.Delay(delay, stoppingToken);
+                if (now > nextRunTime)
+                    nextRunTime = nextRunTime.AddDays(1);
 
-            if (!stoppingToken.IsCancellationRequested)
-            {
-                await SendDailyReportAsync();
+                var delay = nextRunTime - now;
+
+                if (delay.TotalMilliseconds <= 0)
+                {
+                    delay = TimeSpan.FromMinutes(1);
+                    _logger.LogWarning("⚠️ Calculated negative or zero delay. Adjusted to 1 minute.");
+                }
+
+                _logger.LogInformation("⌛ Waiting {Delay} until next run at {NextRunTime}", delay, nextRunTime);
+
+                await Task.Delay(delay, stoppingToken);
+
+                if (!stoppingToken.IsCancellationRequested)
+                {
+                    try
+                    {
+                        _logger.LogInformation("📤 Sending daily reports...");
+                        await SendDailyReportAsync(stoppingToken);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "❌ Error while sending daily report.");
+                    }
+                }
             }
         }
+        catch (TaskCanceledException)
+        {
+            _logger.LogInformation("🛑 DailyReportService cancelled (app shutdown)");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "❗ Unexpected error in DailyReportService");
+        }
+
+        _logger.LogInformation("✅ DailyReportService finished");
     }
 
-    private async Task SendDailyReportAsync()
+    private async Task SendDailyReportAsync(CancellationToken stoppingToken)
     {
         using var scope = _serviceProvider.CreateScope();
         var context = scope.ServiceProvider.GetRequiredService<IApplicationDbContext>();
@@ -47,12 +80,11 @@ internal sealed class DailyReportService : BackgroundService
         var bookings = await context.Bookings
             .Where(x => x.StartDate.Date == DateTime.UtcNow.Date)
             .Include(u => u.User)
-            .ToListAsync();
+            .ToListAsync(stoppingToken);
 
-        foreach( var booking in bookings )
+        foreach (var booking in bookings)
         {
             var message = GenerateMessageAsync(booking);
-
             await telegramService.SendMessageAsync(booking.User.ChatId, message);
         }
     }
