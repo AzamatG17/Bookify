@@ -28,5 +28,10 @@ public class ServicesConfiguration : IEntityTypeConfiguration<Service>
             .WithOne(e => e.Service)
             .HasForeignKey(e => e.ServiceId)
             .OnDelete(DeleteBehavior.NoAction);
+
+        builder.HasOne(s => s.ServiceGroup)
+               .WithMany(g => g.Services)
+               .HasForeignKey(s => s.ServiceGroupId)
+               .OnDelete(DeleteBehavior.SetNull);
     }
 }

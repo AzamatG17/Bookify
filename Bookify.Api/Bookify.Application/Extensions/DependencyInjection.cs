@@ -8,6 +8,7 @@ using Bookify.Application.Mappings;
 using Bookify.Application.Services;
 using Bookify.Application.Stores;
 using Bookify.Application.Validations.Auth;
+using Bookify.Domain_.Entities;
 using FluentValidation;
 using Hangfire;
 using Microsoft.Extensions.Configuration;
@@ -41,6 +42,7 @@ public static class DependencyInjection
         services.AddScoped<ICompaniesService, CompaniesService>();
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<ISmsCodeService, SmsCodeService>();
+        services.AddScoped<IServiceGroupService, ServiceGroupService>();
         services.AddScoped<IBackgroundJobService, BackgroundJobService>();
 
         services.AddSingleton<IJwtTokenHandler, JwtTokenHandler>();
