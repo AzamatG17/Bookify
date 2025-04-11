@@ -19,6 +19,7 @@ public interface IApplicationDbContext
     DbSet<ServiceTranslation> ServiceTranslations { get; set; }
     DbSet<Booking> Bookings { get; set; }
     DbSet<ETicket> Etickets { get; set; }
+    DbSet<ServiceGroup> ServiceGroups { get; set; }
 
     DatabaseFacade Database { get; }
     int SaveChanges();

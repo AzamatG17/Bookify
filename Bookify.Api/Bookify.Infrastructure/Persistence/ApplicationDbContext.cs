@@ -25,6 +25,7 @@ public class ApplicationDbContext : IdentityDbContext<User, IdentityRole<Guid>, 
     public virtual DbSet<ServiceTranslation> ServiceTranslations { get; set; }
     public virtual DbSet<Booking> Bookings { get; set; }
     public virtual DbSet<ETicket> Etickets { get; set; }
+    public virtual DbSet<ServiceGroup> ServiceGroups  { get; set; }
 
     public DatabaseFacade Database => base.Database;
 
