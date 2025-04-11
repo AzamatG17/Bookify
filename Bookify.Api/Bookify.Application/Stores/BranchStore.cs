@@ -15,7 +15,7 @@ internal sealed class BranchStore(IApiClient apiClient) : IBranchStore
             throw new ArgumentNullException(nameof(companies.BaseUrlForBookingService));
 
         var endpoint = $"{companies.BaseUrlForBookingService}/api/Branches/ListBranches";
-        var branches = await _apiClient.GetAsync<List<NewBranchResponse>>(endpoint);
+        var branches = await _apiClient.GetStringAsync<List<NewBranchResponse>>(endpoint);
 
         return MapToBranch(branches, companies.Id);
     }
