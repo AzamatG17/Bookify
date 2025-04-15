@@ -1,5 +1,6 @@
 ﻿using Bookify.Application.DTOs;
 using Bookify.Application.Interfaces.Services;
+using Bookify.Application.QueryParameters;
 using Bookify.Application.Requests.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -24,9 +25,9 @@ public class ServiceGroupController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<List<ServiceGroupDto>>> GetServiceGroupAllAsync()
+    public async Task<ActionResult<List<ServiceGroupDto>>> GetServiceGroupAllAsync([FromQuery] ServiceGroupQueryParameters parameters)
     {
-        var serviceGroups = await _service.GetAllAsync();
+        var serviceGroups = await _service.GetAllAsync(parameters);
 
         return Ok(serviceGroups);
     }

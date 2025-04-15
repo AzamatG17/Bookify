@@ -83,6 +83,31 @@ internal sealed class ServicesService : IServicesService
         }
     }
 
+    public async Task UpdateServiceGroupAsync(UpdateServiceGroupRequest requests)
+    {
+        ArgumentNullException.ThrowIfNull(requests);
+
+        var service = await _context.Services
+                .Include(x => x.ServiceGroups)
+                .FirstOrDefaultAsync(sg => sg.Id == requests.Id)
+                ?? throw new EntityNotFoundException($"Услуга с идентификатором: {requests.Id} не существует.");
+
+        var existingGroups = await _context.ServiceGroups
+                .Where(g => requests.ServiceGroupIds.Contains(g.Id))
+                .ToListAsync();
+
+        var missingIds = requests.ServiceGroupIds.Except(existingGroups.Select(g => g.Id)).ToList();
+
+        service.ServiceGroups.Clear();
+
+        foreach (var group in existingGroups)
+        {
+            service.ServiceGroups.Add(group);
+        }
+
+        await _context.SaveChangesAsync();
+    }
+
     private async Task<List<Service>> GetDataForServiceStore(BranchRequest branchRequest)
     {
         var branch = await _context.Branches
@@ -148,6 +173,11 @@ internal sealed class ServicesService : IServicesService
         if (serviceQuery.BranchId.HasValue)
         {
             query = query.Where(q => q.Services.BranchId == serviceQuery.BranchId);
+        }
+
+        if (serviceQuery.ServiceGroupId.HasValue)
+        {
+            query = query.Where(q => q.Services.ServiceGroups.Any(x => x.Id == serviceQuery.ServiceGroupId));
         }
 
         query = serviceQuery.SortBy switch
