@@ -9,4 +9,5 @@ public interface IServicesService
     Task<List<ServiceDto>> GetAllAsync(ServiceQueryParameters serviceQueryParameters);
     Task<ServiceDto> GetByIdAsync(ServiceByIdQueryParameters serviceQueryParameters);
     Task<List<ServiceDto>> UpdateDataAsync(BranchRequest branchRequest);
+    Task UpdateServiceGroupAsync(UpdateServiceGroupRequest requests);
 }
