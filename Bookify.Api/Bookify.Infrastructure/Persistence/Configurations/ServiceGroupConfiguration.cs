@@ -11,8 +11,9 @@ public class ServiceGroupConfiguration : IEntityTypeConfiguration<ServiceGroup>
         builder.ToTable(nameof(ServiceGroup));
         builder.HasKey(s => s.Id);
 
-        builder.Property(g => g.Name)
-               .IsRequired()
-               .HasMaxLength(2000);
+        builder.HasMany(s => s.ServiceGroupTranslations)
+            .WithOne(b => b.ServiceGroup)
+            .HasForeignKey(b => b.ServiceGroupId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }
