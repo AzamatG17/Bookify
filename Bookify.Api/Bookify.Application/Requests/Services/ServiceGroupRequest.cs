@@ -1,5 +1,6 @@
-﻿namespace Bookify.Application.Requests.Services;
+﻿using Bookify.Application.DTOs;
+namespace Bookify.Application.Requests.Services;
 
 public record ServiceGroupRequest(
-    string Name
+    List<ServiceGroupTranslationDto> ServiceGroupTranslationDtos
     );
