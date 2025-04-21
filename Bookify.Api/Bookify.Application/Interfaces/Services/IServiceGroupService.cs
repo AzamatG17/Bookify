@@ -8,6 +8,6 @@ public interface IServiceGroupService
 {
     Task<List<ServiceGroupDto>> GetAllAsync(ServiceGroupQueryParameters parameters);
     Task<ServiceGroupForCreateDto> CreateAsync(ServiceGroupRequest request);
-    Task<ServiceGroupDto> UpdateAsync(ServiceGroupDto serviceGroup);
+    Task<ServiceGroupDto> UpdateAsync(ServicegroupUpdateDto serviceGroup);
     Task DeleteAsync(int id);
 }

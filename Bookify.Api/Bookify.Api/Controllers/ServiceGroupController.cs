@@ -63,7 +63,7 @@ public class ServiceGroupController : ControllerBase
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status406NotAcceptable)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<ServiceGroupDto>> UpdateServiceGroupAsync([FromRoute] int id, [FromBody] ServiceGroupDto serviceGroup)
+    public async Task<ActionResult<ServiceGroupDto>> UpdateServiceGroupAsync([FromRoute] int id, [FromBody] ServicegroupUpdateDto serviceGroup)
     {
         if (id != serviceGroup.Id)
         {

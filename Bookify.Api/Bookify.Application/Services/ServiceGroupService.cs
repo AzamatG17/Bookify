@@ -44,17 +44,26 @@ internal sealed class ServiceGroupService(IApplicationDbContext context, IMapper
         return MapToServiceGroupDto(serviceGroup);
     }
 
-    public async Task<ServiceGroupDto> UpdateAsync(ServiceGroupDto serviceGroup)
+    public async Task<ServiceGroupDto> UpdateAsync(ServicegroupUpdateDto serviceGroup)
     {
         ArgumentNullException.ThrowIfNull(serviceGroup);
 
         var existingServiceGroup = await _context.ServiceGroups
-            .FirstOrDefaultAsync(s => s.Id == serviceGroup.Id)
+            .Include(sg => sg.Services)
+            .Include(sg => sg.ServiceGroupTranslations)
+            .FirstOrDefaultAsync(sg => sg.Id == serviceGroup.Id)
             ?? throw new EntityNotFoundException($"ServiceGroup с идентификатором {serviceGroup.Id} не найдена.");
 
-        _mapper.Map(serviceGroup, existingServiceGroup);
+        var newServices = await _context.Services
+        .Where(s => serviceGroup.ServiceIds.Contains(s.Id))
+        .ToListAsync();
 
-        _context.ServiceGroups.Update(existingServiceGroup);
+        existingServiceGroup.Services.Clear();
+        foreach (var service in newServices)
+        {
+            existingServiceGroup.Services.Add(service);
+        }
+
         await _context.SaveChangesAsync();
 
         return _mapper.Map<ServiceGroupDto>(existingServiceGroup);
@@ -83,6 +92,11 @@ internal sealed class ServiceGroupService(IApplicationDbContext context, IMapper
         if (!string.IsNullOrEmpty(parameters.Language))
         {
             query = query.Where(q => q.LanguageCode != null && q.LanguageCode.Contains(parameters.Language));
+        }
+
+        if (!string.IsNullOrEmpty(parameters.Search))
+        {
+            query = query.Where(q => q.Name != null && q.Name.Contains(parameters.Search));
         }
 
         if (parameters.CompanyId.HasValue)
