@@ -19,11 +19,6 @@ public class ServicesConfiguration : IEntityTypeConfiguration<Service>
             .HasForeignKey(b => b.ServiceId)
             .OnDelete(DeleteBehavior.Cascade);
 
-        builder.HasMany(s => s.Bookings)
-            .WithOne(b => b.Service)
-            .HasForeignKey(b => b.ServiceId)
-            .OnDelete(DeleteBehavior.NoAction);
-
         builder.HasMany(s => s.ETickets)
             .WithOne(e => e.Service)
             .HasForeignKey(e => e.ServiceId)
