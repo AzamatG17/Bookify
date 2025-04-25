@@ -32,14 +32,14 @@ public class ServiceRatingConfiguration : IEntityTypeConfiguration<ServiceRating
             .OnDelete(DeleteBehavior.SetNull);
 
         builder.HasOne(sr => sr.Booking)
-            .WithMany()
-            .HasForeignKey(sr => sr.BookingId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .WithOne(b => b.ServiceRating)
+            .HasForeignKey<ServiceRating>(sr => sr.BookingId)
+            .OnDelete(DeleteBehavior.NoAction);
 
         builder.HasOne(sr => sr.ETicket)
-            .WithMany()
-            .HasForeignKey(sr => sr.ETicketId)
-            .OnDelete(DeleteBehavior.Restrict);
+            .WithOne(e => e.ServiceRating)
+            .HasForeignKey<ServiceRating>(sr => sr.ETicketId)
+            .OnDelete(DeleteBehavior.NoAction);
 
         builder.HasOne(sr => sr.Service)
             .WithMany()
