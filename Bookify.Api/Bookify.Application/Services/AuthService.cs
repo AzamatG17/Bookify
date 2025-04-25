@@ -192,48 +192,19 @@ internal sealed class AuthService : IAuthService
         var user = await _context.Users
             .AsNoTracking()
             .Include(u => u.ETickets.Where(e => e.Success))
-            .ThenInclude(s => s.Service)
-            .ThenInclude(b => b.Branch)
+                .ThenInclude(s => s.Service)
+                    .ThenInclude(b => b.Branch)
+            .Include(u => u.ETickets.Where(e => e.Success))
+                .ThenInclude(ub => ub.ServiceRating)
             .Include(u => u.Bookings.Where(b => b.Success))
-            .ThenInclude(s => s.Service)
-            .ThenInclude(b => b.Branch)
+                .ThenInclude(ub => ub.ServiceRating)
+            .Include(u => u.Bookings.Where(b => b.Success))
+                .ThenInclude(s => s.Service)
+                    .ThenInclude(b => b.Branch)
             .FirstOrDefaultAsync(x => x.Id == userId)
             ?? throw new EntityNotFoundException($"Пользователь не существует.");
 
-        var userDto = new UserDto(
-                user.FirstName,
-                user.LastName,
-                user.UserName ?? "",
-                user.Bookings?
-                    .Where(b => b != null)
-                    .Select(b => new BookingDto(
-                        b.BookingCode,
-                        b.ServiceName,
-                        b.Service?.BranchId ?? 0,
-                        b.Service?.Branch?.BranchId ?? 0,
-                        b.BranchName,
-                        b.StartDate,
-                        b.StartTime.ToString()
-                    ))
-                    .ToList() ?? new List<BookingDto>(),
-                user.ETickets?
-                    .Where(e => e != null)
-                    .Select(e => new ETicketDto(
-                        e.TicketId,
-                        e.Number,
-                        e.Message,
-                        e.ServiceName,
-                        e.Service?.BranchId ?? 0,
-                        e.Service?.Branch?.BranchId ?? 0,
-                        e.Service.Branch.Projects,
-                        e.BranchName,
-                        e.BranchName,
-                        e.ValidUntil
-                    ))
-                    .ToList() ?? new List<ETicketDto>()
-            );
-
-        return userDto;
+        return MapToUserDto(user);
     }
 
     public async Task<UserDto> GetUserInfoWithChatId(int chatId)
@@ -241,46 +212,16 @@ internal sealed class AuthService : IAuthService
         var user = await _context.Users
             .AsNoTracking()
             .Include(u => u.ETickets.Where(e => e.Success))
-            .ThenInclude(s => s.Service)
-            .ThenInclude(b => b.Branch)
+                .ThenInclude(s => s.Service)
+                    .ThenInclude(b => b.Branch)
+            .Include(u => u.ETickets.Where(e => e.Success))
+                .ThenInclude(ub => ub.ServiceRating)
             .Include(u => u.Bookings.Where(b => b.Success))
+                .ThenInclude(ub => ub.ServiceRating)
             .FirstOrDefaultAsync(x => x.ChatId == chatId)
             ?? throw new EntityNotFoundException($"Пользователь не существует.");
 
-        var userDto = new UserDto(
-                user.FirstName,
-                user.LastName,
-                user.UserName ?? "",
-                user.Bookings?
-                    .Where(b => b != null)
-                    .Select(b => new BookingDto(
-                        b.BookingCode,
-                        b.ServiceName,
-                        b.Service?.BranchId ?? 0,
-                        b.Service?.Branch?.BranchId ?? 0,
-                        b.BranchName,
-                        b.StartDate,
-                        b.StartTime.ToString()
-                    ))
-                    .ToList() ?? new List<BookingDto>(),
-                user.ETickets?
-                    .Where(e => e != null)
-                    .Select(e => new ETicketDto(
-                        e.TicketId,
-                        e.Number,
-                        e.Message,
-                        e.ServiceName,
-                        e.Service?.BranchId ?? 0,
-                        e.Service?.Branch?.BranchId ?? 0,
-                        e.Service.Branch.Projects,
-                        e.BranchName,
-                        e.BranchName,
-                        e.ValidUntil
-                    ))
-                    .ToList() ?? new List<ETicketDto>()
-            );
-
-        return userDto;
+        return MapToUserDto(user);
     }
 
     public async Task<UserDto> GetUserInfoWithChatIdAndTokenId(int chatId, string tokenId)
@@ -292,5 +233,41 @@ internal sealed class AuthService : IAuthService
         }
 
         return await GetUserInfoWithChatId(chatId);
+    }
+
+    public static UserDto MapToUserDto(User user)
+    {
+        return new UserDto(
+                user.FirstName,
+                user.LastName,
+                user.UserName ?? "",
+                user.Bookings?
+                    .Where(b => b != null)
+                    .Select(b => new BookingDto(
+                        b.BookingCode,
+                        b.ServiceName,
+                        b.Service?.BranchId ?? 0,
+                        b.Service?.Branch?.BranchId ?? 0,
+                        b.BranchName,
+                        b.StartDate,
+                        b.StartTime.ToString()
+                    ))
+                    .ToList() ?? new List<BookingDto>(),
+                user.ETickets?
+                    .Where(e => e != null)
+                    .Select(e => new ETicketDto(
+                        e.TicketId,
+                        e.Number,
+                        e.Message,
+                        e.ServiceName,
+                        e.Service?.BranchId ?? 0,
+                        e.Service?.Branch?.BranchId ?? 0,
+                        e.Service.Branch.Projects,
+                        e.BranchName,
+                        e.BranchName,
+                        e.ValidUntil
+                    ))
+                    .ToList() ?? new List<ETicketDto>()
+            );
     }
 }

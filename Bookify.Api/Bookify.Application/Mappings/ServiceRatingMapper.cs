@@ -10,5 +10,6 @@ public class ServiceRatingMapper : Profile
     {
         CreateMap<ServiceRating, ServiceRatingDto>();
         CreateMap<ServiceRatingForCreateDto, ServiceRating>();
+        CreateMap<ServiceRatingForUpdateDto, ServiceRating>();
     }
 }

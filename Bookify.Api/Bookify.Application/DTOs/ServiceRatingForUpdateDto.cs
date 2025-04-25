@@ -1,9 +1,8 @@
-﻿using Bookify.Domain_.Entities;
-using Bookify.Domain_.Enums;
+﻿using Bookify.Domain_.Enums;
 
 namespace Bookify.Application.DTOs;
 
-public record ServiceRatingDto(
+public record ServiceRatingForUpdateDto(
     int Id,
     string? Comment,
     string? TicketNumber,
@@ -11,11 +10,7 @@ public record ServiceRatingDto(
     string? DeskName,
     SmileyRating? SmileyRating,
     int? PredefinedTextId,
-    PredefinedText? PredefinedText,
     int? BookingId,
-    BookingDto? Booking,
     int? ETicketId,
-    ETicketDto? ETicket,
-    int? ServiceId,
-    ServiceDto? Service
+    int? ServiceId
     );

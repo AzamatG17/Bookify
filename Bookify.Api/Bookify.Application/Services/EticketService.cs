@@ -70,7 +70,7 @@ internal sealed class EticketService : IEticketService
 
         return result;
     }
-
+     
     public async Task<ETicketDto> CreateTicketAsync(CreateEticketRequest request)
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -84,7 +84,6 @@ internal sealed class EticketService : IEticketService
 
         bool existBooking = await _context.Etickets
             .AnyAsync(b => b.UserId == user.Id &&
-                b.ServiceId == request.ServiceId &&
                 b.CreatedAtUtc.Date == DateTime.UtcNow.Date);
 
         if (existBooking)

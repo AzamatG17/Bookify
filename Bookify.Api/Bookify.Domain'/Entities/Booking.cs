@@ -18,4 +18,5 @@ public class Booking : AuditableEntity
     public virtual Service? Service { get; set; }
     public required Guid UserId { get; set; }
     public virtual User User { get; set; }  
+    public virtual ServiceRating? ServiceRating { get; set; }
 }
