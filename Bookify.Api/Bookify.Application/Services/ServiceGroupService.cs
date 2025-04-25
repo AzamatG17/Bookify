@@ -55,8 +55,8 @@ internal sealed class ServiceGroupService(IApplicationDbContext context, IMapper
             ?? throw new EntityNotFoundException($"ServiceGroup с идентификатором {serviceGroup.Id} не найдена.");
 
         var newServices = await _context.Services
-        .Where(s => serviceGroup.ServiceIds.Contains(s.Id))
-        .ToListAsync();
+            .Where(s => serviceGroup.ServiceIds.Contains(s.Id))
+            .ToListAsync();
 
         existingServiceGroup.Services.Clear();
         foreach (var service in newServices)

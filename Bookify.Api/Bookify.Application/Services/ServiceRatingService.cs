@@ -20,8 +20,8 @@ public sealed class ServiceRatingService : IServiceRatingService
 
     public ServiceRatingService(IApplicationDbContext context, IMapper mapper, UserManager<User> userManager, ICurrentUserService currentUserService)
     {
-        _context = context ?? throw new ArgumentNullException(nameof(context)); 
-        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper)); 
+        _context = context ?? throw new ArgumentNullException(nameof(context));
+        _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
         _currentUserService = currentUserService ?? throw new ArgumentNullException(nameof(currentUserService));
     }
@@ -36,11 +36,32 @@ public sealed class ServiceRatingService : IServiceRatingService
         return result ?? [];
     }
 
+    public async Task<List<ServiceRatingDto>> GetServiceRatingAsync()
+    {
+        var user = await GetUserAsync(_currentUserService.GetUserId());
+
+        var result = await _context.ServiceRatings
+            .Where(x => x.UserId == user.Id)
+            .Include(b => b.Booking)
+            .Include(e => e.ETicket)
+            .Include(s => s.Service)
+            .AsNoTracking()
+            .ToListAsync();
+
+        return result.Select(MapToDto).ToList();
+    }
+
     public async Task<ServiceRatingDto> CreateServiceRatingAsync(ServiceRatingForCreateDto createDto)
     {
         ArgumentNullException.ThrowIfNull(createDto);
 
         var user = await GetUserAsync(_currentUserService.GetUserId());
+
+        if (await _context.ServiceRatings.AnyAsync(x =>
+            x.BookingId == createDto.BookingId || x.ETicketId == createDto.ETicketId))
+        {
+            throw new DuplicateBookingException("Вы уже оставили отзыв");
+        }
 
         var newServiceRating = new ServiceRating
         {
@@ -76,10 +97,114 @@ public sealed class ServiceRatingService : IServiceRatingService
         return _mapper.Map<ServiceRatingDto>(newServiceRating);
     }
 
+    public async Task UpdateAsync(ServiceRatingForUpdateDto dto)
+    {
+        ArgumentNullException.ThrowIfNull(dto);
+
+        var user = await GetUserAsync(_currentUserService.GetUserId());
+
+        var serviceRating = await _context.ServiceRatings
+            .FirstOrDefaultAsync(s => s.Id == dto.Id)
+            ?? throw new EntityNotFoundException($"ServiceRating с идентификатором: {dto.Id} не существует.");
+
+        if (serviceRating.UserId != user.Id)
+        {
+            throw new Domain_.Exceptions.UnauthorizedAccessException("Вы не имеете доступа к этому отзыву.");
+        }
+
+        _mapper.Map(dto, serviceRating);
+
+        if (dto.PredefinedTextId == 0)
+            serviceRating.PredefinedTextId = null;
+
+        if (dto.BookingId == 0)
+            serviceRating.BookingId = null;
+
+        if (dto.ETicketId == 0)
+            serviceRating.ETicketId = null;
+
+        if (dto.ServiceId == 0)
+            serviceRating.ServiceId = null;
+
+        _context.ServiceRatings.Update(serviceRating);
+        await _context.SaveChangesAsync();
+
+        return;
+    }
+
+    public async Task DeleteAsync(int id)
+    {
+        var result = await _context.ServiceRatings
+            .FirstOrDefaultAsync(x => x.Id == id)
+            ?? throw new EntityNotFoundException($"ServiceRating с идентификатором: {id} не существует.");
+
+        var user = await GetUserAsync(_currentUserService.GetUserId());
+
+        if (result.UserId != user.Id)
+        {
+            throw new Domain_.Exceptions.UnauthorizedAccessException("Вы не имеете доступа к этому отзыву.");
+        }
+
+        _context.ServiceRatings.Remove(result);
+        await _context.SaveChangesAsync();
+    }
+
     private async Task<User> GetUserAsync(Guid userId)
     {
         return await _userManager.Users
             .FirstOrDefaultAsync(u => u.Id == userId)
             ?? throw new EntityNotFoundException($"User with id: {userId} does not exist.");
+    }
+
+    public static ServiceRatingDto MapToDto(ServiceRating rating)
+    {
+        if (rating == null) return null!;
+
+        return new ServiceRatingDto(
+            Id: rating.Id,
+            Comment: rating.Comment,
+            TicketNumber: rating.TicketNumber,
+            DeskNumber: rating.DeskNumber,
+            DeskName: rating.DeskName,
+            SmileyRating: rating.SmileyRating,
+            PredefinedTextId: rating.PredefinedTextId,
+            PredefinedText: rating.PredefinedText,
+            BookingId: rating.BookingId,
+            Booking: rating.Booking == null ? null : new BookingDto(
+                BookingCode: rating.Booking.BookingCode,
+                ServiceName: rating.Booking.ServiceName,
+                BranchId: rating.Booking.Service?.BranchId ?? 0,
+                SecondBranchId: rating.Booking.Service?.Branch?.BranchId ?? 0,
+                BranchName: rating.Booking.BranchName,
+                StartDate: rating.Booking.StartDate,
+                StartTime: rating.Booking.StartTime.ToString()
+            ),
+            ETicketId: rating.ETicketId,
+            ETicket: rating.ETicket == null ? null : new ETicketDto(
+                ETicketId: rating.ETicket.TicketId,
+                Number: rating.ETicket.Number,
+                Message: rating.ETicket.Message,
+                ServiceName: rating.ETicket.ServiceName,
+                BranchId: rating.ETicket.Service?.BranchId ?? 0,
+                SecondBranchId: rating.ETicket.Service?.Branch?.BranchId ?? 0,
+                Projects: rating.ETicket.Service?.Branch?.Projects,
+                BranchName: rating.ETicket.BranchName,
+                null,
+                ValidUntil: rating.ETicket.ValidUntil
+            ),
+            ServiceId: rating.ServiceId,
+            Service: rating.Service == null ? null : new ServiceDto(
+                Id: rating.Service.Id,
+                ServiceId: rating.Service.ServiceId,
+                ServiceName: rating.Service.ServiceTranslations?.FirstOrDefault()?.Name ?? "",
+                Color: rating.Service.Branch.Companies.Color ?? "",
+                CompanyId: rating.Service.Branch?.Companies?.Id ?? 0,
+                CompanyName: rating.Service.Branch?.Companies?.Name ?? "",
+                BranchId: rating.Service.Branch?.Id ?? 0,
+                BranchName: rating.Service.Branch?.Name ?? "",
+                CoordinateLatitude: rating.Service.Branch?.CoordinateLatitude ?? 0.0,
+                CoordinateLongitude: rating.Service.Branch?.CoordinateLongitude ?? 0.0
+            )
+        );
     }
 }
