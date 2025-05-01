@@ -28,7 +28,7 @@ public class ServiceController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<List<ServiceDto>>> GetAllServiceAsync([FromQuery] ServiceQueryParameters service)
+    public async Task<ActionResult<List<ServiceWithRatingDto>>> GetAllServiceAsync([FromQuery] ServiceQueryParameters service)
     {
         var companies = await _service.GetAllAsync(service);
 
