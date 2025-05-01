@@ -12,10 +12,10 @@ internal sealed class ApiClient : IApiClient
     private readonly HttpClient _client;
     private readonly ILogger<ApiClient> _logger;
 
-    public ApiClient(HttpClient client)
+    public ApiClient(HttpClient client, ILogger<ApiClient> logger)
     {
         _client = client ?? throw new ArgumentNullException(nameof(client));
-
+        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     public async Task<TResult> GetAsync<TResult>(string url)
@@ -23,9 +23,18 @@ internal sealed class ApiClient : IApiClient
         if (string.IsNullOrEmpty(url))
             throw new ArgumentNullException(nameof(url));
 
-        var response = await _client.GetAsync(url);
+        HttpResponseMessage response;
+        try
+        {
+            response = await _client.GetAsync(url);
 
-        response.EnsureSuccessStatusCode();
+            response.EnsureSuccessStatusCode();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to send GET request to: {Url}", url);
+            throw new HttpRequestException($"Request to {url} failed.", ex);
+        }
 
         var content = await response.Content.ReadAsStringAsync();
 

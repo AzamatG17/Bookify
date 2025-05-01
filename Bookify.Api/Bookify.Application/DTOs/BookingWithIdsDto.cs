@@ -1,6 +1,7 @@
 ﻿namespace Bookify.Application.DTOs;
 
-public record BookingDto(
+public record BookingWithIdsDto(
+    int Id,
     int BookingId,
     string BookingCode,
     string ServiceName,
