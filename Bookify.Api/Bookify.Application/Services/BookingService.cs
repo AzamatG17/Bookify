@@ -208,6 +208,7 @@ internal sealed class BookingService(
     private static BookingDto MapToCreateBookingResponse(Booking b)
     {
         return new BookingDto(
+            0,
             b.BookingCode,
             b.ServiceName,
             0,

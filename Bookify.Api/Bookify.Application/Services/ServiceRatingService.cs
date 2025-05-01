@@ -58,7 +58,7 @@ public sealed class ServiceRatingService : IServiceRatingService
         var user = await GetUserAsync(_currentUserService.GetUserId());
 
         if (await _context.ServiceRatings.AnyAsync(x =>
-            x.BookingId == createDto.BookingId || x.ETicketId == createDto.ETicketId))
+            x.Booking.BookingId == createDto.BookingId || x.ETicket.ETicketId == createDto.ETicketId))
         {
             throw new DuplicateBookingException("Вы уже оставили отзыв");
         }
@@ -118,11 +118,30 @@ public sealed class ServiceRatingService : IServiceRatingService
             serviceRating.PredefinedTextId = null;
 
         if (dto.BookingId == 0)
+        {
             serviceRating.BookingId = null;
+        }
+        else
+        {
+            serviceRating.BookingId = await _context.Bookings
+                .Where(x => x.BookingId == dto.BookingId)
+                .Select(x => x.Id)
+                .FirstOrDefaultAsync();
+        }
 
         if (dto.ETicketId == 0)
+        {
             serviceRating.ETicketId = null;
-
+        }
+        else
+        {
+            serviceRating.ETicketId = await _context.Etickets
+                .Where(x => x.ETicketId == dto.ETicketId)
+                .Select(x => x.Id)
+                .FirstOrDefaultAsync();
+        }
+            
+            
         if (dto.ServiceId == 0)
             serviceRating.ServiceId = null;
 
@@ -171,6 +190,7 @@ public sealed class ServiceRatingService : IServiceRatingService
             PredefinedText: rating.PredefinedText,
             BookingId: rating.BookingId,
             Booking: rating.Booking == null ? null : new BookingDto(
+                BookingId: rating.Booking.BookingId,
                 BookingCode: rating.Booking.BookingCode,
                 ServiceName: rating.Booking.ServiceName,
                 BranchId: rating.Booking.Service?.BranchId ?? 0,

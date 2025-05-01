@@ -139,8 +139,12 @@ internal sealed class EticketService : IEticketService
                 await _store.DeleteOnlinetAsync(eTicket.Service.Branch.Companies.BaseUrlForOnlinet, user.Id.ToString(), request.Number)
         };
 
-        _backgroundJobClient.Enqueue(() => _backgroundJobService.DeleteEticketAsync(eTicket.Id));
+        //_backgroundJobClient.Enqueue(() => _backgroundJobService.DeleteEticketAsync(eTicket.Id));
         _backgroundJobClient.Enqueue(() => _backgroundJobService.SendDeleteETicketTelegram(MapToETicketResponse(eTicket), user.Id, request.Language));
+
+
+
+        await _backgroundJobService.DeleteEticketAsync(eTicket.Id);
 
         return deleteResponse;
     }

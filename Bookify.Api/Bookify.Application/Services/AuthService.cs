@@ -243,7 +243,9 @@ internal sealed class AuthService : IAuthService
                 user.UserName ?? "",
                 user.Bookings?
                     .Where(b => b != null)
-                    .Select(b => new BookingDto(
+                    .Select(b => new BookingWithIdsDto(
+                        b.Id,
+                        b.BookingId,
                         b.BookingCode,
                         b.ServiceName,
                         b.Service?.BranchId ?? 0,
@@ -252,7 +254,7 @@ internal sealed class AuthService : IAuthService
                         b.StartDate,
                         b.StartTime.ToString()
                     ))
-                    .ToList() ?? new List<BookingDto>(),
+                    .ToList() ?? new List<BookingWithIdsDto>(),
                 user.ETickets?
                     .Where(e => e != null)
                     .Select(e => new ETicketDto(
