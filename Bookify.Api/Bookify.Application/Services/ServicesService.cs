@@ -7,7 +7,6 @@ using Bookify.Domain_.Entities;
 using Bookify.Domain_.Exceptions;
 using Bookify.Domain_.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
 
 namespace Bookify.Application.Services;
 
@@ -28,7 +27,15 @@ internal sealed class ServicesService : IServicesService
 
         var query = await FilterService(serviceQueryParameters);
 
-        return query.Select(MapToServiceDto).ToList();
+        var result = new List<ServiceWithRatingDto>();
+
+        foreach (var service in query)
+        {
+            var dto = await MapToServiceDto(service);
+            result.Add(dto);
+        }
+
+        return result.ToList();
     }
 
     public async Task<ServiceDto> GetByIdAsync(ServiceByIdQueryParameters serviceByIdQueryParameters)
@@ -74,7 +81,7 @@ internal sealed class ServicesService : IServicesService
             await _context.SaveChangesAsync();
             await transaction.CommitAsync();
 
-            return newServices.Select(MapToServiceDto).ToList();
+            return newServices.Select(MapToServiceDtoForUpdate).ToList();
         }
         catch (Exception ex)
         {
@@ -197,25 +204,21 @@ internal sealed class ServicesService : IServicesService
         return await query.ToListAsync();
     }
 
-    private static ServiceWithRatingDto MapToServiceDto(ServiceTranslation service)
+    private async Task<ServiceWithRatingDto> MapToServiceDto(ServiceTranslation service)
     {
-        var ratings = new List<int>();
+        var serviceRatings = await _context.ServiceRatings
+            .AsNoTracking()
+            .Where(sr =>
+                (sr.Booking != null && sr.Booking.Service != null && sr.Booking.Service.BranchId == service.Services.BranchId) ||
+                (sr.ETicket != null && sr.ETicket.Service != null && sr.ETicket.Service.BranchId == service.Services.BranchId))
+            .ToListAsync();
 
-        if (service?.Services?.Bookings != null)
-        {
-            ratings.AddRange(service.Services.Bookings
-                .Where(x => x?.ServiceRating != null)
-                .Select(x => (int)x.ServiceRating.SmileyRating.Value));
-        }
-
-        if (service?.Services?.ETickets != null)
-        {
-            ratings.AddRange(service.Services.ETickets
-                .Where(x => x?.ServiceRating != null)
-                .Select(x => (int)x.ServiceRating.SmileyRating.Value));
-        }
-
-        double? averageRating = ratings.Count > 0 ? ratings.Average() : (double?) 0;
+        double? averageRating = serviceRatings.Count > 0 ?
+            serviceRatings
+                .Where(r => r.SmileyRating != null)
+                .Select(r => (int)r.SmileyRating.Value)
+                .Average()
+            : (double?)0;
 
         return new ServiceWithRatingDto(
             service.Services.Id,
@@ -232,7 +235,7 @@ internal sealed class ServicesService : IServicesService
         );
     }
 
-    private static ServiceDto MapToServiceDto(Service service)
+    private static ServiceDto MapToServiceDtoForUpdate(Service service)
     {
         return new ServiceDto(
             service.Id,
