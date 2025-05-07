@@ -54,6 +54,9 @@ namespace Bookify.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Language")
                         .IsRequired()
                         .HasMaxLength(10)
@@ -128,6 +131,9 @@ namespace Bookify.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
                     b.Property<DateTime?>("LastUpdatedAtUtc")
                         .HasColumnType("datetime2");
 
@@ -185,6 +191,9 @@ namespace Bookify.Infrastructure.Persistence.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
                     b.Property<DateTime?>("LastUpdatedAtUtc")
                         .HasColumnType("datetime2");
 
@@ -230,6 +239,9 @@ namespace Bookify.Infrastructure.Persistence.Migrations
 
                     b.Property<int>("ETicketId")
                         .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Language")
                         .IsRequired()
@@ -307,6 +319,9 @@ namespace Bookify.Infrastructure.Persistence.Migrations
                     b.Property<int>("Day")
                         .HasColumnType("int");
 
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
                     b.Property<DateTime?>("LastUpdatedAtUtc")
                         .HasColumnType("datetime2");
 
@@ -361,6 +376,9 @@ namespace Bookify.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
                     b.Property<DateTime?>("LastUpdatedAtUtc")
                         .HasColumnType("datetime2");
 
@@ -392,6 +410,9 @@ namespace Bookify.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
                     b.Property<DateTime?>("LastUpdatedAtUtc")
                         .HasColumnType("datetime2");
 
@@ -417,6 +438,9 @@ namespace Bookify.Infrastructure.Persistence.Migrations
                     b.Property<string>("CreatedBy")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
 
                     b.Property<string>("LanguageCode")
                         .IsRequired()
@@ -477,6 +501,9 @@ namespace Bookify.Infrastructure.Persistence.Migrations
                     b.Property<int?>("ETicketId")
                         .HasColumnType("int");
 
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
                     b.Property<DateTime?>("LastUpdatedAtUtc")
                         .HasColumnType("datetime2");
 
@@ -532,6 +559,9 @@ namespace Bookify.Infrastructure.Persistence.Migrations
                     b.Property<string>("CreatedBy")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
 
                     b.Property<string>("LanguageCode")
                         .IsRequired()
