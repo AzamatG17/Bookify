@@ -191,14 +191,10 @@ internal sealed class AuthService : IAuthService
 
         var user = await _context.Users
             .AsNoTracking()
-            .Include(u => u.ETickets.Where(e => e.Success))
+            .Include(u => u.ETickets.Where(e => e.Success && e.IsActive))
                 .ThenInclude(s => s.Service)
                     .ThenInclude(b => b.Branch)
-            .Include(u => u.ETickets.Where(e => e.Success))
-                .ThenInclude(ub => ub.ServiceRating)
-            .Include(u => u.Bookings.Where(b => b.Success))
-                .ThenInclude(ub => ub.ServiceRating)
-            .Include(u => u.Bookings.Where(b => b.Success))
+            .Include(u => u.Bookings.Where(b => b.Success && b.IsActive))
                 .ThenInclude(s => s.Service)
                     .ThenInclude(b => b.Branch)
             .FirstOrDefaultAsync(x => x.Id == userId)
@@ -211,13 +207,12 @@ internal sealed class AuthService : IAuthService
     {
         var user = await _context.Users
             .AsNoTracking()
-            .Include(u => u.ETickets.Where(e => e.Success))
+            .Include(u => u.ETickets.Where(e => e.Success && e.IsActive))
                 .ThenInclude(s => s.Service)
                     .ThenInclude(b => b.Branch)
-            .Include(u => u.ETickets.Where(e => e.Success))
-                .ThenInclude(ub => ub.ServiceRating)
-            .Include(u => u.Bookings.Where(b => b.Success))
-                .ThenInclude(ub => ub.ServiceRating)
+            .Include(u => u.Bookings.Where(b => b.Success && b.IsActive))
+                .ThenInclude(s => s.Service)
+                    .ThenInclude(b => b.Branch)
             .FirstOrDefaultAsync(x => x.ChatId == chatId)
             ?? throw new EntityNotFoundException($"Пользователь не существует.");
 

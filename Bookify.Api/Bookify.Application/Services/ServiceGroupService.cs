@@ -83,9 +83,9 @@ internal sealed class ServiceGroupService(IApplicationDbContext context, IMapper
     {
         var query = _context.ServiceGroupTranslations
             .Include(s => s.ServiceGroup)
-            .ThenInclude(s => s.Services)
-            .ThenInclude(b => b.Branch)
-            .ThenInclude(c => c.Companies)
+                .ThenInclude(s => s.Services)
+                    .ThenInclude(b => b.Branch)
+                        .ThenInclude(c => c.Companies)
             .AsNoTracking()
             .AsQueryable();
 
