@@ -3,5 +3,6 @@
 public record ServiceGroupDto(
     int Id,
     string Color,
-    string Name
+    string Name,
+    int CompanyId
     );
