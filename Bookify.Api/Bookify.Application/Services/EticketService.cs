@@ -84,6 +84,7 @@ internal sealed class EticketService : IEticketService
 
         bool existBooking = await _context.Etickets
             .AnyAsync(b => b.UserId == user.Id &&
+                b.IsActive &&
                 b.CreatedAtUtc.Date == DateTime.UtcNow.Date);
 
         if (existBooking)
@@ -127,22 +128,20 @@ internal sealed class EticketService : IEticketService
                 .ThenInclude(s => s.Branch)
                     .ThenInclude(br => br.Companies)
             .AsNoTracking()
-            .FirstOrDefaultAsync(e => e.Number == request.Number && e.UserId == user.Id)
-            ?? throw new EntityNotFoundException($"ETicket с номером: {request.Number} не найден.");
+            .FirstOrDefaultAsync(e => e.ETicketId == request.eTicketId && e.UserId == user.Id)
+            ?? throw new EntityNotFoundException($"ETicket с номером: {request.eTicketId} не найден.");
 
         DeleteResponse deleteResponse = eTicket.Service.Branch.Projects switch
         {
             Projects.BookingService =>
-                await _store.DeleteBookingServiceAsync(eTicket.Service.Branch.Companies.BaseUrlForBookingService, eTicket.Service.Branch.BranchId, request.Number),
+                await _store.DeleteBookingServiceAsync(eTicket.Service.Branch.Companies.BaseUrlForBookingService, eTicket.Service.Branch.BranchId, eTicket.Number),
 
             Projects.Onlinet =>
-                await _store.DeleteOnlinetAsync(eTicket.Service.Branch.Companies.BaseUrlForOnlinet, user.Id.ToString(), request.Number)
+                await _store.DeleteOnlinetAsync(eTicket.Service.Branch.Companies.BaseUrlForOnlinet, user.Id.ToString(), eTicket.Number)
         };
 
         //_backgroundJobClient.Enqueue(() => _backgroundJobService.DeleteEticketAsync(eTicket.Id));
         _backgroundJobClient.Enqueue(() => _backgroundJobService.SendDeleteETicketTelegram(MapToETicketResponse(eTicket), user.Id, request.Language));
-
-
 
         await _backgroundJobService.DeleteEticketAsync(eTicket.Id);
 

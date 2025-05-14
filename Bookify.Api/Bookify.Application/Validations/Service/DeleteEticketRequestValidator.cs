@@ -7,7 +7,7 @@ public class DeleteEticketRequestValidator : AbstractValidator<DeleteEticketRequ
 {
     public DeleteEticketRequestValidator()
     {
-        RuleFor(x => x.Number)
+        RuleFor(x => x.eTicketId)
             .NotEmpty().WithMessage("Номер билета обязателен.");
 
         RuleFor(x => x.SecondBranchId)

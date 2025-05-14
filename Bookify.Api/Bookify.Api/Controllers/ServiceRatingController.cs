@@ -1,5 +1,6 @@
 ﻿using Bookify.Application.DTOs;
 using Bookify.Application.Interfaces.Services;
+using Bookify.Application.QueryParameters;
 using Bookify.Application.Requests.Services;
 using Bookify.Domain_.Entities;
 using Microsoft.AspNetCore.Authorization;
@@ -30,6 +31,17 @@ public class ServiceRatingController : ControllerBase
     public async Task<ActionResult<List<ServiceRatingDto>>> GetAllServiceRatingAsync()
     {
         var result = await _ratingService.GetAllServiceRatingAsync();
+
+        return Ok(result);
+    }
+
+    [HttpGet("GetByCompanyId")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult> GetAllServiceRatingByCompany([FromQuery] ServiceRatingByCompanyQueryParametrs queryParametrs)
+    {
+        var result = await _ratingService.GetAllServiceRatingByCompanyAsync(queryParametrs);
 
         return Ok(result);
     }

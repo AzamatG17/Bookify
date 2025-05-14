@@ -70,7 +70,8 @@ internal sealed class BookingService(
         var booking = await _context.Bookings
             .Where(b => b.UserId == user.Id &&
                 b.ServiceId == bookingRequest.ServiceId &&
-                b.StartDate == bookingRequest.StartDate)
+                b.StartDate == bookingRequest.StartDate &&
+                b.IsActive)
             .OrderByDescending(b => b.Id)
             .FirstOrDefaultAsync();
          

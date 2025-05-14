@@ -120,7 +120,8 @@ internal sealed class ServiceGroupService(IApplicationDbContext context, IMapper
         return new ServiceGroupDto(
             translation.ServiceGroupId,
             translation.ServiceGroup.Services.Select(b => b.Branch.Companies.Color).FirstOrDefault(),
-            translation.Name
+            translation.Name,
+            translation.ServiceGroup.Services.Select(b => b.Branch.CompanyId).FirstOrDefault()
         );
     }
 

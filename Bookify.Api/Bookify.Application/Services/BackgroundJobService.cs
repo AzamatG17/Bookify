@@ -224,11 +224,13 @@ internal sealed class BackgroundJobService : IBackgroundJobService
 
     public async Task DeleteBookingAsync(int bookingId)
     {
-        var existingBooking = await _context.Bookings.FindAsync(bookingId);
+        var existingBookings = await _context.Bookings
+            .Where(x => x.Id == bookingId)
+            .ToListAsync();
 
-        if (existingBooking != null)
+        foreach (var eTicket in existingBookings)
         {
-            existingBooking.IsActive = false;
+            eTicket.IsActive = false;
         }
 
         await _context.SaveChangesAsync();
@@ -236,13 +238,13 @@ internal sealed class BackgroundJobService : IBackgroundJobService
 
     public async Task DeleteEticketAsync(int eTicketId)
     {
-        var eTicket = await _context.Etickets.FindAsync(eTicketId);
+        var eTicket = await _context.Etickets
+        .FirstOrDefaultAsync(x => x.Id == eTicketId);
 
-        if (eTicket != null)
-        {
-            eTicket.IsActive = false;
-        }
+        if (eTicket is null || !eTicket.IsActive)
+            return;
 
+        eTicket.IsActive = false;
         await _context.SaveChangesAsync();
     }
 }

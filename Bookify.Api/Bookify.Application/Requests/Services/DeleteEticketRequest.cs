@@ -1,3 +1,3 @@
 ﻿namespace Bookify.Application.Requests.Services;
 
-public record DeleteEticketRequest(string Number, int SecondBranchId, string Language);
+public record DeleteEticketRequest(int eTicketId, int SecondBranchId, string Language);
