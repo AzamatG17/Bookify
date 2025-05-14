@@ -3,11 +3,13 @@ using AutoMapper.QueryableExtensions;
 using Bookify.Application.DTOs;
 using Bookify.Application.Interfaces.IServices;
 using Bookify.Application.Interfaces.Services;
+using Bookify.Application.QueryParameters;
 using Bookify.Domain_.Entities;
 using Bookify.Domain_.Exceptions;
 using Bookify.Domain_.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace Bookify.Application.Services;
 
@@ -34,6 +36,20 @@ public sealed class ServiceRatingService : IServiceRatingService
             .ToListAsync();
 
         return result ?? [];
+    }
+    
+    public async Task<List<ServiceRatingByCompanyDto>> GetAllServiceRatingByCompanyAsync(ServiceRatingByCompanyQueryParametrs queryParametrs)
+    {
+        ArgumentNullException.ThrowIfNull(queryParametrs);
+
+        var query = await FilterServiceRating(queryParametrs);
+
+        if (query == null || !query.Any())
+        {
+            throw new EntityNotFoundException("Рейтинги услуг по заданным параметрам не найдены.");
+        }
+
+        return MapServiceRatingsToDto(query);
     }
 
     public async Task<List<ServiceRatingDto>> GetServiceRatingAsync()
@@ -175,6 +191,44 @@ public sealed class ServiceRatingService : IServiceRatingService
             ?? throw new EntityNotFoundException($"User with id: {userId} does not exist.");
     }
 
+    private async Task<List<ServiceRating>> FilterServiceRating(ServiceRatingByCompanyQueryParametrs parametrs)
+    {
+        var query = _context.ServiceRatings
+            .Include(sr => sr.Booking)
+                .ThenInclude(b => b.User)
+            .Include(sr => sr.Booking)
+                .ThenInclude(srs => srs.Service)
+                    .ThenInclude(srb => srb.Branch)
+            .Include(se => se.ETicket)
+                .ThenInclude(e => e.User)
+            .Include(sr => sr.ETicket)
+                .ThenInclude(srs => srs.Service)
+                    .ThenInclude(srb => srb.Branch)
+            .Where(x => x.IsActive)
+            .Where(sr =>
+                (sr.Booking != null && sr.Booking.Service != null && sr.Booking.Service.Branch.CompanyId == parametrs.CompanyId) ||
+                (sr.ETicket != null && sr.ETicket.Service != null && sr.ETicket.Service.Branch.CompanyId == parametrs.CompanyId)
+            )
+            .AsQueryable();
+
+        if (parametrs.BranchId.HasValue)
+        {
+            query = query.Where(sr =>
+                (sr.Booking != null && sr.Booking.Service != null && sr.Booking.Service.BranchId == parametrs.BranchId.Value) ||
+                (sr.ETicket != null && sr.ETicket.Service != null && sr.ETicket.Service.BranchId == parametrs.BranchId.Value)
+            );
+        }
+
+        query = parametrs.SortBy switch
+        {
+            "idDesc" => query.OrderByDescending(q => q.Id),
+            "idAsc" => query.OrderBy(q => q.Id),
+            _ => query
+        };
+
+        return await query.ToListAsync();
+    }
+
     public static ServiceRatingDto MapToDto(ServiceRating rating)
     {
         if (rating == null) return null!;
@@ -225,6 +279,61 @@ public sealed class ServiceRatingService : IServiceRatingService
                 CoordinateLatitude: rating.Service.Branch?.CoordinateLatitude ?? 0.0,
                 CoordinateLongitude: rating.Service.Branch?.CoordinateLongitude ?? 0.0
             )
+        );
+    }
+
+    private static List<ServiceRatingByCompanyDto> MapServiceRatingsToDto(List<ServiceRating> ratings)
+    {
+        return ratings
+            .Where(sr =>
+                sr.Booking?.Service?.Branch != null ||
+                sr.ETicket?.Service?.Branch != null)
+            .GroupBy(sr =>
+            {
+                var branch = sr.Booking?.Service?.Branch ?? sr.ETicket?.Service?.Branch;
+                return new { branch.Id, branch.Name };
+            })
+            .Select(g =>
+                new ServiceRatingByCompanyDto(
+                    g.Key.Id,
+                    g.Key.Name,
+                    g.Select(sr =>
+                    {
+                        var user = sr.Booking?.User ?? sr.ETicket?.User;
+                        var userName = user != null
+                            ? $"{user.LastName} {user.FirstName}".Trim()
+                            : "Неизвестный пользователь";
+
+                        return new ServiceRatingByBranchDto(
+                            sr.Id,
+                            sr.Comment,
+                            sr.SmileyRating,
+                            sr.PredefinedTextId,
+                            sr.PredefinedText,
+                            userName
+                        );
+                    }).ToList()
+                )
+            )
+            .ToList();
+    }
+
+    public static ServiceRatingByBranchDto MapToServiceRatingByBranchDto(ServiceRating sr)
+    {
+        var user = sr.Booking?.User
+               ?? sr.ETicket?.User;
+
+        var userName = user is not null
+            ? $"{user.LastName} {user.FirstName}"
+            : "Unknown";
+
+        return new ServiceRatingByBranchDto(
+            sr.Id,
+            sr.Comment,
+            sr.SmileyRating,
+            sr.PredefinedTextId,
+            sr.PredefinedText,
+            userName
         );
     }
 }
