@@ -24,6 +24,15 @@ internal sealed class ServiceGroupService(IApplicationDbContext context, IMapper
         return query.Select(MapToServiceGroupDto).ToList();
     }
 
+    public async Task<List<ServiceGroupForAdminDto>> GetAllForAdminAsync(ServiceGroupQueryParameters parameters)
+    {
+        ArgumentNullException.ThrowIfNull(parameters);
+
+        var query = await FilterServiceGroup(parameters);
+
+        return query.Select(MapToServiceRatingForAdminDto).ToList();
+    }
+
     public async Task<ServiceGroupForCreateDto> CreateAsync(ServiceGroupRequest request)
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -86,6 +95,9 @@ internal sealed class ServiceGroupService(IApplicationDbContext context, IMapper
                 .ThenInclude(s => s.Services)
                     .ThenInclude(b => b.Branch)
                         .ThenInclude(c => c.Companies)
+            .Include(s => s.ServiceGroup)
+                .ThenInclude(s => s.Services)
+                    .ThenInclude(b => b.ServiceTranslations)
             .AsNoTracking()
             .AsQueryable();
 
@@ -122,6 +134,32 @@ internal sealed class ServiceGroupService(IApplicationDbContext context, IMapper
             translation.ServiceGroup.Services.Select(b => b.Branch.Companies.Color).FirstOrDefault(),
             translation.Name,
             translation.ServiceGroup.Services.Select(b => b.Branch.CompanyId).FirstOrDefault()
+        );
+    }
+
+    private static ServiceGroupForAdminDto MapToServiceRatingForAdminDto(ServiceGroupTranslation translation)
+    {
+        var services = translation.ServiceGroup?.Services ?? new List<Service>();
+
+        return new ServiceGroupForAdminDto(
+            translation.ServiceGroupId,
+            services.Select(b => b.Branch?.Companies?.Color).FirstOrDefault(),
+            translation.Name,
+            services.Select(b => b.Branch?.CompanyId ?? 0).FirstOrDefault(),
+            services.Select(b => b.Branch?.Companies?.Name).FirstOrDefault(),
+            services.Select(b => new ServiceWithRatingDto(
+                b.Id,
+                b.ServiceId,
+                b.ServiceTranslations?.FirstOrDefault(x => x.LanguageCode == "ru")?.Name ?? "",
+                b.Branch?.Companies?.Color,
+                b.Branch?.CompanyId ?? 0, 
+                b.Branch?.Companies?.Name ?? "Unknown",
+                b.BranchId ?? 0,
+                b.Branch?.Name ?? "Unknown",
+                0,  
+                b.Branch?.CoordinateLatitude ?? 0,
+                b.Branch?.CoordinateLongitude ?? 0
+            )).ToList()
         );
     }
 

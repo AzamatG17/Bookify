@@ -33,6 +33,23 @@ public class ServiceGroupController : ControllerBase
     }
 
     /// <summary>
+    /// Get all service groups for admin
+    /// </summary>
+    /// <param name="parameters"></param>
+    /// <returns></returns>
+    [Authorize(Policy = "Admin")]
+    [HttpGet("admin")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult<List<ServiceGroupDto>>> GetServiceGroupForAdminAsync([FromQuery] ServiceGroupQueryParameters parameters)
+    {
+        var serviceGroups = await _service.GetAllForAdminAsync(parameters);
+
+        return Ok(serviceGroups);
+    }
+
+    /// <summary>
     /// Create a new service group
     /// </summary>
     /// <param name="request"></param>

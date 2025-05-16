@@ -3,13 +3,13 @@ using AutoMapper.QueryableExtensions;
 using Bookify.Application.DTOs;
 using Bookify.Application.Interfaces.IServices;
 using Bookify.Application.Interfaces.Services;
+using Bookify.Application.Models;
 using Bookify.Application.QueryParameters;
 using Bookify.Domain_.Entities;
 using Bookify.Domain_.Exceptions;
 using Bookify.Domain_.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
 
 namespace Bookify.Application.Services;
 
@@ -19,7 +19,7 @@ public sealed class ServiceRatingService : IServiceRatingService
     private readonly UserManager<User> _userManager;
     private readonly ICurrentUserService _currentUserService;
     private readonly IMapper _mapper;
-
+     
     public ServiceRatingService(IApplicationDbContext context, IMapper mapper, UserManager<User> userManager, ICurrentUserService currentUserService)
     {
         _context = context ?? throw new ArgumentNullException(nameof(context));
@@ -191,32 +191,26 @@ public sealed class ServiceRatingService : IServiceRatingService
             ?? throw new EntityNotFoundException($"User with id: {userId} does not exist.");
     }
 
-    private async Task<List<ServiceRating>> FilterServiceRating(ServiceRatingByCompanyQueryParametrs parametrs)
+    private async Task<List<Branch>> FilterServiceRating(ServiceRatingByCompanyQueryParametrs parametrs)
     {
-        var query = _context.ServiceRatings
-            .Include(sr => sr.Booking)
-                .ThenInclude(b => b.User)
-            .Include(sr => sr.Booking)
-                .ThenInclude(srs => srs.Service)
-                    .ThenInclude(srb => srb.Branch)
-            .Include(se => se.ETicket)
-                .ThenInclude(e => e.User)
-            .Include(sr => sr.ETicket)
-                .ThenInclude(srs => srs.Service)
-                    .ThenInclude(srb => srb.Branch)
-            .Where(x => x.IsActive)
-            .Where(sr =>
-                (sr.Booking != null && sr.Booking.Service != null && sr.Booking.Service.Branch.CompanyId == parametrs.CompanyId) ||
-                (sr.ETicket != null && sr.ETicket.Service != null && sr.ETicket.Service.Branch.CompanyId == parametrs.CompanyId)
-            )
-            .AsQueryable();
+        var query = _context.Branches
+            .Include(s => s.Services)
+                .ThenInclude(b => b.Bookings)
+                    .ThenInclude(b => b.User)
+            .Include(s => s.Services)
+                .ThenInclude(e => e.ETickets)
+                    .ThenInclude(u => u.User)
+            .Include(s => s.Services)
+                .ThenInclude(b => b.Bookings)
+                    .ThenInclude(sr => sr.ServiceRating)
+            .Include(s => s.Services)
+                .ThenInclude(e => e.ETickets)
+                    .ThenInclude(sr => sr.ServiceRating)
+            .Where(x => x.CompanyId == parametrs.CompanyId);
 
         if (parametrs.BranchId.HasValue)
         {
-            query = query.Where(sr =>
-                (sr.Booking != null && sr.Booking.Service != null && sr.Booking.Service.BranchId == parametrs.BranchId.Value) ||
-                (sr.ETicket != null && sr.ETicket.Service != null && sr.ETicket.Service.BranchId == parametrs.BranchId.Value)
-            );
+            query = query.Where(x => x.Id == parametrs.BranchId);
         }
 
         query = parametrs.SortBy switch
@@ -282,58 +276,39 @@ public sealed class ServiceRatingService : IServiceRatingService
         );
     }
 
-    private static List<ServiceRatingByCompanyDto> MapServiceRatingsToDto(List<ServiceRating> ratings)
+    private static List<ServiceRatingByCompanyDto> MapServiceRatingsToDto(List<Branch> branches)
     {
-        return ratings
-            .Where(sr =>
-                sr.Booking?.Service?.Branch != null ||
-                sr.ETicket?.Service?.Branch != null)
-            .GroupBy(sr =>
-            {
-                var branch = sr.Booking?.Service?.Branch ?? sr.ETicket?.Service?.Branch;
-                return new { branch.Id, branch.Name };
-            })
-            .Select(g =>
-                new ServiceRatingByCompanyDto(
-                    g.Key.Id,
-                    g.Key.Name,
-                    g.Select(sr =>
-                    {
-                        var user = sr.Booking?.User ?? sr.ETicket?.User;
-                        var userName = user != null
-                            ? $"{user.LastName} {user.FirstName}".Trim()
-                            : "Неизвестный пользователь";
-
-                        return new ServiceRatingByBranchDto(
-                            sr.Id,
-                            sr.Comment,
-                            sr.SmileyRating,
-                            sr.PredefinedTextId,
-                            sr.PredefinedText,
-                            userName
-                        );
-                    }).ToList()
+        return branches.Select(branch =>
+        {
+            var ratings = branch.Services
+                .SelectMany(service =>
+                    service.Bookings
+                        .Where(b => b.ServiceRating?.IsActive == true)
+                        .Select(b => new { b.ServiceRating, b.User })
+                    .Concat(
+                        service.ETickets
+                            .Where(e => e.ServiceRating?.IsActive == true)
+                            .Select(e => new { e.ServiceRating, e.User })
+                    )
                 )
-            )
-            .ToList();
-    }
+                .Select(entry =>
+                {
+                    var userName = entry.User != null
+                        ? $"{entry.User.LastName} {entry.User.FirstName}".Trim()
+                        : "";
 
-    public static ServiceRatingByBranchDto MapToServiceRatingByBranchDto(ServiceRating sr)
-    {
-        var user = sr.Booking?.User
-               ?? sr.ETicket?.User;
+                    return new ServiceRatingByBranchDto(
+                        entry.ServiceRating.Id,
+                        entry.ServiceRating.Comment,
+                        entry.ServiceRating.SmileyRating,
+                        entry.ServiceRating.PredefinedTextId,
+                        entry.ServiceRating.PredefinedText,
+                        userName
+                    );
+                })
+                .ToList();
 
-        var userName = user is not null
-            ? $"{user.LastName} {user.FirstName}"
-            : "Unknown";
-
-        return new ServiceRatingByBranchDto(
-            sr.Id,
-            sr.Comment,
-            sr.SmileyRating,
-            sr.PredefinedTextId,
-            sr.PredefinedText,
-            userName
-        );
+            return new ServiceRatingByCompanyDto(branch.Id, branch.Name, ratings);
+        }).ToList();
     }
 }

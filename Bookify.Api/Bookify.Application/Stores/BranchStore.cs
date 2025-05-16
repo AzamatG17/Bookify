@@ -41,10 +41,28 @@ internal sealed class BranchStore(IApiClient apiClient) : IBranchStore
             CoordinateLatitude = r.BranchCoordinates.Latitude,
             CoordinateLongitude = r.BranchCoordinates.Longitude,
             Projects = Domain_.Enums.Projects.BookingService,
-            OpeningTimeBranches = r.BranchOpenHours?.Select(o => new OpeningTimeBranch
+            OpeningTimeBranches = r.BranchOpenHours?.Select(o =>
                 {
-                    Day = o.Day,
-                    OpenTime = o.OpenTime
+                    TimeSpan startTime = TimeSpan.Zero;
+                    TimeSpan endTime = TimeSpan.Zero;
+
+                    if (!string.IsNullOrWhiteSpace(o.OpenTime))
+                    {
+                        var parts = o.OpenTime.Split(" - ", StringSplitOptions.RemoveEmptyEntries);
+                        if (parts.Length == 2)
+                        {
+                            TimeSpan.TryParse(parts[0], out startTime);
+                            TimeSpan.TryParse(parts[1], out endTime);
+                        }
+                    }
+
+                    return new OpeningTimeBranch
+                    {
+                        Day = o.Day,
+                        OpenTime = o.OpenTime,
+                        StartTime = startTime,
+                        EndTime = endTime
+                    };
                 }).ToList() ?? [],
             CompanyId = companyId
         }).ToList();
@@ -60,10 +78,28 @@ internal sealed class BranchStore(IApiClient apiClient) : IBranchStore
             CoordinateLatitude = r.BranchCoordinates.Latitude,
             CoordinateLongitude = r.BranchCoordinates.Longitude,
             Projects = Domain_.Enums.Projects.Onlinet,
-            OpeningTimeBranches = r.BranchOpeningTime?.Select(o => new OpeningTimeBranch
+            OpeningTimeBranches = r.BranchOpeningTime?.Select(o => 
                 {
-                    Day = o.Day,
-                    OpenTime = o.OpenTime
+                    TimeSpan startTime = TimeSpan.Zero;
+                    TimeSpan endTime = TimeSpan.Zero;
+
+                    if (!string.IsNullOrWhiteSpace(o.OpenTime))
+                    {
+                        var parts = o.OpenTime.Split(" - ", StringSplitOptions.RemoveEmptyEntries);
+                        if (parts.Length == 2)
+                        {
+                            TimeSpan.TryParse(parts[0], out startTime);
+                            TimeSpan.TryParse(parts[1], out endTime);
+                        }
+                    }
+
+                    return new OpeningTimeBranch
+                    {
+                        Day = o.Day,
+                        OpenTime = o.OpenTime,
+                        StartTime = startTime,
+                        EndTime = endTime
+                    };
                 }).ToList() ?? [],
             CompanyId = companyId
         }).ToList();

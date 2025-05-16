@@ -239,7 +239,7 @@ internal sealed class BackgroundJobService : IBackgroundJobService
     public async Task DeleteEticketAsync(int eTicketId)
     {
         var eTicket = await _context.Etickets
-        .FirstOrDefaultAsync(x => x.Id == eTicketId);
+            .FirstOrDefaultAsync(x => x.Id == eTicketId);
 
         if (eTicket is null || !eTicket.IsActive)
             return;

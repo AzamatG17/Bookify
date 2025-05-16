@@ -16,5 +16,11 @@ internal class OpeningTimeBranchConfiguration : IEntityTypeConfiguration<Opening
 
         builder.Property(o => o.OpenTime)
             .HasMaxLength(30);
+
+        builder.Property(o => o.StartTime)
+            .IsRequired();
+
+        builder.Property(o => o.EndTime)
+            .IsRequired();
     }
 }
