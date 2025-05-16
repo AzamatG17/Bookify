@@ -47,8 +47,8 @@ internal sealed class EticketService : IEticketService
         var eTicket = await _context.Etickets
             .Include(u => u.User)
             .Include(s => s.Service)
-            .ThenInclude(b => b.Branch)
-            .ThenInclude(c => c.Companies)
+                .ThenInclude(b => b.Branch)
+                    .ThenInclude(c => c.Companies)
             .AsNoTracking()
             .FirstOrDefaultAsync(e => e.TicketId == request.TicketId && e.Service.Branch.BranchId == request.BranchId)
             ?? throw new EntityNotFoundException($"ETicket с идентификатором: {request.TicketId} не найден в филиале: {request.BranchId}");
@@ -70,7 +70,7 @@ internal sealed class EticketService : IEticketService
 
         return result;
     }
-     
+    
     public async Task<ETicketDto> CreateTicketAsync(CreateEticketRequest request)
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -81,6 +81,18 @@ internal sealed class EticketService : IEticketService
             ?? throw new InvalidOperationException("Филиал не связан с компанией.");
 
         var user = await GetUserAsync(_currentUserService.GetUserId());
+
+        var now = DateTime.UtcNow.AddHours(5);
+        var currentDay = (int)now.DayOfWeek;
+        var currentTime = now.TimeOfDay;
+
+        var openingHours = service.Branch.OpeningTimeBranches
+            .FirstOrDefault(o => o.Day == currentDay);
+
+        if (openingHours == null || currentTime < openingHours.StartTime || currentTime > openingHours.EndTime)
+        {
+            throw new InvalidOperationException("Подача заявки на eTicket вне рабочего времени филиала.");
+        }
 
         bool existBooking = await _context.Etickets
             .AnyAsync(b => b.UserId == user.Id &&
@@ -131,13 +143,15 @@ internal sealed class EticketService : IEticketService
             .FirstOrDefaultAsync(e => e.ETicketId == request.eTicketId && e.UserId == user.Id)
             ?? throw new EntityNotFoundException($"ETicket с номером: {request.eTicketId} не найден.");
 
+        string onlyNumber = new string(eTicket.Number.Where(char.IsDigit).ToArray());
+
         DeleteResponse deleteResponse = eTicket.Service.Branch.Projects switch
         {
             Projects.BookingService =>
                 await _store.DeleteBookingServiceAsync(eTicket.Service.Branch.Companies.BaseUrlForBookingService, eTicket.Service.Branch.BranchId, eTicket.Number),
 
             Projects.Onlinet =>
-                await _store.DeleteOnlinetAsync(eTicket.Service.Branch.Companies.BaseUrlForOnlinet, user.Id.ToString(), eTicket.Number)
+                await _store.DeleteOnlinetAsync(eTicket.Service.Branch.Companies.BaseUrlForOnlinet, user.Id.ToString(), onlyNumber)
         };
 
         //_backgroundJobClient.Enqueue(() => _backgroundJobService.DeleteEticketAsync(eTicket.Id));
@@ -152,7 +166,9 @@ internal sealed class EticketService : IEticketService
     {
         return await _context.Services
             .Include(s => s.Branch)
-            .ThenInclude(b => b.Companies)
+                .ThenInclude(b => b.Companies)
+            .Include(s => s.Branch)
+                .ThenInclude(o => o.OpeningTimeBranches)
             .FirstOrDefaultAsync(s => s.Id == serviceId)
             ?? throw new EntityNotFoundException($"Сервис с идентификатором: {serviceId} не найден.");
     }
